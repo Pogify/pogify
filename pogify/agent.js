@@ -13,7 +13,7 @@ function load(src) {
     });
 }
 
-firebase_url_count = {amount: 0};
+firebase_url_count = { amount: 0 };
 
 document.querySelectorAll("head")[0].innerHTML += `
 <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
@@ -25,7 +25,20 @@ async function load_firebase() {
         elem.style.zIndex = 5;
         elem.innerHTML = data;
         document.body.appendChild(elem);
-    })
+    });
+    let fetchStyle = function (url) {
+        return new Promise((resolve, reject) => {
+            let link = document.createElement('link');
+            link.type = 'text/css';
+            link.rel = 'stylesheet';
+            link.onload = function () { resolve(); console.log('style has loaded'); };
+            link.href = url;
+
+            let headScript = document.querySelector('script');
+            headScript.parentNode.insertBefore(link, headScript);
+        });
+    };
+    // await fetchStyle("https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
     firebase_urls = [
         "https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js",
         "https://www.gstatic.com/firebasejs/7.17.2/firebase-analytics.js",
@@ -47,16 +60,16 @@ async function load_firebase() {
     // await load(root("/app.js"));
     // console.log("[LOAD] app");
     // await load("https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js");
-         // .then(() => {
-         // return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js").then(() => {
-         //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-analytics.js")
-         // }).then(() => {
-         //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-auth.js");
-         // }).then(() => {
-         //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-database.js");
-         // }).then(() => {
-         //     return load(root("/app.js"));
-         // });
+    // .then(() => {
+    // return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js").then(() => {
+    //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-analytics.js")
+    // }).then(() => {
+    //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-auth.js");
+    // }).then(() => {
+    //     return load("https://www.gstatic.com/firebasejs/7.17.2/firebase-database.js");
+    // }).then(() => {
+    //     return load(root("/app.js"));
+    // });
 }
 
 load_firebase().catch(e => {
