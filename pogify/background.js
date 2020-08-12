@@ -24,7 +24,7 @@ var init = function () {
         onHeadersReceived, onHeaderFilter, ['blocking', 'responseHeaders']
     );
     chrome.browserAction.onClicked.addListener(function (tab) {
-        chrome.tabs.create({ 'https://open.spotify.com/': chrome.extension.getURL('popup.html') }, function (tab) {
+        chrome.tabs.create({ url: 'https://open.spotify.com/' }, function (tab) {
             // Tab opened.
         });
     });
