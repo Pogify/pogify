@@ -5,7 +5,7 @@ from youtube_search import YoutubeSearch
 
 
 @app.get("/")
-def search(q: str):
+async def search(q: str):
     results = YoutubeSearch(q, max_results=1).to_dict()
     if len(results) == 0:
         return ""
