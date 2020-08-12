@@ -17,20 +17,24 @@ function auth() {
     });
 }
 
-window.onload = () => {
+function newButton(id, content) {
     document.querySelectorAll("#main > div > div.Root__top-container > div.Root__top-bar > header > div")[1].innerHTML +=
-        `<button type="button" class="modalButton" id="accountToggle" style="margin-right: 20px;">Loading Pogify...</button>`;
+        `<button type="button" class="modalButton" id="${id}" style="margin-right: 20px;">${content}</button>`;
+}
+
+window.onload = () => {
+    newButton("accountToggle", "Loading Pogify...");
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             console.log("User:", user);
-            document.querySelectorAll("#accountToggle")[0].textContent = "Sign out of Pogify";
+            document.querySelectorAll("#accountToggle")[0].textContent = "Stop Pogify Session";
             document.querySelectorAll("#accountToggle")[0].onclick = () => {
                 firebase.auth().signOut();
             };
             var uid = user.uid;
         } else {
-            popup("Sign in to Pogify", "Sign in with your Google account to stream your music on Pogify.", "Sign in", auth);
-            document.querySelectorAll("#accountToggle")[0].textContent = "Sign in to Pogify";
+            // popup("Sign in to Pogify", "Sign in with your Google account to stream your music on Pogify.", "Sign in", auth);
+            document.querySelectorAll("#accountToggle")[0].textContent = "Start Pogify Session";
             document.querySelectorAll("#accountToggle")[0].onclick = auth;
 
         }
