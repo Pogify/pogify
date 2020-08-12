@@ -17,7 +17,8 @@ function auth() {
     });
 }
 
-window.onload = () => {
+// window.onload = () => {
+window.addEventListener("load", () => {
     document.querySelectorAll("#main > div > div.Root__top-container > div.Root__top-bar > header > div")[1].innerHTML +=
         `<button type="button" class="modalButton" id="accountToggle" style="margin-right: 20px;">Loading Pogify...</button>`;
     firebase.auth().onAuthStateChanged((user) => {
@@ -36,7 +37,7 @@ window.onload = () => {
         }
     });
 
-};
+});
 
 function closePopup() {
     modal.setAttribute("hidden", "true");
@@ -50,3 +51,4 @@ function popup(title, text, button, callback) {
     document.querySelectorAll("#modalCloseButton")[0].onclick = closePopup;
     modal.removeAttribute("hidden");
 }
+
