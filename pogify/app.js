@@ -18,7 +18,7 @@ function auth() {
 }
 
 function newButton(id, content) {
-    document.querySelectorAll("#main > div > div.Root__top-container > div.Root__top-bar > header > div")[1].insertAdjacentHTML(
+    document.querySelectorAll("div.Root__top-bar > header > div")[1].insertAdjacentHTML(
         'beforEend',
         `<button type="button" class="modalButton" id="${id}" style="margin-right: 20px;">${content}</button>`
     );
@@ -35,7 +35,8 @@ function copy(text) {
     return result;
 }
 
-window.addEventListener('load', (event) => {
+// window.addEventListener('load', (event) => {
+window.onload = (event) => {
     var accountToggle = newButton("accountToggle", "Loading Pogify...");
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -83,7 +84,7 @@ window.addEventListener('load', (event) => {
         }
     });
 
-});
+};
 
 function closePopup() {
     modal.setAttribute("hidden", "true");
