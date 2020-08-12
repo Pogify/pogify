@@ -5,7 +5,7 @@ var timestamp = document.getElementsByClassName("playback-bar")[0].getElementsBy
 var playbtn = document.getElementsByClassName("player-controls")[0].getElementsByTagName("button")[2];
 var data = {
   last_unpaused_timestamp: get_seconds(timestamp.textContent),
-  last_unpaused_utc: Date.now()/1000
+  last_unpaused_utc: Date.now() / 1000
 };
 
 // Converts timestamp in format of min:sec to seconds
@@ -14,7 +14,7 @@ function get_seconds(timestamp) {
   split = timestamp
     .split(':')
     .map(e => parseInt(e));
-  return split[0]*60 + split[1];
+  return split[0] * 60 + split[1];
 }
 
 function reload() {
@@ -37,8 +37,8 @@ function notify() {
 // Tells whether the timestamp is unexpected or not
 function time_weird(timestamp) {
   timestamp_delta = get_seconds(timestamp) - data.last_unpaused_timestamp;
-  utc_delta = Date.now()/1000 - data.last_unpaused_utc;
-  return Math.abs(timestamp_delta-utc_delta) > 1;
+  utc_delta = Date.now() / 1000 - data.last_unpaused_utc;
+  return Math.abs(timestamp_delta - utc_delta) > 1;
 }
 
 function is_paused() {
@@ -56,7 +56,7 @@ function reload_timestamp() {
     console.log("[TIMESTAMP]")
     notify();
     data.last_unpaused_timestamp = get_seconds(curr_timestamp);
-    data.last_unpaused_utc = Date.now()/1000;
+    data.last_unpaused_utc = Date.now() / 1000;
   }
 }
 
@@ -64,8 +64,8 @@ function reload_timestamp() {
 // button_observer.disconnect()
 
 var timestamp_observer = new MutationObserver(reload_timestamp);
-timestamp_observer.observe(timestamp, {characterData: true, subtree: true});
+timestamp_observer.observe(timestamp, { characterData: true, subtree: true });
 
 var button_observer = new MutationObserver(reload_button);
-button_observer.observe(playbtn, {attributes: true, subtree: true});
+button_observer.observe(playbtn, { attributes: true, subtree: true });
 

@@ -1,0 +1,115 @@
+<style>
+    .modalWrapper {
+        --scrollbar-vertical-size: 16px;
+        --scrollbar-horizontal-size: 16px;
+        --glue-font-weight-normal: 400;
+        --glue-font-weight-bold: 700;
+        --glue-font-weight-black: 900;
+        --facebook-gradient: linear-gradient(0deg, hsla(0, 0%, 100%, 0.2), hsla(0, 0%, 100%, 0.2)) #1877f2;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: .015em;
+        font-weight: var(--glue-font-weight-normal);
+        text-transform: none;
+        font-family: spotify-circular, spotify-circular-cyrillic, spotify-circular-arabic, spotify-circular-hebrew, Helvetica Neue, Helvetica, Arial, Hiragino Kaku Gothic Pro, Meiryo, MS Gothic, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        box-sizing: border-box;
+        margin: 0;
+        border: 0;
+        vertical-align: baseline;
+        color: #000;
+        padding: 24px;
+        background-color: #fff;
+        max-width: 402px;
+        text-align: center;
+        border-radius: 4px;
+    }
+
+    .modalTitle {
+        --scrollbar-vertical-size: 16px;
+        --scrollbar-horizontal-size: 16px;
+        --glue-font-weight-normal: 400;
+        --glue-font-weight-bold: 700;
+        --glue-font-weight-black: 900;
+        --facebook-gradient: linear-gradient(0deg, hsla(0, 0%, 100%, 0.2), hsla(0, 0%, 100%, 0.2)) #1877f2;
+        letter-spacing: .015em;
+        text-transform: none;
+        font-family: spotify-circular, spotify-circular-cyrillic, spotify-circular-arabic, spotify-circular-hebrew, Helvetica Neue, Helvetica, Arial, Hiragino Kaku Gothic Pro, Meiryo, MS Gothic, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #000;
+        text-align: center;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        vertical-align: baseline;
+        font-weight: 900;
+        font-size: 28px;
+        line-height: 36px;
+        margin-bottom: 16px;
+    }
+
+    .modalButton {
+        --scrollbar-vertical-size: 16px;
+        --scrollbar-horizontal-size: 16px;
+        --glue-font-weight-normal: 400;
+        --glue-font-weight-bold: 700;
+        --glue-font-weight-black: 900;
+        --facebook-gradient: linear-gradient(0deg, hsla(0, 0%, 100%, 0.2), hsla(0, 0%, 100%, 0.2)) #1877f2;
+        -webkit-font-smoothing: antialiased;
+        box-sizing: border-box;
+        font-family: spotify-circular, spotify-circular-cyrillic, spotify-circular-arabic, spotify-circular-hebrew, Helvetica Neue, Helvetica, Arial, Hiragino Kaku Gothic Pro, Meiryo, MS Gothic, sans-serif;
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 700;
+        letter-spacing: 1.76px;
+        text-transform: uppercase;
+        border: 2px solid transparent;
+        border-radius: 500px;
+        color: #fff;
+        transition: all 33ms cubic-bezier(.3, 0, 0, 1);
+        will-change: transform;
+        white-space: nowrap;
+        padding: 8px 34px;
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+        background-color: #1db954;
+    }
+
+    .modalText {
+        --scrollbar-vertical-size: 16px;
+        --scrollbar-horizontal-size: 16px;
+        --glue-font-weight-normal: 400;
+        --glue-font-weight-bold: 700;
+        --glue-font-weight-black: 900;
+        --facebook-gradient: linear-gradient(0deg, hsla(0, 0%, 100%, 0.2), hsla(0, 0%, 100%, 0.2)) #1877f2;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: .015em;
+        font-weight: var(--glue-font-weight-normal);
+        text-transform: none;
+        font-family: spotify-circular, spotify-circular-cyrillic, spotify-circular-arabic, spotify-circular-hebrew, Helvetica Neue, Helvetica, Arial, Hiragino Kaku Gothic Pro, Meiryo, MS Gothic, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #000;
+        text-align: center;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        vertical-align: baseline;
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="ReactModalPortal" id="logInPrompt" hidden="true">
+    <div class="GenericModal__overlay ">
+        <div class="GenericModal " tabindex="-1" role="dialog" aria-label="Something went wrong">
+            <div class="modalWrapper">
+                <h1 class="modalTitle">Sign in to Pogify</h1>
+                <p class="modalText">Sign in with your Google account to stream your music on Pogify.</p><button
+                    class="modalButton" type="button" id="signInButton">Sign in</button>
+            </div>
+        </div>
+    </div>
+</div>
