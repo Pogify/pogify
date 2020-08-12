@@ -23,6 +23,11 @@ var init = function () {
     chrome.webRequest.onHeadersReceived.addListener(
         onHeadersReceived, onHeaderFilter, ['blocking', 'responseHeaders']
     );
+    chrome.browserAction.onClicked.addListener(function (tab) {
+        chrome.tabs.create({ 'https://open.spotify.com/': chrome.extension.getURL('popup.html') }, function (tab) {
+            // Tab opened.
+        });
+    });
 };
 
 init();

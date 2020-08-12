@@ -100,15 +100,20 @@
         vertical-align: baseline;
         margin-bottom: 16px;
     }
+
+    .closeButton {
+        background-color: #272727 !important;
+    }
 </style>
 
 <div class="ReactModalPortal" id="logInPrompt" hidden="true">
     <div class="GenericModal__overlay ">
         <div class="GenericModal " tabindex="-1" role="dialog" aria-label="Something went wrong">
             <div class="modalWrapper">
-                <h1 class="modalTitle">Sign in to Pogify</h1>
-                <p class="modalText">Sign in with your Google account to stream your music on Pogify.</p><button
-                    class="modalButton" type="button" id="signInButton">Sign in</button>
+                <h1 class="modalTitle" id="modalTitle"></h1>
+                <p class="modalText" id="modalText"></p>
+                <button class="modalButton closeButton" type="button" id="modalCloseButton">Close</button>
+                <button class="modalButton" type="button" id="modalActionButton"></button>
             </div>
         </div>
     </div>
