@@ -1,0 +1,4 @@
+fastapi==0.61.0
+urllib3==1.25.10
+uvicorn==0.11.8
+youtube-search==1.1.0
