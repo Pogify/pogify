@@ -46,6 +46,7 @@ if (isMobile) {
                 });
             }
             if (playing) {
+                p.status.textContent = "Now Playing";
                 player.playVideo();
             } else {
                 player.pauseVideo();
@@ -72,7 +73,7 @@ if (isMobile) {
         db.ref(`users/${window.location.hash.substr(1)}`).on("value", val => {
             try {
                 val = val.val();
-                p.status.textContent = val.playing ? "Now Playing" : "Paused";
+                p.status.textContent = val.playing ? "Loading..." : "Paused";
                 p.song.textContent = val.song;
                 p.artist.textContent = val.artist;
                 p.link.innerHTML = `<i class="fab fa-spotify"></i> Listen on Spotify`;
