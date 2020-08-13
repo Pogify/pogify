@@ -61,12 +61,14 @@ function loaded() {
     }
     var accountToggle = newButton("accountToggle", "Loading Pogify...");
     firebase.auth().onAuthStateChanged((user) => {
+        closePopup();
         if (user) {
             console.log("User:", user);
             accountToggle.textContent = "Stop Pogify Session";
             accountToggle.classList.add("redButton");
             accountToggle.onclick = () => {
                 firebase.auth().signOut();
+                userinfo.ref.remove();
             };
             var shareSession = newButton("shareSessionButton", "Share Session");
             var link = window.location.href;
@@ -101,7 +103,11 @@ function loaded() {
             // popup("Sign in to Pogify", "Sign in with your Google account to stream your music on Pogify.", "Sign in", auth);
             accountToggle.textContent = "Start Pogify Session";
             accountToggle.classList.remove("redButton");
-            accountToggle.onclick = auth;
+            accountToggle.onclick = () => {
+                popup("Start a session",
+                    "Sign in with your Google account to create a permanent Pogify stream link.<br /><br />No personal data will be collected.",
+                    `<i class="fab fa-google"></i> Sign in`, auth);
+            };
             var ssb = document.querySelectorAll("#shareSessionButton");
             if (ssb.length > 0) {
                 ssb[0].remove();
@@ -119,7 +125,7 @@ function closePopup() {
 function popup(title, text, button, callback) {
     document.querySelectorAll("#modalTitle")[0].textContent = title;
     document.querySelectorAll("#modalText")[0].innerHTML = text;
-    document.querySelectorAll("#modalActionButton")[0].textContent = button;
+    document.querySelectorAll("#modalActionButton")[0].innerHTML = button;
     document.querySelectorAll("#modalActionButton")[0].onclick = callback;
     document.querySelectorAll("#modalCloseButton")[0].onclick = closePopup;
     modal.removeAttribute("hidden");
