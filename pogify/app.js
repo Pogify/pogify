@@ -174,22 +174,27 @@ function get_seconds(timestamp) {
 }
 
 function reload() {
-    var query = {
-        song: epico.song.textContent,
-        artist: epico.artist.textContent,
+    return fetch(`https://pogify-yt.herokuapp.com/?q=${epico.song.textContent} ${epico.artist.textContent}`, {
+        cache: "force-cache"
+    }).then(v => v.json()).then(video => {
+        var query = {
+            song: epico.song.textContent,
+            artist: epico.artist.textContent,
 
-        // timestamp: epico.timestamp.textContent,
-        timestamp_sec: get_seconds(epico.timestamp.textContent),
-        playing: !is_paused(),
-        event_timestamp: firebase.database.ServerValue.TIMESTAMP
-    };
-    // console.log(query);
-    return query;
+            // timestamp: epico.timestamp.textContent,
+            timestamp_sec: get_seconds(epico.timestamp.textContent),
+            playing: !is_paused(),
+            event_timestamp: firebase.database.ServerValue.TIMESTAMP,
+            video: video.video
+        };
+        // console.log(query);
+        return query;
+    });
 }
 
 async function notify() {
     // Replace with firebase request with reload()
-    var to_send = reload();
+    var to_send = await reload();
     await userinfo.ref.update(to_send);
 }
 
