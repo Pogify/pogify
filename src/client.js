@@ -84,7 +84,9 @@ if (isMobile) {
                 p.song.textContent = "No song";
                 p.artist.textContent = "No artists";
                 p.link.textContent = "";
-                player.pauseVideo();
+                if (player) {
+                    player.pauseVideo();
+                }
             }
         });
     }
