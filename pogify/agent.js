@@ -43,12 +43,15 @@ async function load_firebase() {
         });
     };
     // await fetchStyle("https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+    
+    // need to load app firt
+    await load("https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js");
+    console.log("[LOAD] " + "https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js");
+
     firebase_urls = [
-        "https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js",
         "https://www.gstatic.com/firebasejs/7.17.2/firebase-analytics.js",
         "https://www.gstatic.com/firebasejs/7.17.2/firebase-auth.js",
         "https://www.gstatic.com/firebasejs/7.17.2/firebase-database.js"
-        // root("/app.js")
     ];
     firebase_url_count.amount = firebase_urls.length;
     firebase_urls.forEach(async (url) => {
