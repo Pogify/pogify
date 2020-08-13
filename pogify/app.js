@@ -141,6 +141,7 @@ var epico = {
     artist: undefined,
     timestamp: undefined,
     playbtn: undefined,
+    spotify: undefined,
     data: undefined,
 }
 
@@ -151,6 +152,7 @@ function init_observer_stuff() {
     var artist = elem.querySelectorAll("div")[2];
     var timestamp = document.getElementsByClassName("playback-bar")[0].getElementsByTagName("div")[0];
     var playbtn = document.getElementsByClassName("player-controls")[0].getElementsByTagName("button")[2];
+    var spotify = song.getElementsByTagName("a")[0].href;
     var data = {
         last_unpaused_timestamp: get_seconds(timestamp.textContent),
         last_unpaused_utc: Date.now() / 1000
@@ -161,6 +163,7 @@ function init_observer_stuff() {
     epico.artist = artist;
     epico.timestamp = timestamp;
     epico.playbtn = playbtn;
+    epico.spotify = spotify;
     epico.data = data;
 
     observe_dom();
@@ -187,6 +190,7 @@ function reload() {
             timestamp_sec: get_seconds(epico.timestamp.textContent),
             playing: !is_paused(),
             event_timestamp: firebase.database.ServerValue.TIMESTAMP,
+            spotify_link: epico.spotify,
             video: video.video
         };
         // console.log(query);
