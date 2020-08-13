@@ -121,97 +121,97 @@ function popup(title, text, button, callback) {
 // The part which monitors Spotify dom
 
 var epico = {
-  elem: undefined,
-  song: undefined,
-  artist: undefined,
-  timestamp: undefined,
-  playbtn: undefined,
-  data: undefined,
+    elem: undefined,
+    song: undefined,
+    artist: undefined,
+    timestamp: undefined,
+    playbtn: undefined,
+    data: undefined,
 }
 
 
 function init_observer_stuff() {
-  var elem = document.querySelectorAll(".now-playing .ellipsis-one-line")[0];
-  var song = elem.querySelectorAll("div")[1];
-  var artist = elem.querySelectorAll("div")[2];
-  var timestamp = document.getElementsByClassName("playback-bar")[0].getElementsByTagName("div")[0];
-  var playbtn = document.getElementsByClassName("player-controls")[0].getElementsByTagName("button")[2];
-  var data = {
-    last_unpaused_timestamp: get_seconds(timestamp.textContent),
-    last_unpaused_utc: Date.now() / 1000
-  };
+    var elem = document.querySelectorAll(".now-playing .ellipsis-one-line")[0];
+    var song = elem.querySelectorAll("div")[1];
+    var artist = elem.querySelectorAll("div")[2];
+    var timestamp = document.getElementsByClassName("playback-bar")[0].getElementsByTagName("div")[0];
+    var playbtn = document.getElementsByClassName("player-controls")[0].getElementsByTagName("button")[2];
+    var data = {
+        last_unpaused_timestamp: get_seconds(timestamp.textContent),
+        last_unpaused_utc: Date.now() / 1000
+    };
 
-  epico.elem = elem;
-  epico.song = song;
-  epico.artist = artist;
-  epico.timestamp = timestamp;
-  epico.playbtn = playbtn;
-  epico.data = data;
+    epico.elem = elem;
+    epico.song = song;
+    epico.artist = artist;
+    epico.timestamp = timestamp;
+    epico.playbtn = playbtn;
+    epico.data = data;
 
-  observe_dom();
+    observe_dom();
 }
-  
+
 // Converts timestamp in format of min:sec to seconds
 // ex: 0:17 => 17
 function get_seconds(timestamp) {
-  split = timestamp
-    .split(':')
-    .map(e => parseInt(e));
-  return split[0] * 60 + split[1];
+    split = timestamp
+        .split(':')
+        .map(e => parseInt(e));
+    return split[0] * 60 + split[1];
 }
 
 function reload() {
-  var query = {
-    song: epico.song.textContent,
-    artist: epico.artist.textContent,
-    timestamp: epico.timestamp.textContent,
-    timestamp_sec: get_seconds(epico.timestamp.textContent),
-    play: !is_paused()
-  };
-  // console.log(query);
-  return query;
+    var query = {
+        song: epico.song.textContent,
+        artist: epico.artist.textContent,
+        timestamp: epico.timestamp.textContent,
+        timestamp_sec: get_seconds(epico.timestamp.textContent),
+        play: !is_paused()
+    };
+    // console.log(query);
+    return query;
 }
 
 async function notify() {
-  // Replace with firebase request with reload()
-  var to_send = reload();
-  await userinfo.ref.set(to_send);
+    // Replace with firebase request with reload()
+    var to_send = reload();
+    await userinfo.ref.update(to_send);
 }
 
 // Tells whether the timestamp is unexpected or not
 function time_weird(timestamp) {
-  timestamp_delta = get_seconds(timestamp) - epico.data.last_unpaused_timestamp;
-  utc_delta = Date.now() / 1000 - epico.data.last_unpaused_utc;
-  return Math.abs(timestamp_delta - utc_delta) > 1;
+    timestamp_delta = get_seconds(timestamp) - epico.data.last_unpaused_timestamp;
+    utc_delta = Date.now() / 1000 - epico.data.last_unpaused_utc;
+    return Math.abs(timestamp_delta - utc_delta) > 1;
 }
 
 function is_paused() {
-  return epico.playbtn.title != "Pause";
+    return epico.playbtn.title != "Pause";
 }
 
 async function reload_button() {
-  console.log("[BUTTON]");
-  await notify();
+    console.log("[BUTTON]");
+    await notify();
 }
 
 async function reload_timestamp() {
-  curr_timestamp = epico.timestamp.textContent;
-  if (time_weird(curr_timestamp)) {
-    console.log("[TIMESTAMP]")
-    await notify();
-    epico.data.last_unpaused_timestamp = get_seconds(curr_timestamp);
-    epico.data.last_unpaused_utc = Date.now() / 1000;
-  }
+    curr_timestamp = epico.timestamp.textContent;
+    if (time_weird(curr_timestamp)) {
+        console.log("[TIMESTAMP]")
+        await notify();
+        epico.data.last_unpaused_timestamp = get_seconds(curr_timestamp);
+        epico.data.last_unpaused_utc = Date.now() / 1000;
+    }
 }
 
 // timestamp_observer.disconnect()
 // button_observer.disconnect()
 
 function observe_dom() {
-  var timestamp_observer = new MutationObserver(reload_timestamp);
-  timestamp_observer.observe(timestamp, { characterData: true, subtree: true });
-  
-  var button_observer = new MutationObserver(reload_button);
-  button_observer.observe(playbtn, { attributes: true, subtree: true });
+    var timestamp_observer = new MutationObserver(reload_timestamp);
+    timestamp_observer.observe(epico.timestamp, { characterData: true, subtree: true });
+
+    var button_observer = new MutationObserver(reload_button);
+    button_observer.observe(epico.playbtn, { attributes: true, subtree: true });
 }
 
