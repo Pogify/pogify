@@ -37,6 +37,15 @@ function copy(text) {
 
 // window.addEventListener('load', (event) => {
 
+function copyLink(link) {
+    copy(link);
+    var span = document.querySelectorAll("#copyLinkButton > span")[0];
+    span.textContent = "Copied!";
+    setTimeout(() => {
+        span.textContent = "Copy URL";
+    }, 1000);
+}
+
 function loaded() {
     if (document.querySelectorAll("div.Root__top-bar > header > div").length < 2) {
         setTimeout(loaded, 100);
@@ -56,7 +65,8 @@ function loaded() {
             var link = window.location.href;
             shareSession.onclick = () => {
                 popup("Pogify Session", `
-                <input value="${link}" style="width:100%;color:black;text-align:center;" readonly></input>
+                <input value="${link}" id="linkBox" readonly 
+                onclick="this.setSelectionRange(0, this.value.length);" oncontextmenu="copyLink(this.value);"></input>
                 <br>
                 <a style="cursor:pointer;" id="copyLinkButton">
                     <i class="fas fa-clipboard"></i> <span>Copy URL</span>
@@ -69,14 +79,9 @@ function loaded() {
                     }
                     navigator.share(shareData);
                 });
-                var copyButton = document.querySelectorAll("#copyLinkButton")[0];
-                copyButton.onclick = (event) => {
-                    copy(link);
-                    var span = copyButton.querySelectorAll("span")[0];
-                    span.textContent = "Copied!";
-                    setTimeout(() => {
-                        span.textContent = "Copy URL";
-                    }, 1000);
+
+                document.querySelectorAll("#copyLinkButton")[0].onclick = (event) => {
+                    copyLink(link);
                 }
             };
             var uid = user.uid;
