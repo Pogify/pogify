@@ -9,12 +9,14 @@ var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 var p = {
     status: document.querySelectorAll("#status")[0],
     song: document.querySelectorAll("#song")[0],
-    artist: document.querySelectorAll("#artist")[0]
+    artist: document.querySelectorAll("#artist")[0],
+    link: document.querySelectorAll("#link")[0]
 }
 if (isMobile) {
     p.status.textContent = "Device not supported";
     p.song.textContent = "Mobile devices are not yet supported.";
     p.artist.textContent = "Stay tuned for future updates!";
+    p.link.textContent = "";
 } else {
     var fbConfig = {
         apiKey: "AIzaSyAkaNtHvfJIMLWeWeh1DXLvcN7ybA2yKeo",
@@ -73,11 +75,14 @@ if (isMobile) {
                 p.status.textContent = val.playing ? "Now Playing" : "Paused";
                 p.song.textContent = val.song;
                 p.artist.textContent = val.artist;
+                p.link.innerHTML = `<i class="fab fa-spotify"></i> Listen on Spotify`;
+                p.link.href = val.spotify_link;
                 loadVideo(val.video, Math.round((Date.now() - val.event_timestamp) / 1000) + val.timestamp_sec, val.playing);
             } catch (e) {
                 p.status.textContent = "Stream Stopped";
                 p.song.textContent = "No song";
                 p.artist.textContent = "No artists";
+                p.link.textContent = "";
             }
         });
     }
