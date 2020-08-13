@@ -1,8 +1,59 @@
 <title>Pogify Client</title>
+
 <body>
     <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-database.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+        integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
+        crossorigin="anonymous">
 </body>
-<div id="frame_div"></div>
+<div id="frame_div" style="display:none;"></div>
+
+<div id="open-modal" class="modal-window">
+    <div>
+        <h1 id="status">Status</h1>
+        <h2 id="song">Song</h2>
+        <h3 id="artist">Artist</h3>
+        <div>
+            <small>
+                <a href="https://github.com/KentoNishi/pogify">
+                    <i class="fab fa-github"></i>
+                    View source code on GitHub
+                </a>
+            </small>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-window {
+        font-family: 'Roboto';
+        font-weight: bold;
+        color: black;
+        visibility: visible;
+        pointer-events: auto;
+        width: 75vw;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+        padding-bottom: 1.5em;
+        padding-top: 0em;
+        background: #ffffff;
+    }
+
+    body {
+        background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #7f53ac), to(#657ced));
+        background-image: linear-gradient(to right, #7f53ac 0, #657ced 100%);
+        color: black;
+    }
+
+    a {
+        color: blue;
+    }
+</style>
 <script src="./src/client.js"></script>
