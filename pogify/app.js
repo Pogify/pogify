@@ -52,7 +52,8 @@ function copyLink(link) {
 }
 
 function loaded() {
-    if (document.querySelectorAll("div.Root__top-bar > header > div").length < 2) {
+    if (document.querySelectorAll("div.Root__top-bar > header > div").length < 2 ||
+        document.querySelectorAll(".now-playing .ellipsis-one-line").length == 0) {
         setTimeout(loaded, 100);
         return;
     }
