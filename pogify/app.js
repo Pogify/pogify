@@ -1,3 +1,5 @@
+const CLIENT = "https://kentonishi.github.io/pogify";
+
 var fbConfig = {
     apiKey: "AIzaSyAkaNtHvfJIMLWeWeh1DXLvcN7ybA2yKeo",
     authDomain: "pogify-database.firebaseapp.com",
@@ -64,6 +66,7 @@ function loaded() {
         closePopup();
         if (user) {
             console.log("User:", user);
+            var uid = user.uid;
             accountToggle.textContent = "Stop Pogify Session";
             accountToggle.classList.add("redButton");
             accountToggle.onclick = () => {
@@ -71,7 +74,7 @@ function loaded() {
                 userinfo.ref.remove();
             };
             var shareSession = newButton("shareSessionButton", "Share Session");
-            var link = window.location.href;
+            var link = CLIENT + "#" + uid;
             shareSession.onclick = () => {
                 popup("Pogify Session", `
                 <input value="${link}" id="linkBox" readonly 
@@ -93,7 +96,6 @@ function loaded() {
                     copyLink(link);
                 }
             };
-            var uid = user.uid;
             userinfo.uid = uid;
             userinfo.ref = db.ref(`users/${uid}`);
             userinfo.ref.onDisconnect().remove();
@@ -202,7 +204,7 @@ async function notify() {
 function time_weird(timestamp) {
     timestamp_delta = get_seconds(timestamp) - epico.data.last_unpaused_timestamp;
     utc_delta = Date.now() / 1000 - epico.data.last_unpaused_utc;
-    return Math.abs(timestamp_delta - utc_delta) > 1;
+    return Math.abs(timestamp_delta - utc_delta) > 5;
 }
 
 function is_paused() {
