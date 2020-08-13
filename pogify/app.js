@@ -64,7 +64,6 @@ function loaded() {
             accountToggle.textContent = "Stop Pogify Session";
             accountToggle.classList.add("redButton");
             accountToggle.onclick = () => {
-                console.log(1);
                 firebase.auth().signOut();
             };
             var shareSession = newButton("shareSessionButton", "Share Session");
