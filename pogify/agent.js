@@ -17,8 +17,15 @@ firebase_url_count = { amount: 0 };
 
 if (!document.head.getElementsByClassName("nocors").length) {
     document.head.innerHTML += `
-  <meta class="nocors" http-equiv="Content-Security-Policy" content="default-src *; media-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
-  `;
+    <meta class="nocors"
+    http-equiv="Content-Security-Policy"
+    content="
+        default-src *;
+        media-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+        style-src 'self' http://* 'unsafe-inline';
+        script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'
+    " />
+    `;
 }
 
 async function load_firebase() {
