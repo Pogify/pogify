@@ -2,6 +2,17 @@ from fastapi import FastAPI
 
 app = FastAPI()
 from youtube_search import YoutubeSearch
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["https://open.spotify.com"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
