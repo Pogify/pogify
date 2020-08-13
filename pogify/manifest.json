@@ -34,5 +34,8 @@
         ],
         "persistent": true
     },
-    "browser_action": {}
+    "browser_action": {},
+    "icons": {
+        "32": "icon.png"
+    }
 }
