@@ -1,8 +1,8 @@
 {
     "name": "Pogify",
+    "description": "Listen to music with your stream chat without getting DMCA-striked.",
     "version": "0.0.1",
     "manifest_version": 2,
-    "description": "",
     "permissions": [
         "webRequest",
         "webRequestBlocking",
