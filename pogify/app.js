@@ -99,7 +99,10 @@ function loaded() {
             accountToggle.textContent = "Start Pogify Session";
             accountToggle.classList.remove("redButton");
             accountToggle.onclick = auth;
-            document.querySelectorAll("#shareSessionButton")[0].remove();
+            var ssb = document.querySelectorAll("#shareSessionButton");
+            if (ssb.length > 0) {
+                ssb[0].remove();
+            }
         }
     });
 }
@@ -165,9 +168,11 @@ function reload() {
     var query = {
         song: epico.song.textContent,
         artist: epico.artist.textContent,
-        timestamp: epico.timestamp.textContent,
+
+        // timestamp: epico.timestamp.textContent,
         timestamp_sec: get_seconds(epico.timestamp.textContent),
-        play: !is_paused()
+        playing: !is_paused(),
+        event_timestamp: firebase.database.ServerValue.TIMESTAMP
     };
     // console.log(query);
     return query;
