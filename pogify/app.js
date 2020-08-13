@@ -36,7 +36,12 @@ function copy(text) {
 }
 
 // window.addEventListener('load', (event) => {
-window.onload = (event) => {
+
+function loaded() {
+    if (document.querySelectorAll("div.Root__top-bar > header > div").length < 2) {
+        setTimeout(loaded, 100);
+        return;
+    }
     var accountToggle = newButton("accountToggle", "Loading Pogify...");
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -83,8 +88,9 @@ window.onload = (event) => {
             document.querySelectorAll("#shareSessionButton")[0].remove();
         }
     });
+}
 
-};
+window.onload = loaded;
 
 function closePopup() {
     modal.setAttribute("hidden", "true");
