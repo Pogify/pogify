@@ -17,8 +17,10 @@ var userinfo = {
 
 function auth() {
     var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).catch(function (error) {
-        console.log(error);
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
+        firebase.auth().signInWithPopup(provider).catch(function (error) {
+            console.log(error);
+        });
     });
 }
 
@@ -92,7 +94,9 @@ function loaded() {
             var uid = user.uid;
             userinfo.uid = uid;
             userinfo.ref = db.ref(`users/${uid}`);
+            userinfo.ref.onDisconnect().remove();
             init_observer_stuff();
+            notify();
         } else {
             // popup("Sign in to Pogify", "Sign in with your Google account to stream your music on Pogify.", "Sign in", auth);
             accountToggle.textContent = "Start Pogify Session";
