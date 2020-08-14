@@ -1,4 +1,4 @@
-# Pogify Chrome Extension
+# Pogify Client & Chrome Extension
 
 Listen to music with your stream chat without getting DMCA-striked.
 
@@ -7,6 +7,10 @@ Listen to music with your stream chat without getting DMCA-striked.
 > I just want like my songs to play on your computer when I uh, when I play them on my computer.
 >
 > -- <cite>Michael Reeves</cite>
+
+## What is Pogify?
+
+Pogify is a service that enables streamers to listen to music together with their viewers. The streamer can start a session using the Pogify Chrome extension, and chat can listen along with a stream link.
 
 ## Usage
 
