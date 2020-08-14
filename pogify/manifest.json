@@ -7,11 +7,7 @@
         "webRequest",
         "webRequestBlocking",
         "browsingData",
-        "activeTab",
-        "notifications",
-        "storage",
-        "http://*/*",
-        "https://*/*"
+        "https://open.spotify.com/*"
     ],
     "content_scripts": [
         {

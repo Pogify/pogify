@@ -1,4 +1,4 @@
-const CLIENT = "https://kentonishi.github.io/pogify";
+const CLIENT = "https://kentonishi.github.io/pogify/client";
 
 var fbConfig = {
     apiKey: "AIzaSyAkaNtHvfJIMLWeWeh1DXLvcN7ybA2yKeo",
