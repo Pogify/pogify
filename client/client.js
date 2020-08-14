@@ -5,6 +5,10 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+window.onhashchange = function () {
+    window.location.reload();
+}
+
 var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 var p = {
     status: document.querySelectorAll("#status")[0],
@@ -76,7 +80,7 @@ if (isMobile) {
                 p.status.textContent = val.playing ? "Loading..." : "Paused";
                 p.song.textContent = val.song;
                 p.artist.textContent = val.artist;
-                p.link.innerHTML = `<i class="fab fa-spotify"></i> Listen on Spotify`;
+                p.link.innerHTML = "";//`<i class="fab fa-spotify"></i> Listen on Spotify`;
                 p.link.href = val.spotify_link;
                 loadVideo(val.video, Math.round((Date.now() - val.event_timestamp) / 1000) + val.timestamp_sec, val.playing);
             } catch (e) {
