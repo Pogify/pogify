@@ -2,6 +2,8 @@
 
 Listen to music with your stream chat without getting DMCA-striked.
 
+[View code on GitHub](https://github.com/KentoNishi/pogify)
+
 ![logo](img/logo.png)
 
 > I just want like my songs to play on your computer when I uh, when I play them on my computer.
