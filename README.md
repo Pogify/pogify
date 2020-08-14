@@ -16,7 +16,9 @@ Pogify is a service that enables streamers to listen to music together with thei
 
 ### Streamer
 
-1. Install the Chrome extension availabe [on the Chrome Web Store]().
+1. Install the Chrome extension.
+    > The extension is currently under review by Google.
+    > It will be published on the Chrome Web Store soon.
 
 1. Open Spotify Desktop and begin playing music as you normally do.
 
