@@ -1,79 +1,68 @@
-# Pogify Client & Chrome Extension
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Listen to music with your stream chat without getting DMCA-striked.
+## Available Scripts
 
-[View code on GitHub](https://github.com/KentoNishi/pogify)
+In the project directory, you can run:
 
-![logo](img/logo.png)
+### `yarn start`
 
-> I just want like my songs to play on your computer when I uh, when I play them on my computer.
->
-> -- <cite>Michael Reeves</cite>
+Runs the app in the development mode.<br />
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## What is Pogify?
+The page will reload if you make edits.<br />
+You will also see any lint errors in the console.
 
-Pogify is a service that enables streamers to listen to music together with their viewers. The streamer can start a session using the Pogify Chrome extension, and chat can listen along with a stream link.
+### `yarn test`
 
-## Usage
+Launches the test runner in the interactive watch mode.<br />
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### Streamer
+### `yarn build`
 
-1. Install the Chrome extension.
-    > The extension is currently under review by Google.
-    > It will be published on the Chrome Web Store soon.
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-1. Open Spotify Desktop and begin playing music as you normally do.
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed!
 
-    ![](./img/open_desktop.png)
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-1. Click on the Pogify icon at the top right of your Chrome window.
+### `yarn eject`
 
-    ![](./img/open_extension.png)
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-    Clicking the button will open Spotify web (https://open.spotify.com).
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-    ![](./img/open_spotify_web.png)
-    
-1. Click on the `Start Pogify Session` button to start a new session.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-    ![](./img/start_pogify_session.png)
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-    You will be asked to sign in with your Google account to create a permanent stream link. No personal data will be collected.
+## Learn More
 
-    ![](./img/sign_in.png)
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-1. After signing in, share your Pogify session using the `Share Session` button.
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-    ![](./img/share_session.png)
+### Code Splitting
 
-    Copy the link and share it with the chat.
+This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
 
-    ![](./img/copy_link.png)
+### Analyzing the Bundle Size
 
-1. You are good to go! **Make sure you leave the Spotify web tab open in the background**. You can continue to use Spotify Desktop for your own listening.
+This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
 
+### Making a Progressive Web App
 
-### Chat
+This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
 
-Open the link your streamer shared with you.
+### Advanced Configuration
 
-![](./img/client.png)
+This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
 
-You are good to go! **Make sure to keep the tab open in the background while you watch the stream.** You can now watch the streamer on a different tab while streaming their music.
+### Deployment
 
-## Status
+This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
 
-This project relies upon a realtime database from [Firebase](https://firebase.google.com/) which in its free tier will only allow for 100 simultaneous connections and therefore only 99 viewers. To allow for more users, the developers will be looking into either engineering an alternative to Firebase's realtime database or crowdfunding for a Firebase paid plan.
+### `yarn build` fails to minify
 
-## How It Works
-
-1. A [mutation observer](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) is launched on the streamer's spotify website.
-
-2. The observer updates the Firebase Realtime Database when the streamer's song or timestamp within the song changes.
-
-3. The client adjusts its hidden youtube video based upon the changes in the realtime database.
-
-## Credits
-
-* [Kento Nishi](https://github.com/kentonishi) - extension and client frontend, database
-* [Ronak Badhe](https://github.com/r2dev2bb8) - spotify observer, database
+This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
