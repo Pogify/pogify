@@ -8,11 +8,12 @@
 // List of tabIds where CSP headers are disabled
 
 var onHeadersReceived = function (details) {
-    chrome.browsingData.remove({}, { serviceWorkers: true }, function () { });
+    chrome.browsingData.remove({}, { serviceWorkers: true }, () => { });
 
     for (var i = 0; i < details.responseHeaders.length; i++) {
-        if (details.responseHeaders[i].name.toLowerCase() === 'content-security-policy') {
-            details.responseHeaders[i].value = '';
+        var header = details.responseHeaders[i];
+        if (header.name.toLowerCase() === 'content-security-policy') {
+            header.value = '';
         }
     }
 
@@ -27,7 +28,7 @@ var init = function () {
     chrome.webRequest.onHeadersReceived.addListener(
         onHeadersReceived, onHeaderFilter, ['blocking', 'responseHeaders']
     );
-    chrome.browserAction.onClicked.addListener(function (tab) {
+    chrome.browserAction.onClicked.addListener((tab) => {
         chrome.tabs.create({ url: 'https://open.spotify.com/' }, function (tab) {
             // Tab opened.
         });

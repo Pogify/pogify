@@ -6,6 +6,7 @@ var fbConfig = {
     databaseURL: "https://pogify-database.firebaseio.com/",
     projectId: "pogify-database",
 };
+
 firebase.initializeApp(fbConfig);
 var db = firebase.database();
 var provider = new firebase.auth.GoogleAuthProvider();
@@ -44,7 +45,6 @@ function copy(text) {
     return result;
 }
 
-// window.addEventListener('load', (event) => {
 
 function copyLink(link) {
     copy(link);
@@ -102,7 +102,6 @@ function loaded() {
             init_observer_stuff();
             notify();
         } else {
-            // popup("Sign in to Pogify", "Sign in with your Google account to stream your music on Pogify.", "Sign in", auth);
             accountToggle.textContent = "Start Pogify Session";
             accountToggle.classList.remove("redButton");
             accountToggle.onclick = () => {
@@ -135,6 +134,7 @@ function popup(title, text, button, callback) {
 
 // The part which monitors Spotify dom
 
+// Object to contain the state variables
 var epico = {
     elem: undefined,
     song: undefined,
@@ -147,24 +147,22 @@ var epico = {
 
 
 function init_observer_stuff() {
-    var elem = document.querySelectorAll(".now-playing .ellipsis-one-line")[0];
-    var song = elem.querySelectorAll("div")[1];
-    var artist = elem.querySelectorAll("div")[2];
-    var timestamp = document.getElementsByClassName("playback-bar")[0].getElementsByTagName("div")[0];
-    var playbtn = document.getElementsByClassName("player-controls")[0].getElementsByTagName("button")[2];
-    var spotify = song.getElementsByTagName("a")[0];
-    var data = {
+    epico.elem = document.querySelectorAll(".now-playing .ellipsis-one-line")[0];
+    epico.song = elem.querySelectorAll("div")[1];
+    epico.artist = elem.querySelectorAll("div")[2];
+    epico.timestamp = document
+        .getElementsByClassName("playback-bar")[0]
+        .getElementsByTagName("div")[0];
+
+    epico.playbtn = document.
+        getElementsByClassName("player-controls")[0].
+        getElementsByTagName("button")[2];
+
+    epico.spotify = song.getElementsByTagName("a")[0];
+    epico.data = {
         last_unpaused_timestamp: get_seconds(timestamp.textContent),
         last_unpaused_utc: Date.now() / 1000
     };
-
-    epico.elem = elem;
-    epico.song = song;
-    epico.artist = artist;
-    epico.timestamp = timestamp;
-    epico.playbtn = playbtn;
-    epico.spotify = spotify;
-    epico.data = data;
 
     observe_dom();
 }
@@ -193,7 +191,6 @@ function reload() {
             spotify_link: epico.spotify.href,
             video: video.video
         };
-        // console.log(query);
         return query;
     });
 }
@@ -229,9 +226,6 @@ async function reload_timestamp() {
         epico.data.last_unpaused_utc = Date.now() / 1000;
     }
 }
-
-// timestamp_observer.disconnect()
-// button_observer.disconnect()
 
 function observe_dom() {
     var timestamp_observer = new MutationObserver(reload_timestamp);
