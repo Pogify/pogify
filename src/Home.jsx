@@ -1,21 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import Layout from "./Layout"
-
-const Button = styled.button`
-  border: 1px solid #2C3A3A;
-  padding: 10px 30px;
-  border-radius: 25px;
-  font-size: 1.3rem;
-  cursor: pointer;
-  margin: 5px;
-  transition: background-color 0.5s, color 0.5s;
-  :hover {
-    background-color: #2C3A3A;
-    color: white;
-  }
-`;
 
 class Home extends React.Component {
   render() {
@@ -34,10 +19,10 @@ class Home extends React.Component {
           </h1>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Link to="/session">
-            <Button>I am a viewer</Button>
+            <button>I am a viewer</button>
           </Link>
-          <Link to="/create">
-            <Button style={{ marignLeft: "10px" }}>I am a streamer</Button>
+          <Link style={{ marignLeft: "10px" }} to="/create">
+            <button style={{ marginLeft: 10}}>I am a streamer</button>
           </Link>
         </div>
       </Layout>
