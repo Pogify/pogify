@@ -1,9 +1,8 @@
 button {
   cursor: pointer;
   border: 1px solid #2C3A3A;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 12px;
-  font-size: 1.3rem;
   cursor: pointer;
   transition: box-shadow 0.3s;
   margin: 5px;
