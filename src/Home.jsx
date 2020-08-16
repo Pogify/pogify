@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Layout from "./Layout"
 
 const Button = styled.button`
-  border: 1px solid black;
+  border: 1px solid #2C3A3A;
   padding: 10px 30px;
   border-radius: 25px;
   font-size: 1.3rem;
@@ -12,7 +12,7 @@ const Button = styled.button`
   margin: 5px;
   transition: background-color 0.5s, color 0.5s;
   :hover {
-    background-color: black;
+    background-color: #2C3A3A;
     color: white;
   }
 `;
