@@ -7,7 +7,6 @@ export const Player = (props) => {
       style={{
         width: 300,
         textAlign: "center",
-        backgroundColor: "#424242",
         borderRadius: 10,
         padding: 30,
       }}

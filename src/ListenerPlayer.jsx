@@ -271,32 +271,33 @@ export default class HostPlayer extends React.Component {
 
     return (
       <Layout>
-        <Player
-          position={position / 1000}
-          duration={duration / 1000}
-          coverArtURL={coverArtURL}
-          album={album}
-          title={title}
-          artists={artists}
-          playing={!paused}
-          volume={volume}
-          changeVolume={this.changeVolume}
-        />
-        <div
-          style={{
-            width: 300,
-            textAlign: "center",
-            backgroundColor: "#424242",
-            borderRadius: 10,
-            padding: 30,
-            marginTop: 10,
-          }}
-        >
-          You are listening to session {this.props.sessionId}. <br />
-          Playback is controlled by the host. <br />
-          Pressing pause will pause playback locally only. On resume, playback
-          will resyncronize with the host. <br />
-          {this.state.connections} in this session.
+        <div>
+          <Player
+            position={position / 1000}
+            duration={duration / 1000}
+            coverArtURL={coverArtURL}
+            album={album}
+            title={title}
+            artists={artists}
+            playing={!paused}
+            volume={volume}
+            changeVolume={this.changeVolume}
+          />
+          <div
+            style={{
+              width: 300,
+              textAlign: "center",
+              borderRadius: 10,
+              padding: 30,
+              marginTop: 10,
+            }}
+          >
+            You are listening to session {this.props.sessionId}. <br />
+            Playback is controlled by the host. <br />
+            Pressing pause will pause playback locally only. On resume, playback
+            will resyncronize with the host. <br />
+            {this.state.connections} in this session.
+          </div>
         </div>
       </Layout>
     );
