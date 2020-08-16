@@ -2,6 +2,7 @@ import React from "react";
 import * as auth from "./auth";
 import axios from "axios";
 import { Player } from "./Player";
+import Layout from "./Layout";
 
 export default class HostPlayer extends React.Component {
   state = {
@@ -245,19 +246,19 @@ export default class HostPlayer extends React.Component {
 
   render() {
     if (Date.now() > window.sessionStorage.getItem("expires_at")) {
-      return <button onClick={this.connect}>Login with Spotify</button>;
+      return <Layout><button onClick={this.connect}>Login with Spotify</button></Layout>;
     }
 
     if (!this.state.connected) {
-      return <button onClick={this.connect}>Join Session</button>;
+      return <Layout><button onClick={this.connect}>Join Session</button></Layout>;
     }
 
     if (!this.state.hostConnected) {
-      return <div>waitingforhost</div>;
+      return <Layout><div>waitingforhost</div></Layout>;
     }
 
     if (!this.state.pso) {
-      return <div>no pso</div>;
+      return <Layout><div>no pso</div></Layout>;
     }
     let { paused, duration } = this.state.pso;
     let volume = this.state.volume;
