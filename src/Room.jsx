@@ -43,11 +43,11 @@ export class Room extends React.Component {
           {this.state.isHost ? (
             <HostPlayer {...this.props} socket={this.socket} />
           ) : (
-            <ListenerPlayer
-              sessionId={this.props.match.params.id}
-              socket={this.socket}
-            />
-          )}
+              <ListenerPlayer
+                sessionId={this.props.match.params.id}
+                socket={this.socket}
+              />
+            )}
         </div>
       );
     } else {
