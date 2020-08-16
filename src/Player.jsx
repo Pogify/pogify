@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause, faVolumeUp } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faPause, faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 export const Player = (props) => {
   return (
     <div
@@ -42,7 +42,7 @@ export const Player = (props) => {
         {secondsToTimeFormat(props.duration)}
       </div>
       <div>
-        <FAI icon={faVolumeUp} />
+        <FAI icon={faVolumeMute} />
         <input
           type="range"
           name="volume"
@@ -53,6 +53,7 @@ export const Player = (props) => {
           max={1}
           step={0.01}
         />
+        <FAI icon={faVolumeUp} />
       </div>
       <div style={{ cursor: "pointer" }}>
         {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}

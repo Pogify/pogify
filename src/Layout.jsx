@@ -10,8 +10,7 @@ const Layout = (props) => {
         width: "100vw",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        backgroundImage: "linear-gradient(to right, #7f53ac 0, #657ced 100%)"
+        alignItems: "center"
       }}
     >
       <div
@@ -32,7 +31,7 @@ const Layout = (props) => {
         transform: "translateX(-50%)",
         color: 'white'
       }}>
-        © <Link to="https://www.pogify.net/" style={{color: 'white'}}>Pogify</Link> 2020 | <Link to="tos" style={{color: 'white'}}>Terms of Service</Link> | <Link to="privacy" style={{color: 'white'}}>Privacy Policy</Link>
+        © <a href="https://www.pogify.net/" style={{color: 'white'}}>Pogify</a> 2020 | <Link to="tos" style={{color: 'white'}}>Terms of Service</Link> | <Link to="privacy" style={{color: 'white'}}>Privacy Policy</Link>
       </p>
     </div>
   );
