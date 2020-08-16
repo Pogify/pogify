@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 import "./Layout.css";
-
 const Layout = (props) => {
   return (
     <div
@@ -25,6 +25,15 @@ const Layout = (props) => {
       >
         {props.children}
       </div>
+      <p style={{
+        position: "absolute",
+        bottom: "0",
+        left: "50%",
+        transform: "translateX(-50%)",
+        color: 'white'
+      }}>
+        © <Link to="https://www.pogify.net/" style={{color: 'white'}}>Pogify</Link> 2020 | <Link to="tos" style={{color: 'white'}}>Terms of Service</Link> | <Link to="privacy" style={{color: 'white'}}>Privacy Policy</Link>
+      </p>
     </div>
   );
 }
