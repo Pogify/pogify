@@ -1,6 +1,7 @@
 import React from "react";
 import HostPlayer from "./HostPlayer";
 import ListenerPlayer from "./ListenerPlayer";
+import Layout from "./Layout"
 
 const io = window.io;
 export class Room extends React.Component {
@@ -51,7 +52,7 @@ export class Room extends React.Component {
         </div>
       );
     } else {
-      return <div>loading</div>;
+      return <Layout><h2>Loading...</h2></Layout>;
     }
   }
 }
