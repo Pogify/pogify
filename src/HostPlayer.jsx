@@ -59,7 +59,7 @@ export default class HostPlayer extends React.Component {
   initializePlayer = () => {
     this.player = new window.Spotify.Player({
       volume: 0.2,
-      name: "Michael Reeves player",
+      name: "Pogify Host",
       getOAuthToken: (callback) => {
         let token = window.sessionStorage.getItem("access_token");
         let refreshToken = window.sessionStorage.getItem("refresh_token");
