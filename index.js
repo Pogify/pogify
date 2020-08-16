@@ -6,7 +6,6 @@ var io = require("socket.io")(http, {
   perMessageDeflate: false,
 });
 var path = require("path");
-var HostStore = require("./HostStore");
 var session = require("express-session");
 var bodyParser = require("body-parser");
 var customAlphabet = require("nanoid").customAlphabet;

@@ -23,13 +23,13 @@
     "styled-components": "^5.1.1"
   },
   "scripts": {
-    "start": "PORT=3006 react-scripts start",
+    "start": "react-scripts start",
     "start-build": "node index.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:5500",
+  "proxy": "https://spotify-together-1.herokuapp.com/",
   "eslintConfig": {
     "extends": "react-app"
   },

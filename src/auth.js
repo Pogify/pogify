@@ -60,7 +60,7 @@ export async function goAuth(redirectTo) {
     redirectURL
   )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
     hash[1]
-  }`;
+    }`;
 }
 
 export async function getVerifierAndChallenge(len) {

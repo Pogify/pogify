@@ -1,6 +1,7 @@
 import React from "react";
 import HostPlayer from "./HostPlayer";
 import ListenerPlayer from "./ListenerPlayer";
+import Layout from "./Layout"
 
 const io = window.io;
 export class Room extends React.Component {
@@ -43,15 +44,15 @@ export class Room extends React.Component {
           {this.state.isHost ? (
             <HostPlayer {...this.props} socket={this.socket} />
           ) : (
-            <ListenerPlayer
-              sessionId={this.props.match.params.id}
-              socket={this.socket}
-            />
-          )}
+              <ListenerPlayer
+                sessionId={this.props.match.params.id}
+                socket={this.socket}
+              />
+            )}
         </div>
       );
     } else {
-      return <div>loading</div>;
+      return <Layout><h2>Loading...</h2></Layout>;
     }
   }
 }
