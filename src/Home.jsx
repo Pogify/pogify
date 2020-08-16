@@ -21,7 +21,7 @@ class Home extends React.Component {
           <Link to="/session">
             <button>I am a viewer</button>
           </Link>
-          <Link style={{ marignLeft: "10px" }} to="/create">
+          <Link to="/create">
             <button style={{ marginLeft: 10}}>I am a streamer</button>
           </Link>
         </div>
