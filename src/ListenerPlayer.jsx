@@ -254,11 +254,11 @@ export default class HostPlayer extends React.Component {
     }
 
     if (!this.state.hostConnected) {
-      return <Layout><div>waitingforhost</div></Layout>;
+      return <Layout><h2>Waiting for Host...</h2> <p>Session Code: {this.props.sessionId}</p></Layout>;
     }
 
     if (!this.state.pso) {
-      return <Layout><div>no pso</div></Layout>;
+      return <Layout><h2>Pogify Disconnected</h2> <p>Return to home screen</p></Layout>;
     }
     let { paused, duration } = this.state.pso;
     let volume = this.state.volume;
@@ -270,7 +270,7 @@ export default class HostPlayer extends React.Component {
     let title = this.state.pso.track_window.current_track.name;
 
     return (
-      <>
+      <Layout>
         <Player
           position={position / 1000}
           duration={duration / 1000}
@@ -298,7 +298,7 @@ export default class HostPlayer extends React.Component {
           will resyncronize with the host. <br />
           {this.state.connections} in this session.
         </div>
-      </>
+      </Layout>
     );
   }
 }
