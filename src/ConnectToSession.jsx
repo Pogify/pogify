@@ -1,24 +1,6 @@
 import React from "react";
-import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-
-const FlexDiv = styled.div`
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-
-  & > form {
-    margin: 10px;
-  }
-
-  & > form > div {
-    margin: 10px;
-  }
-`;
+import Layout from "./Layout";
 
 export const ConnectToSession = () => {
   const [code, setCode] = React.useState("");
@@ -29,7 +11,7 @@ export const ConnectToSession = () => {
   };
 
   return (
-    <FlexDiv>
+    <Layout>
       <div>Enter session code:</div>
       <form onSubmit={submit}>
         <div>
@@ -43,6 +25,6 @@ export const ConnectToSession = () => {
           <button type="submit">Go to session</button>
         </div>
       </form>
-    </FlexDiv>
+    </Layout>
   );
 };

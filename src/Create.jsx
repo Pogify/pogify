@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Layout from "./Layout";
 
 export class Create extends React.Component {
   constructor(props) {
@@ -35,15 +36,7 @@ export class Create extends React.Component {
 
   render() {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Layout>
         {Boolean(this.state.hosting.length) && (
           <div>
             Your Current Listening Sessions:
@@ -61,7 +54,7 @@ export class Create extends React.Component {
           </div>
         )}
         <button onClick={this.create}>Create New Listening Session</button>
-      </div>
+      </Layout>
     );
   }
 }

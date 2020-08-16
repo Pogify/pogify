@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 const Layout = (props) => {
   return (
@@ -9,17 +10,16 @@ const Layout = (props) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundImage: "linear-gradient(to right, #7f53ac 0, #657ced 100%)",
+        backgroundImage: "linear-gradient(to right, #7f53ac 0, #657ced 100%)"
       }}
     >
       <div
         style={{
           background: "white",
-          color: "black",
-          mixBlendMode: "screen",
+          color: "#2C3A3A",
           padding: "2rem",
           borderRadius: "12.5px",
-          boxShadow: "10px 5px 5px black",
+          boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
         }}
       >
         {props.children}
@@ -27,5 +27,9 @@ const Layout = (props) => {
     </div>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.element.isRequired
+};
 
 export default Layout;
