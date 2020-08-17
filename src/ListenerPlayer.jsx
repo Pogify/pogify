@@ -246,19 +246,36 @@ export default class HostPlayer extends React.Component {
 
   render() {
     if (Date.now() > window.sessionStorage.getItem("expires_at")) {
-      return <Layout><button onClick={this.connect}>Login with Spotify</button></Layout>;
+      return (
+        <Layout>
+          <button onClick={this.connect}>Login with Spotify</button>
+        </Layout>
+      );
     }
 
     if (!this.state.connected) {
-      return <Layout><button onClick={this.connect}>Join Session</button></Layout>;
+      return (
+        <Layout>
+          <button onClick={this.connect}>Join Session</button>
+        </Layout>
+      );
     }
 
     if (!this.state.hostConnected) {
-      return <Layout><h2>Waiting for Host...</h2> <p>Session Code: {this.props.sessionId}</p></Layout>;
+      return (
+        <Layout>
+          <h2>Waiting for Host...</h2>{" "}
+          <p>Session Code: {this.props.sessionId}</p>
+        </Layout>
+      );
     }
 
     if (!this.state.pso) {
-      return <Layout><h2>Pogify Disconnected</h2> <p>Return to home screen</p></Layout>;
+      return (
+        <Layout>
+          <h2>Pogify Disconnected</h2> <p>Return to home screen</p>
+        </Layout>
+      );
     }
     let { paused, duration } = this.state.pso;
     let volume = this.state.volume;
