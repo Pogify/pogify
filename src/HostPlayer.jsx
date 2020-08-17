@@ -2,7 +2,7 @@ import React from "react";
 import * as auth from "./auth";
 import axios from "axios";
 import { Player } from "./Player";
-import Layout from "./Layout"
+import Layout from "./Layout";
 
 export default class HostPlayer extends React.Component {
   state = {
@@ -154,6 +154,20 @@ export default class HostPlayer extends React.Component {
         paused,
       } = this.state.playbackStateObj;
       this.props.socket.emit("UPDATE", uri, position, !paused);
+      axios.post(
+        process.env.REACT_APP_SUB + "/pub",
+        {
+          timestamp: Date.now(),
+          uri,
+          position,
+          playing: !paused,
+        },
+        {
+          params: {
+            id: "abc",
+          },
+        }
+      );
       if (pPSO.paused !== paused) {
         if (paused) {
           clearInterval(this.tickInterval);
@@ -208,11 +222,19 @@ export default class HostPlayer extends React.Component {
 
   render() {
     if (Date.now() > window.sessionStorage.getItem("expires_at")) {
-      return <Layout><button onClick={this.connect}>Login with Spotify</button></Layout>;
+      return (
+        <Layout>
+          <button onClick={this.connect}>Login with Spotify</button>
+        </Layout>
+      );
     }
 
     if (!this.state.playbackStateObj) {
-      return <Layout><button onClick={this.connect}>Start Session</button></Layout>;
+      return (
+        <Layout>
+          <button onClick={this.connect}>Start Session</button>
+        </Layout>
+      );
     }
 
     let { paused, duration } = this.state.playbackStateObj;
