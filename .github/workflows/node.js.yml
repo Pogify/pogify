@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [14.x]
 
     steps:
     - name: Checkout repository
@@ -39,5 +39,5 @@ jobs:
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
-        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        github_token: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         repository: ${{ github.repository }}
