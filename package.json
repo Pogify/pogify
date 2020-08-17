@@ -1,8 +1,6 @@
 {
   "name": "michael-reeves-syncronized-player",
   "homepage": "https://pogify.github.io/",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -31,7 +29,9 @@
     "start-build": "node index.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
   },
   "proxy": "https://spotify-together-1.herokuapp.com/",
   "eslintConfig": {
