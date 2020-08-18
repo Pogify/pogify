@@ -1,36 +1,36 @@
 import React from "react";
 import HostPlayer from "./HostPlayer";
 import ListenerPlayer from "./ListenerPlayer";
-import Layout from "./Layout"
+import Layout from "./Layout";
 
-const io = window.io;
 export class Room extends React.Component {
   state = {
-    isHost: false,
+    isHost: undefined,
   };
 
   componentDidMount() {
-    console.log("room mount");
-
-    this.socket = io("/" + this.props.match.params.id);
-    console.log("room mount");
-    this.socket.on("IS_HOST", (isHost) => {
-      console.log("ishost", isHost);
+    if (window.localStorage.getItem("pogify:expiresAt") < Date.now()) {
+      // TODO: show a expired modal.
       this.setState({
-        isHost,
+        isHost: null,
       });
-    });
-    this.socket.emit("IS_HOST");
+    } else {
+      this.setState({
+        isHost: window.localStorage.getItem("pogify:session"),
+      });
+    }
   }
 
   componentWillUnmount() {
-    if (this.socket) {
-      this.socket.disconnect();
+    if (this.state.expired) {
+      window.localStorage.removeItem("pogify:expiresAt");
+      window.localStorage.removeItem("pogify:token");
+      window.localStorage.removeItem("pogify:session");
     }
   }
 
   render() {
-    if (this.socket) {
+    if (this.state.isHost !== undefined) {
       return (
         <div
           style={{
@@ -41,18 +41,22 @@ export class Room extends React.Component {
             height: "100vh",
           }}
         >
-          {this.state.isHost ? (
-            <HostPlayer {...this.props} socket={this.socket} />
+          {this.state.isHost === this.props.match.params.id ? (
+            <HostPlayer
+              {...this.props}
+              sessionId={this.props.match.params.id}
+            />
           ) : (
-              <ListenerPlayer
-                sessionId={this.props.match.params.id}
-                socket={this.socket}
-              />
-            )}
+            <ListenerPlayer sessionId={this.props.match.params.id} />
+          )}
         </div>
       );
     } else {
-      return <Layout><h2>Loading...</h2></Layout>;
+      return (
+        <Layout>
+          <h2>Loading...</h2>
+        </Layout>
+      );
     }
   }
 }
