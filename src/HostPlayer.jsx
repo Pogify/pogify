@@ -62,6 +62,7 @@ export default class HostPlayer extends React.Component {
         {
           headers: {
             Authorization: "Bearer " + this.state.session_token,
+            "Content-Type": "application/json",
           },
         }
       );
