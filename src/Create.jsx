@@ -32,10 +32,7 @@ export class Create extends React.Component {
   }
 
   componentDidMount() {
-    if (
-      window.localStorage.getItem("expiresAt") <
-      Date.now() + 50 * 60 * 1000
-    ) {
+    if (window.localStorage.getItem("expiresAt") < Date.now()) {
       this.setState({
         activeSession: window.localStorage.getItem("session"),
       });
