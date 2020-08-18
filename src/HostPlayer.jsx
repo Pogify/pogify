@@ -48,6 +48,28 @@ export default class HostPlayer extends React.Component {
         });
     }, 30 * 60 * 1000);
   };
+
+  async publishUpdate(uri, position, playing) {
+    try {
+      await axios.post(
+        "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
+        {
+          uri,
+          position,
+          playing,
+          timestamp: Date.now(),
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + this.state.session_token,
+          },
+        }
+      );
+    } catch (e) {
+      // backoff implementation
+    }
+  }
+
   connect = () => {
     this.player.addListener("ready", (e) => {
       console.log(e);
@@ -158,7 +180,7 @@ export default class HostPlayer extends React.Component {
     _prevProps,
     { playbackStateObj: pPSO, psoCounter: ppsoC }
   ) {
-    if (this.state.psoCounter === 1) {
+    if (ppsoC !== this.state.psoCounter) {
       let {
         track_window: {
           current_track: { uri },
@@ -166,31 +188,8 @@ export default class HostPlayer extends React.Component {
         position,
         paused,
       } = this.state.playbackStateObj;
-      console.log(uri);
-      this.props.socket.emit("HOST_CONNECTED", uri, position, !paused);
-    } else if (ppsoC !== this.state.psoCounter) {
-      let {
-        track_window: {
-          current_track: { uri },
-        },
-        position,
-        paused,
-      } = this.state.playbackStateObj;
-      this.props.socket.emit("UPDATE", uri, position, !paused);
-      axios.post(
-        process.env.REACT_APP_SUB + "/pub",
-        {
-          timestamp: Date.now(),
-          uri,
-          position,
-          playing: !paused,
-        },
-        {
-          params: {
-            id: "abc",
-          },
-        }
-      );
+      this.publishUpdate(uri, position, !paused);
+
       if (pPSO.paused !== paused) {
         if (paused) {
           clearInterval(this.tickInterval);
