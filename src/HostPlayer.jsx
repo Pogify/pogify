@@ -4,6 +4,8 @@ import axios from "axios";
 import { Player } from "./Player";
 import Layout from "./Layout";
 
+// FIXME: loading view when waiting for spotify sdk to load
+
 export default class HostPlayer extends React.Component {
   state = {
     position: 0,
@@ -148,10 +150,9 @@ export default class HostPlayer extends React.Component {
     this.player.on("player_state_changed", (data) => {
       console.log(data);
       if (this.state.psoCounter && !data) {
-        this.props.socket.emit("HOST_DISCONNECT");
-
+        // show a modal and/or send a notification on disconnect
         alert(
-          "Spotify disconnected. Check that you are connected to the 'Michael Reeves Player' on Spotify"
+          "Spotify disconnected. Check that you are connected to 'Pogify Host' on Spotify"
         );
       }
       if (data) {

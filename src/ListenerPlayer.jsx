@@ -4,17 +4,17 @@ import axios from "axios";
 import { Player } from "./Player";
 import Layout from "./Layout";
 
-export default class HostPlayer extends React.Component {
+export default class ListenerPlayer extends React.Component {
   state = {
     hostConnected: false,
-    connected: false,
+    subConnected: false,
+    spotConnected: false,
     artists: [],
     position: 0,
     uri: "",
     duration: 0,
     volume: 0.2,
     playing: false,
-    coverArtURL: "#",
     title: "",
     album: "",
     connections: 0,
@@ -40,54 +40,51 @@ export default class HostPlayer extends React.Component {
   };
 
   setListenerListeners = () => {
-    this.props.socket.on("HOST_DISCONNECT", () => {
-      this.player.pause();
-      alert("Host disconnected. Playback Paused");
-    });
-
+    console.log(process.env.REACT_APP_SUB);
     this.eventListener = new EventSource(
-      join(process.env.REACT_APP_SUB, "sub", this.props.sessionId + ".b1")
+      process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
     );
 
-    this.eventListener.onmessage();
+    this.eventListener.onopen = () => {
+      this.setState({
+        subConnected: true,
+      });
+    };
 
-    this.props.socket.once("INITIAL", (data) => {
-      if (data) {
-        let { uri, position, playing, when } = data;
-        let calcPos = playing ? position + Date.now() - when : position;
-        console.log("intial", uri, position, calcPos, playing, when);
+    this.eventListener.onmessage = (event) => {
+      console.log(event.data);
+      let { timestamp, uri, position, playing } = JSON.parse(event.data);
+
+      if (this.state.uri && !uri) {
         this.setState({
+          playing: false,
+        });
+        alert("Host disconnected. Playback Paused");
+        return;
+      }
+
+      this.setState((prevState) => {
+        // if the incoming timestamp is older than the set timestamp, it is stale. ignore it
+        if (prevState.timestamp && timestamp < prevState.timestamp) {
+          return {};
+        }
+
+        // if this is first connect calc position if is playing
+        let calcPos = prevState.hostConnected
+          ? position
+          : position + Date.now() - timestamp;
+        console.log("Asfefef", calcPos);
+        return {
+          timestamp,
           uri,
           position: calcPos,
           playing,
           hostConnected: true,
-          connected: true,
-        });
-      } else {
-        this.setState({
-          connected: true,
-        });
-      }
-    });
-    this.props.socket.on("UPDATE", (uri, position, playing) => {
-      console.log("update", uri, position, playing);
-      this.setState({
-        uri,
-        position,
-        playing,
-        hostConnected: true,
+        };
       });
-    });
+    };
 
-    this.props.socket.on("HOST_CONNECTED", (uri, position, playing) => {
-      console.log("host_connected");
-      this.setState({
-        uri,
-        position,
-        playing,
-        hostConnected: true,
-      });
-    });
+    this.eventListener.onerror = console.error;
 
     this.player.addListener("player_state_changed", (data) => {
       console.log("player_state_changed");
@@ -95,6 +92,8 @@ export default class HostPlayer extends React.Component {
 
       this.setState({
         pso: data,
+        position: data.position,
+        duration: data.duration,
       });
     });
   };
@@ -138,10 +137,11 @@ export default class HostPlayer extends React.Component {
       this.setListenerListeners();
 
       this.connectToPlayer(e.device_id).then(() => {
-        this.props.socket.emit("INITIAL");
-      });
-      this.setState({
-        device_id: e.device_id,
+        console.log("connect");
+        this.setState({
+          device_id: e.device_id,
+          spotConnected: true,
+        });
       });
     });
     this.player.on("player_state_changed", console.log);
@@ -158,10 +158,12 @@ export default class HostPlayer extends React.Component {
       console.error("Failed to perform playback", message);
     });
     this.player.connect().then(console.log);
-    console.log("connect");
   };
 
   componentWillUnmount() {
+    if (this.eventListener) {
+      this.eventListener.close();
+    }
     if (this.player) {
       this.player.disconnect();
     }
@@ -208,13 +210,6 @@ export default class HostPlayer extends React.Component {
         }
       },
     });
-    window.player = this.player;
-    this.props.socket.on("CONNECTION_COUNT", (number) => {
-      console.log(number, "connections");
-      this.setState({
-        connections: number,
-      });
-    });
   };
 
   componentDidMount() {
@@ -259,7 +254,16 @@ export default class HostPlayer extends React.Component {
       );
     }
 
-    if (!this.state.connected) {
+    // if connecting show connecting
+    if (this.state.connecting) {
+      return (
+        <Layout>
+          <div>Loading...</div>
+        </Layout>
+      );
+    }
+    // if any are false allow join
+    if (!this.state.spotConnected || !this.state.subConnected) {
       return (
         <Layout>
           <button onClick={this.connect}>Join Session</button>
