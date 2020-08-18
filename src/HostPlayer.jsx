@@ -143,6 +143,10 @@ export default class HostPlayer extends React.Component {
   };
 
   componentDidMount() {
+    this.setState({
+      session_token: window.localStorage.getItem("pogify:token"),
+    });
+
     if (window.spotifyReady) {
       this.initializePlayer();
     } else {
