@@ -205,8 +205,6 @@ export default class HostPlayer extends React.Component {
   }
 
   componentWillUnmount() {
-    this.player.removeListener("ready");
-    this.props.socket.disconnect();
     this.player.disconnect();
     clearInterval(this.refreshInterval);
   }
