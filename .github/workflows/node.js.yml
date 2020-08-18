@@ -1,9 +1,7 @@
-name: CI/CD
+name: Auto Deploy
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
