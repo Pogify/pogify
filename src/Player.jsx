@@ -1,6 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause, faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlay,
+  faPause,
+  faVolumeUp,
+  faVolumeMute,
+} from "@fortawesome/free-solid-svg-icons";
 export const Player = (props) => {
   return (
     <div
@@ -54,7 +59,7 @@ export const Player = (props) => {
         />
         <FAI icon={faVolumeUp} />
       </div>
-      <div style={{ cursor: "pointer" }}>
+      <div style={{ cursor: "pointer" }} onClick={() => props.togglePlay()}>
         {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
       </div>
     </div>
