@@ -45,6 +45,12 @@ export default class HostPlayer extends React.Component {
       alert("Host disconnected. Playback Paused");
     });
 
+    this.eventListener = new EventSource(
+      join(process.env.REACT_APP_SUB, "sub", this.props.sessionId + ".b1")
+    );
+
+    this.eventListener.onmessage();
+
     this.props.socket.once("INITIAL", (data) => {
       if (data) {
         let { uri, position, playing, when } = data;
