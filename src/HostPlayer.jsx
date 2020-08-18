@@ -21,19 +21,38 @@ export default class HostPlayer extends React.Component {
     connections: 0,
     viewPlayer: false,
     psoCounter: 0,
+    session_token: "",
   };
 
-  setHostEmitters = () => {
-    axios.get("/refresh");
+  setTokenRefreshInterval = () => {
+    // refresh token
     this.refreshInterval = setInterval(() => {
-      axios.get("/refresh");
+      axios
+        .get(
+          "https://us-central1-pogify-database.cloudfunctions.net/refreshToken",
+          {
+            headers: {
+              Authorization: "Bearer " + this.state.session_token,
+            },
+          }
+        )
+        .then((res) => {
+          window.localStorage.setItem("pogify:token", res.data.token);
+          window.localStorage.setItem(
+            "pogify:expiresAt",
+            res.data.expiresIn * 1000 + Date.now()
+          );
+          this.setState({
+            session_token: res.data.token,
+          });
+        });
     }, 30 * 60 * 1000);
   };
   connect = () => {
     this.player.addListener("ready", (e) => {
       console.log(e);
       this.connectToPlayer(e.device_id);
-      this.setHostEmitters();
+      this.setTokenRefreshInterval();
       console.log(window.sessionStorage.getItem("expires_at"));
 
       this.setState({
@@ -186,7 +205,7 @@ export default class HostPlayer extends React.Component {
     this.player.removeListener("ready");
     this.props.socket.disconnect();
     this.player.disconnect();
-    delete window.player;
+    clearInterval(this.refreshInterval);
   }
 
   connectToPlayer = (device_id) => {
