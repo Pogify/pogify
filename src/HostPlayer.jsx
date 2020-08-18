@@ -283,6 +283,7 @@ export default class HostPlayer extends React.Component {
           album={album}
           title={title}
           artists={artists}
+          togglePlay={() => this.player.togglePlay()}
           playing={!paused}
           volume={volume}
           changeVolume={this.changeVolume}

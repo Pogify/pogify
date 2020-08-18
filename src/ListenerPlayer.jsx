@@ -306,6 +306,7 @@ export default class ListenerPlayer extends React.Component {
             album={album}
             title={title}
             artists={artists}
+            togglePlay={() => this.player.togglePlay()}
             playing={!paused}
             volume={volume}
             changeVolume={this.changeVolume}
