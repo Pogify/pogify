@@ -1,6 +1,6 @@
 button {
   cursor: pointer;
-  border: 1px solid #2C3A3A;
+  border: 1px solid #2c3a3a;
   padding: 5px 10px;
   border-radius: 12px;
   cursor: pointer;
@@ -9,5 +9,12 @@ button {
 }
 
 button:hover {
-  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+button:focus {
+  outline: none;
+  transition: box-shadow 50ms;
+  box-shadow: 0 3px 7px 1pt rgba(0, 0, 0, 0.24);
 }
