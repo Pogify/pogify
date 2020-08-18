@@ -180,6 +180,10 @@ export default class HostPlayer extends React.Component {
     _prevProps,
     { playbackStateObj: pPSO, psoCounter: ppsoC }
   ) {
+    if (!pPSO) {
+      return;
+    }
+
     if (ppsoC !== this.state.psoCounter) {
       let {
         track_window: {
