@@ -21,16 +21,22 @@ export const ConnectToSession = () => {
             onChange={(e) => setCode(e.target.value)}
             style={{
               width: "calc(100% - 10px)",
-              padding: "5px"
+              padding: "5px",
+              textAlign: "center",
             }}
           />
         </div>
         <div>
-          <button type="submit" style={{
-            width: "100%",
-            margin: 0,
-            marginTop: "1rem"
-          }}>Go to session</button>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              margin: 0,
+              marginTop: "1rem",
+            }}
+          >
+            Go to session
+          </button>
         </div>
       </form>
     </Layout>
