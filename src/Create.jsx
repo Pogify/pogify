@@ -19,14 +19,16 @@ export class Create extends React.Component {
         "https://us-central1-pogify-database.cloudfunctions.net/startSession"
       );
 
-      window.localStorage.setItem("token", data.token);
+      window.localStorage.setItem("pogify:token", data.token);
       window.localStorage.setItem(
-        "expiresAt",
+        "pogify:expiresAt",
         data.expiresIn * 1000 + Date.now()
       );
-      window.localStorage.setItem("session", data.session);
+      window.localStorage.setItem("pogify:session", data.session);
       this.props.history.push("/session/" + data.session);
-    } catch (e) {}
+    } catch (e) {
+      // backoff retry implementation
+    }
   }
 
   componentDidMount() {
