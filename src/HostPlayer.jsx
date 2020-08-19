@@ -171,6 +171,37 @@ export default class HostPlayer extends React.Component {
     this.setState({ loading: false });
   };
 
+  connectToPlayer = (device_id) => {
+    return axios
+      .put(
+        `https://api.spotify.com/v1/me/player`,
+        {
+          device_ids: [device_id || this.state.device_id],
+          play: false,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${window.sessionStorage.getItem(
+              "access_token"
+            )}`,
+          },
+        }
+      )
+      .then(() => {
+        this.setState({
+          connected: true,
+        });
+      });
+  };
+
+  changeVolume = (e) => {
+    this.player.setVolume(e.target.value);
+    this.setState({
+      volume: e.target.value,
+    });
+  };
+
   componentDidMount() {
     this.setState({
       session_token: window.localStorage.getItem("pogify:token"),
@@ -219,37 +250,6 @@ export default class HostPlayer extends React.Component {
     this.player.disconnect();
     clearInterval(this.refreshInterval);
   }
-
-  connectToPlayer = (device_id) => {
-    return axios
-      .put(
-        `https://api.spotify.com/v1/me/player`,
-        {
-          device_ids: [device_id || this.state.device_id],
-          play: false,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${window.sessionStorage.getItem(
-              "access_token"
-            )}`,
-          },
-        }
-      )
-      .then(() => {
-        this.setState({
-          connected: true,
-        });
-      });
-  };
-
-  changeVolume = (e) => {
-    this.player.setVolume(e.target.value);
-    this.setState({
-      volume: e.target.value,
-    });
-  };
 
   render() {
     if (Date.now() > window.sessionStorage.getItem("expires_at")) {
