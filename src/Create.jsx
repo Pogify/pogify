@@ -32,7 +32,7 @@ export class Create extends React.Component {
   }
 
   componentDidMount() {
-    if (window.localStorage.getItem("expiresAt") < Date.now()) {
+    if (window.localStorage.getItem("pogify:expiresAt") > Date.now()) {
       this.setState({
         activeSession: window.localStorage.getItem("session"),
       });
