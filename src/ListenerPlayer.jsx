@@ -5,6 +5,7 @@ import { Player } from "./Player";
 import Layout from "./Layout";
 
 export default class ListenerPlayer extends React.Component {
+  playReq = false;
   state = {
     hostConnected: false,
     subConnected: false,
@@ -21,22 +22,34 @@ export default class ListenerPlayer extends React.Component {
   };
 
   play = (uri, pos_ms) => {
+    if (this.playReq) {
+      return;
+    } else {
+      this.playReq = true;
+    }
+
     console.log("play??", uri, pos_ms);
-    return axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${this.state.device_id}`,
-      {
-        uris: [uri],
-        position_ms: pos_ms,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${window.sessionStorage.getItem(
-            "access_token"
-          )}`,
+    return axios
+      .put(
+        `https://api.spotify.com/v1/me/player/play?device_id=${this.state.device_id}`,
+        {
+          uris: [uri],
+          position_ms: pos_ms,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${window.sessionStorage.getItem(
+              "access_token"
+            )}`,
+          },
+        }
+      )
+      .then(() => {
+        setTimeout(() => {
+          this.playReq = false;
+        }, 1000);
+      });
   };
 
   setListenerListeners = () => {
