@@ -10,6 +10,7 @@ export default class ListenerPlayer extends React.Component {
     hostConnected: false,
     subConnected: false,
     spotConnected: false,
+    loading: true,
     artists: [],
     position: 0,
     uri: "",
@@ -223,6 +224,7 @@ export default class ListenerPlayer extends React.Component {
         }
       },
     });
+    this.setState({ loading: false });
   };
 
   componentDidMount() {
@@ -267,8 +269,8 @@ export default class ListenerPlayer extends React.Component {
       );
     }
 
-    // if connecting show connecting
-    if (this.state.connecting) {
+    // if loading sdk show loading
+    if (this.state.loading) {
       return (
         <Layout>
           <div>Loading...</div>
