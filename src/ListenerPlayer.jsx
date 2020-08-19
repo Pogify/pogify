@@ -69,11 +69,8 @@ export default class ListenerPlayer extends React.Component {
           return {};
         }
 
-        // if this is first connect calc position if is playing
-        let calcPos = prevState.playing
-          ? position + Date.now() - timestamp
-          : position;
-        console.log("Asfefef", calcPos);
+        // if this is playing connect calc position if is playing
+        let calcPos = playing ? position + Date.now() - timestamp : position;
         return {
           timestamp,
           uri,
