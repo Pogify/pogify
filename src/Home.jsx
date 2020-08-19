@@ -25,12 +25,12 @@ class Home extends React.Component {
           }}
         >
           <Link to="/session">
-            <button>
+            <button style={{ fontSize: 15 }}>
               <u>Join</u> a Session
             </button>
           </Link>
           <Link to="/create">
-            <button style={{ marginLeft: 10 }}>
+            <button style={{ fontSize: 15 }}>
               <u>Start</u> a session
             </button>
           </Link>
