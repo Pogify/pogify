@@ -7,7 +7,7 @@ export const Privacy = () => {
         <div>
         <h1 id="privacy-policy">Privacy Policy</h1>
         <p>If you require any more information or have any questions about our privacy policy, please feel free to contact us by email at support@pogify.net. At pogify.net, the privacy of our users is extremely important to us. This privacy policy document outlines the types of personal information that are received and collected by pogify.net and how it is used.</p>
-        <p><div id="footnote1">1</div>: A verified session is a permanent session granted to an authenticated user</p>
+        <p id="footnote1">1: A verified session is a permanent session granted to an authenticated user</p>
         <h3 id="cookies-and-tokens">Cookies and Tokens:</h3>
         <p>Pogify.net does use cookies to store information about visitors sessions, record user-specific information regarding pages the user accesses or visits, customise web page content based on the user's browser type and/or other information that the user sends via his or her browser. Pogify.net stores locally Spotify session tokens and refresh tokens provided when a user uses the Spotify media player. Twitch session tokens and refresh tokens will be stored when a user begins a verified session<sup><a href="#footnote1">1</a></sup>.</p>
         <h3 id="user-information">User information:</h3>
