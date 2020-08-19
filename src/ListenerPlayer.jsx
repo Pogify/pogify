@@ -75,6 +75,11 @@ export default class ListenerPlayer extends React.Component {
         });
         alert("Host disconnected. Playback Paused");
         return;
+      } else if (!uri) {
+        this.setState({
+          hostConnected: false,
+        });
+        return;
       }
 
       this.setState((prevState) => {
@@ -103,6 +108,7 @@ export default class ListenerPlayer extends React.Component {
 
       this.setState({
         pso: data,
+        uri: data.uri,
         position: data.position,
         duration: data.duration,
       });
@@ -135,8 +141,9 @@ export default class ListenerPlayer extends React.Component {
       }
 
       if (
-        prevState.uri !== this.state.uri ||
-        this.state.url !== this.state.pso.uri
+        (prevState.uri !== this.state.uri ||
+          this.state.uri !== this.state.pso.uri) &&
+        this.state.uri
       ) {
         console.log("setTrack", this.state.uri, this.state.position);
         this.play(this.state.uri, this.state.position);
