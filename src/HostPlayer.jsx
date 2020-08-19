@@ -150,6 +150,9 @@ export default class HostPlayer extends React.Component {
     this.player.on("player_state_changed", (data) => {
       console.log(data);
       if (this.state.psoCounter && !data) {
+        // push disconnect update
+        this.publishUpdate("", this.state.position, false);
+
         // show a modal and/or send a notification on disconnect
         alert(
           "Spotify disconnected. Check that you are connected to 'Pogify Host' on Spotify"
