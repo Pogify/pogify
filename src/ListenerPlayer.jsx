@@ -123,7 +123,10 @@ export default class ListenerPlayer extends React.Component {
         this.player.seek(this.state.position);
       }
 
-      if (prevState.uri !== this.state.uri) {
+      if (
+        prevState.uri !== this.state.uri ||
+        this.state.url !== this.state.pso.uri
+      ) {
         console.log("setTrack", this.state.uri, this.state.position);
         this.play(this.state.uri, this.state.position);
       }
