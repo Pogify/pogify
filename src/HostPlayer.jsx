@@ -203,6 +203,10 @@ export default class HostPlayer extends React.Component {
   };
 
   componentDidMount() {
+    window.onbeforeunload = () => {
+      this.publishUpdate("", this.state.position, false);
+    };
+
     this.setState({
       session_token: window.localStorage.getItem("pogify:token"),
     });
@@ -247,6 +251,8 @@ export default class HostPlayer extends React.Component {
   }
 
   componentWillUnmount() {
+    this.publishUpdate("", this.state.position, false);
+    window.onbeforeunload = null;
     this.player.disconnect();
     clearInterval(this.refreshInterval);
   }
