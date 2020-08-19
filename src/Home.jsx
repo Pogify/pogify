@@ -17,7 +17,13 @@ class Home extends React.Component {
         >
           POGIFY
         </h1>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            marginTop: 12,
+          }}
+        >
           <Link to="/session">
             <button>
               <u>Join</u> a Session
