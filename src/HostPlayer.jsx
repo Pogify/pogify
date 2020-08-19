@@ -20,6 +20,7 @@ export default class HostPlayer extends React.Component {
     device_id: "",
     volume: 0.2,
     hostConnected: false,
+    loading: true,
     connections: 0,
     viewPlayer: false,
     psoCounter: 0,
@@ -167,6 +168,7 @@ export default class HostPlayer extends React.Component {
         });
       }
     });
+    this.setState({ loading: false });
   };
 
   componentDidMount() {
@@ -254,6 +256,14 @@ export default class HostPlayer extends React.Component {
       return (
         <Layout>
           <button onClick={this.connect}>Login with Spotify</button>
+        </Layout>
+      );
+    }
+
+    if (this.state.loading) {
+      return (
+        <Layout>
+          <div>Loading</div>
         </Layout>
       );
     }
