@@ -68,7 +68,7 @@ export default class ListenerPlayer extends React.Component {
     this.eventListener.onmessage = (event) => {
       console.log(event.data);
       let { timestamp, uri, position, playing } = JSON.parse(event.data);
-
+      console.log(event.data);
       if (this.state.uri && !uri) {
         this.setState({
           playing: false,
@@ -87,6 +87,10 @@ export default class ListenerPlayer extends React.Component {
         if (prevState.timestamp && timestamp < prevState.timestamp) {
           return {};
         }
+        // if spotify is doing the divide by 1000 bug don't do anything
+        // if (Math.abs(prevState.timestamp / 1000 - timestamp) > 2) {
+        //   return {};
+        // }
 
         // if this is playing connect calc position if is playing
         let calcPos = playing ? position + Date.now() - timestamp : position;
@@ -145,7 +149,6 @@ export default class ListenerPlayer extends React.Component {
           this.state.uri !== this.state.pso.uri) &&
         this.state.uri
       ) {
-        console.log("setTrack", this.state.uri, this.state.position);
         this.play(this.state.uri, this.state.position);
       }
     }

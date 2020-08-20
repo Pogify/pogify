@@ -1,11 +1,10 @@
 import React from "react";
 import * as auth from "./SpotifyAuth";
 import * as SessionAuth from "./SessionManager";
+import * as firebase from "firebase/app";
 import axios from "axios";
 import { Player } from "./Player";
 import Layout from "./Layout";
-
-// FIXME: loading view when waiting for spotify sdk to load
 
 export default class HostPlayer extends React.Component {
   state = {
@@ -38,7 +37,9 @@ export default class HostPlayer extends React.Component {
   };
 
   async publishUpdate(uri, position, playing) {
+    this.retryCount = this.retryCount ?? 0;
     try {
+      firebase.auth().signInAnonymously();
       await axios.post(
         "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
         {
@@ -49,13 +50,26 @@ export default class HostPlayer extends React.Component {
         },
         {
           headers: {
-            Authorization: "Bearer " + this.state.session_token,
+            Authorization:
+              "Bearer " + window.localStorage.getItem("pogify:token"),
             "Content-Type": "application/json",
           },
         }
       );
+      this.retryCount = null;
     } catch (e) {
-      // backoff implementation
+      if (e.response) {
+        if (e.response.status === 401) {
+          // session expired modal or something
+          return console.error("sessionExpired");
+        }
+      }
+      if (this.retryCount < 3) {
+        this.retryCount++;
+        return setTimeout(this.publishUpdate, 100, [uri, position, playing]);
+      } else {
+        throw e;
+      }
     }
   }
 
