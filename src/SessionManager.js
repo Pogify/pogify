@@ -3,16 +3,7 @@ import axios from "axios";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
-var firebaseConfig = {
-  apiKey: "AIzaSyAkaNtHvfJIMLWeWeh1DXLvcN7ybA2yKeo",
-  authDomain: "pogify-database.firebaseapp.com",
-  databaseURL: "https://pogify-database.firebaseio.com",
-  projectId: "pogify-database",
-  storageBucket: "pogify-database.appspot.com",
-  messagingSenderId: "444153529634",
-  appId: "1:444153529634:web:777b677d348ef6b544117b",
-  measurementId: "G-TWFDPX1RPF",
-};
+var firebaseConfig = require("../firebaseConfig.json");
 
 firebase.initializeApp(firebaseConfig);
 const FBAuth = firebase.auth();
