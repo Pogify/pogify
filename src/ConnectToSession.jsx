@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import Layout from "./Layout";
+import Layout from "./components/Layout";
 import styled from "styled-components";
 
 const CodeInput = styled.input`
@@ -28,7 +28,7 @@ export const ConnectToSession = () => {
   };
 
   return (
-    <Layout>
+    <>
       <h2 style={{ marginTop: 0 }}>Enter Session Code</h2>
       <form onSubmit={submit} style={{ display: "inline" }}>
         <div>
@@ -52,6 +52,6 @@ export const ConnectToSession = () => {
           </button>
         </div>
       </form>
-    </Layout>
+    </>
   );
 };

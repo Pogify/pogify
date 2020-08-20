@@ -1,7 +1,6 @@
 import React from "react";
 import HostPlayer from "./HostPlayer";
 import ListenerPlayer from "./ListenerPlayer";
-import Layout from "./Layout";
 
 export class Room extends React.Component {
   state = {
@@ -38,7 +37,6 @@ export class Room extends React.Component {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            height: "100vh",
           }}
         >
           {this.state.isHost === this.props.match.params.id ? (
@@ -52,11 +50,7 @@ export class Room extends React.Component {
         </div>
       );
     } else {
-      return (
-        <Layout>
-          <h2>Loading...</h2>
-        </Layout>
-      );
+      return <h2>Loading...</h2>;
     }
   }
 }

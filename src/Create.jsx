@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Layout from "./Layout";
+import Layout from "./components/Layout";
 import { createSession } from "./SessionManager";
 
 export class Create extends React.Component {
@@ -27,7 +27,7 @@ export class Create extends React.Component {
 
   render() {
     return (
-      <Layout>
+      <>
         {Boolean(this.state.activeSession) && (
           <div style={{ textAlign: "center", margin: 5 }}>
             Your Active Session:
@@ -42,7 +42,7 @@ export class Create extends React.Component {
           </div>
         )}
         <button onClick={this.create}>Create New Listening Session</button>
-      </Layout>
+      </>
     );
   }
 }
