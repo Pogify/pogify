@@ -1,7 +1,6 @@
 import React from "react";
 import * as auth from "./SpotifyAuth";
-import * as SessionAuth from "./SessionManager";
-import * as firebase from "firebase/app";
+import * as SessionManager from "./SessionManager";
 import axios from "axios";
 import { Player } from "./Player";
 import Layout from "./Layout";
@@ -30,47 +29,14 @@ export default class HostPlayer extends React.Component {
   setTokenRefreshInterval = () => {
     // refresh token
     this.refreshInterval = setInterval(
-      SessionAuth.refreshToken,
+      SessionManager.refreshToken,
       30 * 60 * 1000,
       [window.localStorage.getItem("pogify:token")]
     );
   };
 
   async publishUpdate(uri, position, playing) {
-    this.retryCount = this.retryCount ?? 0;
-    try {
-      firebase.auth().signInAnonymously();
-      await axios.post(
-        "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
-        {
-          uri,
-          position,
-          playing,
-          timestamp: Date.now(),
-        },
-        {
-          headers: {
-            Authorization:
-              "Bearer " + window.localStorage.getItem("pogify:token"),
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      this.retryCount = null;
-    } catch (e) {
-      if (e.response) {
-        if (e.response.status === 401) {
-          // session expired modal or something
-          return console.error("sessionExpired");
-        }
-      }
-      if (this.retryCount < 3) {
-        this.retryCount++;
-        return setTimeout(this.publishUpdate, 100, [uri, position, playing]);
-      } else {
-        throw e;
-      }
-    }
+    SessionManager.publishUpdate(uri, position, playing);
   }
 
   connect = () => {
