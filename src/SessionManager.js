@@ -47,6 +47,7 @@ export const createSession = async (i = 1) => {
       const user = await FBAuth.signInAnonymously();
       let { data } = await axios.post(
         "https://us-central1-pogify-database.cloudfunctions.net/startSession",
+        undefined,
         {
           headers: {
             Authorization: "Bearer " + (await user.user.getIdToken()),
@@ -97,15 +98,11 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
       if (e.response.status === 401) {
         // session expired modal or something
         console.error("sessionExpired");
+      } else if (e.response.status === 429) {
       }
     }
     if (retries < 3) {
-      setTimeout(this.publishUpdate, 100, [
-        uri,
-        position,
-        playing,
-        retries + 1,
-      ]);
+      setTimeout(() => publishUpdate(uri, position, playing, retries + 1), 100);
     } else {
       throw e;
     }
