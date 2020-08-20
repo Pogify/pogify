@@ -1,5 +1,6 @@
 import React from "react";
-import * as auth from "./auth";
+import * as auth from "./SpotifyAuth";
+import * as SessionAuth from "./SessionManager";
 import axios from "axios";
 import { Player } from "./Player";
 import Layout from "./Layout";
@@ -29,27 +30,11 @@ export default class HostPlayer extends React.Component {
 
   setTokenRefreshInterval = () => {
     // refresh token
-    this.refreshInterval = setInterval(() => {
-      axios
-        .get(
-          "https://us-central1-pogify-database.cloudfunctions.net/refreshToken",
-          {
-            headers: {
-              Authorization: "Bearer " + this.state.session_token,
-            },
-          }
-        )
-        .then((res) => {
-          window.localStorage.setItem("pogify:token", res.data.token);
-          window.localStorage.setItem(
-            "pogify:expiresAt",
-            res.data.expiresIn * 1000 + Date.now()
-          );
-          this.setState({
-            session_token: res.data.token,
-          });
-        });
-    }, 30 * 60 * 1000);
+    this.refreshInterval = setInterval(
+      SessionAuth.refreshToken,
+      30 * 60 * 1000,
+      [window.localStorage.getItem("pogify:token")]
+    );
   };
 
   async publishUpdate(uri, position, playing) {

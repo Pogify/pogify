@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Layout from "./Layout";
+import { createSession } from "./SessionManager";
 
 export class Create extends React.Component {
   constructor(props) {
@@ -13,22 +14,8 @@ export class Create extends React.Component {
   }
 
   async create() {
-    this.backoff = 1;
-    try {
-      let { data } = await axios.post(
-        "https://us-central1-pogify-database.cloudfunctions.net/startSession"
-      );
-
-      window.localStorage.setItem("pogify:token", data.token);
-      window.localStorage.setItem(
-        "pogify:expiresAt",
-        data.expiresIn * 1000 + Date.now()
-      );
-      window.localStorage.setItem("pogify:session", data.session);
-      this.props.history.push("/session/" + data.session);
-    } catch (e) {
-      // backoff retry implementation
-    }
+    await createSession();
+    this.props.history.push("/session/" + data.session);
   }
 
   componentDidMount() {
