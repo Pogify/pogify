@@ -1,5 +1,5 @@
 import React from "react";
-import * as auth from "./auth";
+import * as auth from "./SpotifyAuth";
 export class AuthRedirect extends React.Component {
   componentDidMount() {
     const urlParams = new URLSearchParams(window.location.search);
