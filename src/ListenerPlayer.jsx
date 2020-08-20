@@ -1,8 +1,7 @@
 import React from "react";
 import * as auth from "./SpotifyAuth";
 import axios from "axios";
-import { Player } from "./Player";
-import Layout from "./Layout";
+import { Player } from "./components";
 
 export default class ListenerPlayer extends React.Component {
   playReq = false;
@@ -168,19 +167,6 @@ export default class ListenerPlayer extends React.Component {
         });
       });
     });
-    this.player.on("player_state_changed", console.log);
-    this.player.on("initialization_error", ({ message }) => {
-      console.error("Failed to initialize", message);
-    });
-    this.player.on("authentication_error", ({ message }) => {
-      console.error("Failed to authenticate", message);
-    });
-    this.player.on("account_error", ({ message }) => {
-      console.error("Failed to validate Spotify account", message);
-    });
-    this.player.on("playback_error", ({ message }) => {
-      console.error("Failed to perform playback", message);
-    });
     this.player.connect().then(console.log);
   };
 
@@ -234,44 +220,32 @@ export default class ListenerPlayer extends React.Component {
 
   render() {
     if (Date.now() > window.sessionStorage.getItem("expires_at")) {
-      return (
-        <Layout>
-          <button onClick={this.connect}>Login with Spotify</button>
-        </Layout>
-      );
+      return <button onClick={this.connect}>Login with Spotify</button>;
     }
 
     // if loading sdk show loading
     if (this.state.loading) {
-      return (
-        <Layout>
-          <div>Loading...</div>
-        </Layout>
-      );
+      return <div>Loading...</div>;
     }
     // if any are false allow join
     if (!this.state.spotConnected || !this.state.subConnected) {
-      return (
-        <Layout>
-          <button onClick={this.connect}>Join Session</button>
-        </Layout>
-      );
+      return <button onClick={this.connect}>Join Session</button>;
     }
 
     if (!this.state.hostConnected) {
       return (
-        <Layout>
+        <>
           <h2>Waiting for Host...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
-        </Layout>
+        </>
       );
     }
 
     if (!this.state.pso) {
       return (
-        <Layout>
+        <>
           <h2>Pogify Disconnected</h2> <p>Return to home screen</p>
-        </Layout>
+        </>
       );
     }
     let { paused, duration } = this.state.pso;
@@ -284,37 +258,35 @@ export default class ListenerPlayer extends React.Component {
     let title = this.state.pso.track_window.current_track.name;
 
     return (
-      <Layout>
-        <div>
-          <Player
-            position={position / 1000}
-            duration={duration / 1000}
-            coverArtURL={coverArtURL}
-            album={album}
-            title={title}
-            artists={artists}
-            togglePlay={() => this.player.togglePlay()}
-            playing={!paused}
-            volume={volume}
-            changeVolume={this.changeVolume}
-          />
-          <div
-            style={{
-              width: 300,
-              textAlign: "center",
-              borderRadius: 10,
-              padding: 30,
-              marginTop: 10,
-            }}
-          >
-            You are listening to session {this.props.sessionId}. <br />
-            Playback is controlled by the host. <br />
-            Pressing pause will pause playback locally only. On resume, playback
-            will resynchronize with the host. <br />
-            {this.state.connections} in this session.
-          </div>
+      <div>
+        <Player
+          position={position / 1000}
+          duration={duration / 1000}
+          coverArtURL={coverArtURL}
+          album={album}
+          title={title}
+          artists={artists}
+          togglePlay={() => this.player.togglePlay()}
+          playing={!paused}
+          volume={volume}
+          changeVolume={this.changeVolume}
+        />
+        <div
+          style={{
+            width: 300,
+            textAlign: "center",
+            borderRadius: 10,
+            padding: 30,
+            marginTop: 10,
+          }}
+        >
+          You are listening to session {this.props.sessionId}. <br />
+          Playback is controlled by the host. <br />
+          Pressing pause will pause playback locally only. On resume, playback
+          will resynchronize with the host. <br />
+          {this.state.connections} in this session.
         </div>
-      </Layout>
+      </div>
     );
   }
 }
