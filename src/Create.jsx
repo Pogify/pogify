@@ -13,8 +13,8 @@ export class Create extends React.Component {
   }
 
   async create() {
-    await createSession();
-    this.props.history.push("/session/" + data.session);
+    let res = await createSession();
+    this.props.history.push("/session/" + res.session);
   }
 
   componentDidMount() {
