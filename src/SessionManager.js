@@ -15,12 +15,13 @@ const FBAuth = firebase.auth();
 
 export const refreshToken = async (session_token) => {
   try {
-    await FBAuth.signInAnonymously();
+    let user = await FBAuth.signInAnonymously();
     let res = await axios.get(
       "https://us-central1-pogify-database.cloudfunctions.net/refreshToken",
       {
         headers: {
-          Authorization: "Bearer " + session_token,
+          "X-Session-Token": window.localStorage.getItem("pogify:token"),
+          Authorization: "Bearer " + (await user.user.getIdToken()),
         },
       }
     );
@@ -32,6 +33,7 @@ export const refreshToken = async (session_token) => {
     );
     return res.data;
   } catch (error) {
+    // TODO: error handling
     let { code: errorCode, message: errorMessage } = error;
 
     if (errorCode === "auth/operation-not-allowed") {
@@ -42,9 +44,14 @@ export const refreshToken = async (session_token) => {
 export const createSession = async (i = 1) => {
   return new Promise(async (resolve, reject) => {
     try {
-      await FBAuth.signInAnonymously();
+      const user = await FBAuth.signInAnonymously();
       let { data } = await axios.post(
-        "https://us-central1-pogify-database.cloudfunctions.net/startSession"
+        "https://us-central1-pogify-database.cloudfunctions.net/startSession",
+        {
+          headers: {
+            Authorization: "Bearer " + (await user.user.getIdToken()),
+          },
+        }
       );
 
       window.localStorage.setItem("pogify:token", data.token);
@@ -56,7 +63,7 @@ export const createSession = async (i = 1) => {
       resolve(data);
     } catch (e) {
       // backoff retry implementation
-      if (i == 10) {
+      if (i === 10) {
         return reject(new Error("max retries reached"));
       }
       setTimeout(() => {
@@ -68,7 +75,7 @@ export const createSession = async (i = 1) => {
 
 export const publishUpdate = async (uri, position, playing, retries = 0) => {
   try {
-    firebase.auth().signInAnonymously();
+    let user = await FBAuth.signInAnonymously();
     await axios.post(
       "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
       {
@@ -79,8 +86,8 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
       },
       {
         headers: {
-          Authorization:
-            "Bearer " + window.localStorage.getItem("pogify:token"),
+          "X-Session-Token": window.localStorage.getItem("pogify:token"),
+          Authorization: "Bearer " + (await user.user.getIdToken()),
           "Content-Type": "application/json",
         },
       }
