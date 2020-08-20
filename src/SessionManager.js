@@ -70,36 +70,41 @@ export const createSession = async (i = 1) => {
   });
 };
 
-export const publishUpdate = (uri, position, playing, retries = 0) => {
-    try {
-      firebase.auth().signInAnonymously();
-      await axios.post(
-        "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
-        {
-          uri,
-          position,
-          playing,
-          timestamp: Date.now(),
+export const publishUpdate = async (uri, position, playing, retries = 0) => {
+  try {
+    firebase.auth().signInAnonymously();
+    await axios.post(
+      "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
+      {
+        uri,
+        position,
+        playing,
+        timestamp: Date.now(),
+      },
+      {
+        headers: {
+          Authorization:
+            "Bearer " + window.localStorage.getItem("pogify:token"),
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            Authorization:
-              "Bearer " + window.localStorage.getItem("pogify:token"),
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    } catch (e) {
-      if (e.response) {
-        if (e.response.status === 401) {
-          // session expired modal or something
-          console.error("sessionExpired");
-        }
       }
-      if (retries < 3) {
-        setTimeout(this.publishUpdate, 100, [uri, position, playing, retries +1]);
-      } else {
-        throw e;
+    );
+  } catch (e) {
+    if (e.response) {
+      if (e.response.status === 401) {
+        // session expired modal or something
+        console.error("sessionExpired");
       }
     }
-}
+    if (retries < 3) {
+      setTimeout(this.publishUpdate, 100, [
+        uri,
+        position,
+        playing,
+        retries + 1,
+      ]);
+    } else {
+      throw e;
+    }
+  }
+};
