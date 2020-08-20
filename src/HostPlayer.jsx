@@ -67,6 +67,7 @@ export default class HostPlayer extends React.Component {
   };
 
   initializePlayer = () => {
+    window.spotifyReady = true;
     this.player = new window.Spotify.Player({
       volume: 0.2,
       name: "Pogify Host",

@@ -194,6 +194,7 @@ export default class ListenerPlayer extends React.Component {
   }
 
   initializePlayer = () => {
+    window.spotifyReady = true;
     this.player = new window.Spotify.Player({
       volume: 0.2,
       name: "Pogify Listener",
