@@ -348,7 +348,7 @@ export default class ListenerPlayer extends React.Component {
             You are listening to session {this.props.sessionId}. <br />
             Playback is controlled by the host. <br />
             Pressing pause will pause playback locally only. On resume, playback
-            will resyncronize with the host. <br />
+            will resynchronize with the host. <br />
             {this.state.connections} in this session.
           </div>
         </div>
