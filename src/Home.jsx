@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "./components";
+import Layout from "./Layout";
 
 class Home extends React.Component {
   render() {
     return (
-      <>
+      <Layout>
         <h1
           style={{
             textAlign: "center",
@@ -35,7 +35,7 @@ class Home extends React.Component {
             </button>
           </Link>
         </div>
-      </>
+      </Layout>
     );
   }
 }
