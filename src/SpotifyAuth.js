@@ -60,7 +60,49 @@ export async function goAuth(redirectTo) {
     redirectURL
   )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
     hash[1]
-    }`;
+  }`;
+}
+
+export function getPlayer(title) {
+  return new window.Spotify.Player({
+    volume: 0.2,
+    name: title,
+    getOAuthToken: (callback) => {
+      let token = window.sessionStorage.getItem("access_token");
+      let refreshToken = window.sessionStorage.getItem("refresh_token");
+      let expire = window.sessionStorage.getItem("expires_at");
+      if (Date.now() > expire && refreshToken) {
+        return refreshToken(refreshToken)
+          .then((data) => {
+            callback(data.access_token);
+          })
+          .catch((e) => {
+            if ((e.error_description = "Refresh Token Revoked")) {
+              window.sessionStorage.removeItem("refresh_token");
+              window.sessionStorage.removeItem("access_token");
+              goAuth(this.props.match.params.id);
+            }
+          });
+      }
+
+      if (token) {
+        return callback(token);
+      }
+      let code = window.sessionStorage.getItem("code");
+      if (code) {
+        getToken(code).then((data) => {
+          window.sessionStorage.removeItem("code");
+          console.log(data);
+          this.setState({
+            loggedIn: true,
+          });
+          callback(data.access_token);
+        });
+      } else {
+        goAuth(this.props.match.params.id);
+      }
+    },
+  });
 }
 
 export async function getVerifierAndChallenge(len) {

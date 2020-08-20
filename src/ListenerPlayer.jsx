@@ -195,46 +195,7 @@ export default class ListenerPlayer extends React.Component {
 
   initializePlayer = () => {
     window.spotifyReady = true;
-    this.player = new window.Spotify.Player({
-      volume: 0.2,
-      name: "Pogify Listener",
-      getOAuthToken: (callback) => {
-        let token = window.sessionStorage.getItem("access_token");
-        let refreshToken = window.sessionStorage.getItem("refresh_token");
-        let expire = window.sessionStorage.getItem("expires_at");
-        if (Date.now() > expire && refreshToken) {
-          return auth
-            .refreshToken(refreshToken)
-            .then((data) => {
-              callback(data.access_token);
-            })
-            .catch((e) => {
-              window.sessionStorage.removeItem("refresh_token");
-              window.sessionStorage.removeItem("access_token");
-              auth.goAuth(this.props.sessionId);
-            });
-        }
-
-        if (token) {
-          return callback(token);
-        }
-        let code = window.sessionStorage.getItem("code");
-        if (code) {
-          auth
-            .getToken(code)
-            .then((data) => {
-              window.sessionStorage.removeItem("code");
-              console.log(data);
-              callback(data.access_token);
-            })
-            .catch(() => {
-              auth.goAuth(this.props.sessionId);
-            });
-        } else {
-          auth.goAuth(this.props.sessionId);
-        }
-      },
-    });
+    this.player = auth.getPlayer("Pogify Listener");
     this.setState({ loading: false });
   };
 

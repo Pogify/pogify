@@ -48,6 +48,7 @@ export default class HostPlayer extends React.Component {
 
       this.setState({
         device_id: e.device_id,
+        loggedIn: true,
       });
     });
     this.player.addListener("not_ready", console.log);
@@ -68,52 +69,7 @@ export default class HostPlayer extends React.Component {
 
   initializePlayer = () => {
     window.spotifyReady = true;
-    this.player = new window.Spotify.Player({
-      volume: 0.2,
-      name: "Pogify Host",
-      getOAuthToken: (callback) => {
-        let token = window.sessionStorage.getItem("access_token");
-        let refreshToken = window.sessionStorage.getItem("refresh_token");
-        let expire = window.sessionStorage.getItem("expires_at");
-        if (Date.now() > expire && refreshToken) {
-          return auth
-            .refreshToken(refreshToken)
-            .then((data) => {
-              this.setState({
-                loggedIn: true,
-              });
-              callback(data.access_token);
-            })
-            .catch((e) => {
-              if ((e.error_description = "Refresh Token Revoked")) {
-                window.sessionStorage.removeItem("refresh_token");
-                window.sessionStorage.removeItem("access_token");
-                auth.goAuth(this.props.match.params.id);
-              }
-            });
-        }
-
-        if (token) {
-          this.setState({
-            loggedIn: true,
-          });
-          return callback(token);
-        }
-        let code = window.sessionStorage.getItem("code");
-        if (code) {
-          auth.getToken(code).then((data) => {
-            window.sessionStorage.removeItem("code");
-            console.log(data);
-            this.setState({
-              loggedIn: true,
-            });
-            callback(data.access_token);
-          });
-        } else {
-          auth.goAuth(this.props.match.params.id);
-        }
-      },
-    });
+    this.player = auth.getPlayer("Pogify Host");
     this.player.on("player_state_changed", (data) => {
       console.log(data);
       if (this.state.psoCounter && !data) {
