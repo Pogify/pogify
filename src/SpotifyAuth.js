@@ -64,7 +64,7 @@ export async function goAuth(redirectTo) {
 }
 
 export function getPlayer(title) {
-  let player = new window.Spotify.Player({
+  return new window.Spotify.Player({
     volume: 0.2,
     name: title,
     getOAuthToken: (callback) => {
@@ -80,7 +80,7 @@ export function getPlayer(title) {
             if ((e.error_description = "Refresh Token Revoked")) {
               window.sessionStorage.removeItem("refresh_token");
               window.sessionStorage.removeItem("access_token");
-              goAuth(window.location.pathname);
+              goAuth(this.props.match.params.id);
             }
           });
       }
@@ -99,25 +99,10 @@ export function getPlayer(title) {
           callback(data.access_token);
         });
       } else {
-        goAuth(window.location.pathname);
+        goAuth(this.props.match.params.id);
       }
     },
   });
-
-  player.on("player_state_changed", console.log);
-  player.on("initialization_error", ({ message }) => {
-    console.error("Failed to initialize", message);
-  });
-  player.on("authentication_error", ({ message }) => {
-    console.error("Failed to authenticate", message);
-  });
-  player.on("account_error", ({ message }) => {
-    console.error("Failed to validate Spotify account", message);
-  });
-  player.on("playback_error", ({ message }) => {
-    console.error("Failed to perform playback", message);
-  });
-  return player;
 }
 
 export async function getVerifierAndChallenge(len) {
