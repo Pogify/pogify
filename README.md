@@ -1,10 +1,20 @@
 # Pogify
 
-Pogify allows a Spotify user to host a listening session with an almost unlimited audience.
+> I just want like my songs to play on your computer when I uh, when I play them on my computer.
+>
+> -- <cite>Michael Reeves</cite>
 
-> ## 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work at capacity. ⛔🚧
+Listen to music with your live audience without getting DMCA-striked!
 
-> ## ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
+[View code on GitHub](https://github.com/pogify/pogify.github.io)
+/
+[Join Discord Server](https://discord.gg/bEfdQp)
+
+![logo](./img/logo.png)
+
+> ### 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work to any capacity. ⛔🚧
+
+> ### ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
 
 ## Help keep our dev servers running
 
@@ -27,7 +37,7 @@ Pogify allows a Spotify user to host a listening session with an almost unlimite
 
 ## Mechanism
 
-Pogify does **NOT** stream audio from the host of a listening session. Instead, pogify collects metadata of a host and forwards it to listeners as soon as possible. Listeners wait for metadata events and reacts accordingly.
+Pogify does **NOT** stream audio from the host of a listening session. Instead, pogify collects metadata (ie. current song, current timestamp in the song, etc.) of a host and forwards it to listeners as soon as possible. Listeners wait for metadata events and reacts accordingly.
 
 ### Tech Stack
 
