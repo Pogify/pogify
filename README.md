@@ -10,7 +10,8 @@ Listen to music with your live audience without getting DMCA-striked!
 /
 [Join Discord Server](https://discord.gg/bEfdQp)
 
-![logo](./img/logo.png)
+<!-- ![logo](./img/logo.png ) -->
+<img src="img/logo.png" width=300 style="margin:5px 50%; transform: translateX(-50%);">
 
 > ### 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work to any capacity. ⛔🚧
 
