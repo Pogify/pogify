@@ -33,11 +33,12 @@ export const refreshToken = async (session_token) => {
     );
     return res.data;
   } catch (error) {
+    console.error(error)
     // TODO: error handling
-    let { code: errorCode, message: errorMessage } = error;
+//     let { code: errorCode, message: errorMessage } = error;
 
-    if (errorCode === "auth/operation-not-allowed") {
-    }
+//     if (errorCode === "auth/operation-not-allowed") {
+//     }
   }
 };
 
