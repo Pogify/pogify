@@ -5,9 +5,7 @@ export class AuthRedirect extends React.Component {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("code")) {
       auth.getToken(urlParams.get("code")).then(() => {
-        this.props.history.replace(
-          `/session/${window.sessionStorage.getItem("redirectTo")}`
-        );
+        this.props.history.replace(window.sessionStorage.getItem("redirectTo"));
       });
     }
   }
