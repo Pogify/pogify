@@ -80,7 +80,7 @@ export function getPlayer(title) {
             if ((e.error_description = "Refresh Token Revoked")) {
               window.sessionStorage.removeItem("refresh_token");
               window.sessionStorage.removeItem("access_token");
-              goAuth(this.props.match.params.id);
+              goAuth(window.location.pathname);
             }
           });
       }
@@ -99,7 +99,7 @@ export function getPlayer(title) {
           callback(data.access_token);
         });
       } else {
-        goAuth(this.props.match.params.id);
+        goAuth(window.location.pathname);
       }
     },
   });
