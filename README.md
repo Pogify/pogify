@@ -1,5 +1,9 @@
 # Pogify
 
+[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
+[![Discord](https://img.shields.io/discord/744265206816833617.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bU6E9Xj)
+
 > I just want like my songs to play on your computer when I uh, when I play them on my computer.
 >
 > -- <cite>Michael Reeves</cite>
@@ -70,7 +74,17 @@ Rate limits to cloud function endpoints are enforced per host. Listeners are not
 
 Current Limit: 100 calls per 5 minutes.
 
+## Data Collection (Or the lack thereof)
+
+Pogify does not collect and store any of the metadata from its hosts beyond the five minute cache.
+
+Pogify uses Google Firebase's Authentication service to use its anonymous sign in method to enforce api rate limits. Pogify does not use anonymous sign in for any other use.
+
 ## Known Issues / Limitations
+
+This project is still in alpha and as such there are still lots of bugs.
+
+Currently the project is deployed on a free tier heroku
 
 - ### Pogify does **NOT** work on Safari, or Mobile Browsers
   - This is a limitation of the Spotify Web Playback SDK.
@@ -88,17 +102,16 @@ Current Limit: 100 calls per 5 minutes.
 - No nav bar or alternative
 - Sessions may timeout even if its active.
 - Navigating away from player screen shows an alert.
-- Overall buggy user experience (this project is still in alpha)
 - Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
 - State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
 - Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.
 - there are no tests.
 - And probably many more I forgot about
 
-## Contributing
+## Contributing and Communication
 
 - Make a pull request
 - Open an issue
 - Message an admins
-- Join us on Discord: https://discord.gg/WdV3yt
+- Join us on Discord: https://discord.gg/bU6E9Xj
 - [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
