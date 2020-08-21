@@ -1,6 +1,5 @@
 {
   "name": "pogify",
-  "homepage": "https://pogify.github.io/pogify",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
