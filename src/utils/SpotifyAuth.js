@@ -28,11 +28,11 @@ export async function getToken(code) {
   return res.data;
 }
 
-export async function refreshToken(refreshToken) {
+export async function refreshToken(token) {
   let postData = {
     client_id: CLIENT_ID,
     grant_type: "refresh_token",
-    refresh_token: refreshToken,
+    refresh_token: token,
   };
   let form = new URLSearchParams();
   for (let key in postData) {
@@ -69,10 +69,10 @@ export function getPlayer(title) {
     name: title,
     getOAuthToken: (callback) => {
       let token = window.sessionStorage.getItem("access_token");
-      let refreshToken = window.sessionStorage.getItem("refresh_token");
+      let rToken = window.sessionStorage.getItem("refresh_token");
       let expire = window.sessionStorage.getItem("expires_at");
-      if (Date.now() > expire && refreshToken) {
-        return refreshToken(refreshToken)
+      if (Date.now() > expire && rToken) {
+        return refreshToken(token)
           .then((data) => {
             callback(data.access_token);
           })
