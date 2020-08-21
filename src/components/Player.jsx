@@ -17,7 +17,40 @@ const InheritA = styled.a`
     text-decoration: underline;
   }
 `;
+
+const transform = (a) => a * 2 - 1;
+const untransform = (b) => {
+  return (b + 1) / 2;
+};
+const sig = (x) => 1 / (1 + Math.E ** -(5 * x));
+
+const invSig = (y) => Math.log(y / (1 - y)) / 5;
+
+const input = (vol) => {
+  if (vol >= 0.5) {
+    return transform(vol);
+  } else if (vol === 0) {
+    return -1;
+  } else {
+    return invSig(vol);
+  }
+};
+const output = (vol) => {
+  if (vol === -1) {
+    return 0;
+  }
+  return vol > 0 ? untransform(vol) : sig(vol);
+};
+
 export const Player = (props) => {
+  const setVolume = (e) => {
+    props.changeVolume({
+      target: {
+        value: output(parseFloat(e.target.value)),
+      },
+    });
+  };
+
   return (
     <div
       style={{
@@ -68,9 +101,9 @@ export const Player = (props) => {
           type="range"
           name="volume"
           id="volume"
-          value={props.volume}
-          onChange={props.changeVolume}
-          min={0}
+          value={input(parseFloat(props.volume))}
+          onChange={setVolume}
+          min={-1}
           max={1}
           step={0.01}
         />
