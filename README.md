@@ -1,68 +1,101 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Pogify
 
-## Available Scripts
+> I just want like my songs to play on your computer when I uh, when I play them on my computer.
+>
+> -- <cite>Michael Reeves</cite>
 
-In the project directory, you can run:
+Listen to music with your live audience without getting DMCA-striked!
 
-### `yarn start`
+[View code on GitHub](https://github.com/pogify/pogify.github.io)
+/
+[Join Discord Server](https://discord.gg/bEfdQp)
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+<!-- ![logo](./img/logo.png ) -->
+<img src="img/logo.png" width=300 style="margin:5px 50%; transform: translateX(-50%);">
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+> ### 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work to any capacity. ⛔🚧
 
-### `yarn test`
+> ### ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Help keep our dev servers running
 
-### `yarn build`
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_donations" />
+<input type="hidden" name="business" value="PMHPX79UJJVTA" />
+<input type="hidden" name="item_name" value="Pogify" />
+<input type="hidden" name="currency_code" value="USD" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+- A single host can control the playback of an almost unlimited audience live.
+- A host can play, pause, seek, and skip track and listeners will also live.
+- A host an use any Spotify solution they want to control playback granted they keep `Pogify` open.
+- [planned feature] verified sessions with permalink.
+- Want to see a feature? Request it with an issue.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Mechanism
 
-### `yarn eject`
+Pogify does **NOT** stream audio from the host of a listening session. Instead, pogify collects metadata (ie. current song, current timestamp in the song, etc.) of a host and forwards it to listeners as soon as possible. Listeners wait for metadata events and reacts accordingly.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Tech Stack
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Nginx
+  - with [push_stream_module](https://github.com/wandenberg/nginx-push-stream-module)
+    - module enables us to handle 60k connections on one VPS (single core, 1GB).
+- Google Firebase
+  - Realtime Database & Authentication
+    - uses anonymous sign in and the realtime database to implement a rate limiter for cloud functions
+  - Cloud Functions
+    - enables serverless api endpoints for rapid development.
+    - performs session authorization to limit malicious calls.
+- React JS
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Flow
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Hosts start a session and begin sending updates to cloud functions.
+2. Cloud functions check rate limits and authorization.
+3. Cloud function forwards updates to our nginx server.
+4. nginx then propagates to all listeners.
+5. listener clients react to updates.
 
-## Learn More
+## Rate Limit
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Rate limits to cloud function endpoints are enforced per host. Listeners are not limited.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Current Limit: 100 calls per 5 minutes.
 
-### Code Splitting
+## Known Issues / Limitations
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+- ### Pogify does **NOT** work on Safari, or Mobile Browsers
+  - This is a limitation of the Spotify Web Playback SDK.
+  - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
+  - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
+- Listeners cannot play pause their local spotify
+- Session member count is always 0.
+- Listener Player will stutter.
+- Listener player unexpectedly seek to beginning of track.
+- Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
+- Volume Control is not good.
+- 'Join Session' / 'Start session' buttons sometimes do not work
+- Incomplete error handling
+- Leftover console.logs
+- No nav bar or alternative
+- Sessions may timeout even if its active.
+- Navigating away from player screen shows an alert.
+- Overall buggy user experience (this project is still in alpha)
+- Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
+- State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
+- Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.
+- there are no tests.
+- And probably many more I forgot about
 
-### Analyzing the Bundle Size
+## Contributing
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- Make a pull request
+- Open an issue
+- Message an admins
+- Join us on Discord: https://discord.gg/WdV3yt
+- [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
