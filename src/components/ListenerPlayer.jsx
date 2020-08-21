@@ -267,14 +267,21 @@ export default class ListenerPlayer extends React.Component {
     let position = this.state.position;
     let coverArtURL = this.state.pso.track_window.current_track.album.images[0]
       .url;
-    let album = this.state.pso.track_window.current_track.album.name;
+    let {
+      name: album,
+      uri: albumURI,
+    } = this.state.pso.track_window.current_track.album;
     let artists = this.state.pso.track_window.current_track.artists;
-    let title = this.state.pso.track_window.current_track.name;
+    let {
+      name: title,
+      uri: titleURI,
+    } = this.state.pso.track_window.current_track;
 
     return (
       <Layout>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           <Player
+            uri={{ title: titleURI, album: albumURI }}
             dontShow={true}
             position={position / 1000}
             duration={duration / 1000}

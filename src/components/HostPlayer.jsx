@@ -196,15 +196,21 @@ export default class HostPlayer extends React.Component {
     let position = this.state.position;
     let coverArtURL = this.state.playbackStateObj.track_window.current_track
       .album.images[0].url;
-    let album = this.state.playbackStateObj.track_window.current_track.album
-      .name;
+    let {
+      name: album,
+      uri: albumURI,
+    } = this.state.playbackStateObj.track_window.current_track.album;
     let artists = this.state.playbackStateObj.track_window.current_track
       .artists;
-    let title = this.state.playbackStateObj.track_window.current_track.name;
+    let {
+      name: title,
+      uri: titleURI,
+    } = this.state.playbackStateObj.track_window.current_track;
 
     return (
       <>
         <Player
+          uri={{ title: titleURI, album: albumURI }}
           position={position / 1000}
           duration={duration / 1000}
           coverArtURL={coverArtURL}

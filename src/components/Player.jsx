@@ -6,6 +6,17 @@ import {
   faVolumeUp,
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
+
+const InheritA = styled.a`
+  color: inherit;
+  text-decoration: inherit;
+
+  &:hover {
+    /* color: grey; */
+    text-decoration: underline;
+  }
+`;
 export const Player = (props) => {
   return (
     <div
@@ -26,9 +37,16 @@ export const Player = (props) => {
         <img src={props.coverArtURL} alt={`Cover art for ${props.album}`} />
       </div>
       <div style={{ paddingBottom: 10 }}>
-        <h3>{props.title}</h3>
-        {props.artists.map((item) => item.name).join(", ")} <br />
-        {props.album}
+        <h3>
+          <InheritA href={props.uri.title}>{props.title}</InheritA>
+        </h3>
+        {props.artists.map(({ name, uri }, i) => (
+          <InheritA href={uri} key={i}>
+            {name}
+          </InheritA>
+        ))}{" "}
+        <br />
+        <InheritA href={props.uri.album}>{props.album}</InheritA>
       </div>
       <div>
         {secondsToTimeFormat(props.position)}
