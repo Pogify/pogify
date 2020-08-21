@@ -21,7 +21,6 @@ export const Player = (props) => {
           height: 300,
           width: 300,
           overflow: "hidden",
-          borderRadius: 10,
         }}
       >
         <img src={props.coverArtURL} alt={`Cover art for ${props.album}`} />
