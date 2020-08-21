@@ -87,7 +87,7 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 This project is still in alpha and as such there are still lots of bugs.
 
-Currently the project is deployed on a free tier heroku
+Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
 
 - ### Pogify does **NOT** work on Safari, or Mobile Browsers
   - This is a limitation of the Spotify Web Playback SDK.
