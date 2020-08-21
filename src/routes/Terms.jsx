@@ -41,6 +41,19 @@ export const Terms = () => {
           The work on pogify.net and the images, logos, text and other such
           information is the property of pogify.net ( unless otherwise stated ).
         </p>
+        <h2>Spotify</h2>
+        <p>
+          You agree that you will not modify or create derivative works based on the Spotify Platform, Spotify Service or Spotify Content.
+        </p>
+        <p>
+          You agree that you will not decompile, reverse-engineer, disassemble, and otherwise reducing the Spotify Platform, Spotify Service, and Spotify Content to source code or other human-perceivable form, to the full extent allowed by law.
+        </p>
+        <p>
+          <a href="http://Pogify.net">Pogify.net</a> takes full liabilty of it’s products and disclaims any liabilty from Spotify.
+        </p>
+        <p>
+          Spotify is a third party beneficiary of <a href="http://Pogify.net">Pogify.net</a> end user license agreement and privacy policy and is entitled to directly enforce them.
+        </p>
       </div>
     </Layout>
   );

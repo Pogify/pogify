@@ -15,7 +15,7 @@ export const Privacy = () => {
           pogify.net and how it is used.
         </p>
         <p id="footnote1">
-          1: A verified session is a permanent session granted to an
+          1: Verified Session - A permanent session granted to an
           authenticated user
         </p>
         <h3 id="cookies-and-tokens">Cookies and Tokens:</h3>
