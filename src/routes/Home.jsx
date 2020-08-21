@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Layout from "./Layout"
+import { Layout } from "../components";
 
-class Home extends React.Component {
+export class Home extends React.Component {
   render() {
     return (
       <Layout>
@@ -16,18 +16,26 @@ class Home extends React.Component {
           }}
         >
           POGIFY
-          </h1>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        </h1>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            marginTop: 12,
+          }}
+        >
           <Link to="/session">
-            <button>I am a viewer</button>
+            <button style={{ fontSize: 15 }}>
+              <u>Join</u> a Session
+            </button>
           </Link>
           <Link to="/create">
-            <button style={{ marginLeft: 10}}>I am a streamer</button>
+            <button style={{ fontSize: 15 }}>
+              <u>Start</u> a session
+            </button>
           </Link>
         </div>
       </Layout>
     );
   }
 }
-
-export default Home;
