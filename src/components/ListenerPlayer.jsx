@@ -168,19 +168,7 @@ export default class ListenerPlayer extends React.Component {
         });
       });
     });
-    this.player.on("player_state_changed", console.log);
-    this.player.on("initialization_error", ({ message }) => {
-      console.error("Failed to initialize", message);
-    });
-    this.player.on("authentication_error", ({ message }) => {
-      console.error("Failed to authenticate", message);
-    });
-    this.player.on("account_error", ({ message }) => {
-      console.error("Failed to validate Spotify account", message);
-    });
-    this.player.on("playback_error", ({ message }) => {
-      console.error("Failed to perform playback", message);
-    });
+
     this.player.connect().then(console.log);
   };
 

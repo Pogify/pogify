@@ -64,7 +64,7 @@ export async function goAuth(redirectTo) {
 }
 
 export function getPlayer(title) {
-  return new window.Spotify.Player({
+  let player = new window.Spotify.Player({
     volume: 0.2,
     name: title,
     getOAuthToken: (callback) => {
@@ -103,6 +103,20 @@ export function getPlayer(title) {
       }
     },
   });
+  player.on("player_state_changed", console.log);
+  player.on("initialization_error", ({ message }) => {
+    console.error("Failed to initialize", message);
+  });
+  player.on("authentication_error", ({ message }) => {
+    console.error("Failed to authenticate", message);
+  });
+  player.on("account_error", ({ message }) => {
+    console.error("Failed to validate Spotify account", message);
+  });
+  player.on("playback_error", ({ message }) => {
+    console.error("Failed to perform playback", message);
+  });
+  return player;
 }
 
 export async function getVerifierAndChallenge(len) {

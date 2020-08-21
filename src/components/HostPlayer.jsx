@@ -51,19 +51,6 @@ export default class HostPlayer extends React.Component {
         loggedIn: true,
       });
     });
-    this.player.addListener("not_ready", console.log);
-    this.player.on("initialization_error", ({ message }) => {
-      console.error("Failed to initialize", message);
-    });
-    this.player.on("authentication_error", ({ message }) => {
-      console.error("Failed to authenticate", message);
-    });
-    this.player.on("account_error", ({ message }) => {
-      console.error("Failed to validate Spotify account", message);
-    });
-    this.player.on("playback_error", ({ message }) => {
-      console.error("Failed to perform playback", message);
-    });
     this.player.connect();
   };
 
