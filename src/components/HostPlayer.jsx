@@ -2,7 +2,8 @@ import React from "react";
 import * as auth from "../utils/SpotifyAuth";
 import * as SessionManager from "../utils/SessionManager";
 import axios from "axios";
-import { Player, Layout } from ".";
+import { Player } from ".";
+import { Layout } from "../layouts";
 
 export default class HostPlayer extends React.Component {
   state = {

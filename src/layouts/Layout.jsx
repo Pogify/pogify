@@ -19,6 +19,9 @@ export const Layout = (props) => {
           padding: "2rem",
           borderRadius: "12.5px",
           boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
+          maxWidth: "90%",
+          maxHeight: "80%",
+          overflow: "auto",
         }}
       >
         {props.children}

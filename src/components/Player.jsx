@@ -58,9 +58,11 @@ export const Player = (props) => {
         />
         <FAI icon={faVolumeUp} />
       </div>
-      <div style={{ cursor: "pointer" }} onClick={() => props.togglePlay()}>
-        {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
-      </div>
+      {!props.dontShow && (
+        <div style={{ cursor: "pointer" }} onClick={() => props.togglePlay()}>
+          {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+        </div>
+      )}
     </div>
   );
 };

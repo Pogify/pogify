@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Layout } from "../components";
+import { Layout } from "../layouts";
 import styled from "styled-components";
 
 const CodeInput = styled.input`

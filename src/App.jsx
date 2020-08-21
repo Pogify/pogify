@@ -1,10 +1,10 @@
 import React from "react";
-import { Privacy } from "./Privacy";
-import { Terms } from "./Terms";
+import { Privacy } from "./routes/Privacy";
+import { Terms } from "./routes/Terms";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { AuthRedirect, Room, Create, ConnectToSession, Home } from "./routes";
 import "./styles/App.css";
-import { Layout } from "./components";
+import { Layout } from "./layouts";
 
 function App() {
   return (

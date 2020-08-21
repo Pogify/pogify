@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "../components";
+import { Layout } from "../layouts";
 import { createSession } from "../utils/SessionManager";
 
 export class Create extends React.Component {

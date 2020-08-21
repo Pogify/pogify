@@ -1,5 +1,6 @@
 import React from "react";
-import { HostPlayer, ListenerPlayer, Layout } from "../components";
+import { Layout } from "../layouts";
+import { HostPlayer, ListenerPlayer } from "../components";
 
 export class Room extends React.Component {
   state = {

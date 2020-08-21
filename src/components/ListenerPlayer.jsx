@@ -1,7 +1,8 @@
 import React from "react";
 import * as auth from "../utils/SpotifyAuth";
 import axios from "axios";
-import { Player, Layout } from ".";
+import { Player } from ".";
+import { Layout } from "../layouts";
 
 export default class ListenerPlayer extends React.Component {
   playReq = false;
@@ -284,8 +285,9 @@ export default class ListenerPlayer extends React.Component {
 
     return (
       <Layout>
-        <div>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
           <Player
+            dontShow={true}
             position={position / 1000}
             duration={duration / 1000}
             coverArtURL={coverArtURL}
@@ -308,8 +310,20 @@ export default class ListenerPlayer extends React.Component {
           >
             You are listening to session {this.props.sessionId}. <br />
             Playback is controlled by the host. <br />
-            Pressing pause will pause playback locally only. On resume, playback
-            will resynchronize with the host. <br />
+            <deL>
+              Pressing pause will pause playback locally only. On resume,
+              playback will resynchronize with the host. <br />
+            </deL>
+            <h3>
+              Listener Pause/Play is not implemented at the moment. To pause
+              navigate away from this page or disconnect from 'Pogify Listener'
+              from another spotify instance.
+            </h3>{" "}
+            <h1>
+              PRESSING PLAY OR PAUSE ON SPOTIFY WILL NOT CONTROL LOCAL PLAYBACK
+              AS LONG AS YOU ARE CONNECTED TO "POGIFY LISTENER"
+            </h1>
+            <br />
             {this.state.connections} in this session.
           </div>
         </div>
