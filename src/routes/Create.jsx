@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Layout from "./Layout";
-import { createSession } from "./SessionManager";
+import { Layout } from "../components";
+import { createSession } from "../utils/SessionManager";
 
 export class Create extends React.Component {
   constructor(props) {

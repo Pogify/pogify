@@ -1,7 +1,5 @@
 import React from "react";
-import HostPlayer from "./HostPlayer";
-import ListenerPlayer from "./ListenerPlayer";
-import Layout from "./Layout";
+import { HostPlayer, ListenerPlayer, Layout } from "../components";
 
 export class Room extends React.Component {
   state = {
@@ -10,7 +8,7 @@ export class Room extends React.Component {
 
   componentDidMount() {
     if (window.localStorage.getItem("pogify:expiresAt") < Date.now()) {
-      // TODO: show a expired modal.
+      // TODO: show an expired modal.
       this.setState({
         isHost: null,
       });
