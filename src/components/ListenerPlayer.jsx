@@ -305,10 +305,10 @@ export default class ListenerPlayer extends React.Component {
           >
             You are listening to session {this.props.sessionId}. <br />
             Playback is controlled by the host. <br />
-            <deL>
+            <del>
               Pressing pause will pause playback locally only. On resume,
               playback will resynchronize with the host. <br />
-            </deL>
+            </del>
             <h3>
               Listener Pause/Play is not implemented at the moment. To pause
               navigate away from this page or disconnect from 'Pogify Listener'
