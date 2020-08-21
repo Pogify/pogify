@@ -1,21 +1,31 @@
 # Pogify
 
-Pogify allows a Spotify user to host a listening session with an almost unlimited audience.
+> I just want like my songs to play on your computer when I uh, when I play them on my computer.
+>
+> -- <cite>Michael Reeves</cite>
 
-> ## 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work at capacity. ⛔🚧
+Listen to music with your live audience without getting DMCA-striked!
 
-> ## ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
+[View code on GitHub](https://github.com/pogify/pogify.github.io)
+/
+[Join Discord Server](https://discord.gg/bEfdQp)
+
+![logo](./img/logo.png)
+
+> ### 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work to any capacity. ⛔🚧
+
+> ### ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
 
 ## Features
 
 - A single host can control the playback of an almost unlimited audience.
-- A host an use any spotify solution they want to control playback granted they keep pogify open.
-- A host can play, pause, seek, and skip track and listeners will also.
-- (planned feature) verified sessions with permalink.
+- A host an use any Spotify client for their own listening.
+- When the host plays, pauses, seeks, or skips a track, the listeners' Spotify player will do the same.
+- (Planned Feature) Twitch streamers can create permanent session links.
 
 ## Mechanism
 
-Pogify does **NOT** stream audio from the host of a listening session. Instead, pogify collects metadata of a host and broadcasts
+Pogify does **NOT** stream audio from the host of a listening session. Instead, Pogify collects metadata from the host (ex. current song, current timestamp in the song, etc.) and broadcasts it to their entire audience. 
 
 ## Known Issues / Limitations
 
