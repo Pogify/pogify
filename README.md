@@ -21,12 +21,20 @@ Listen to music with your live audience without getting DMCA-striked!
 
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
 
+## Notice:
+
+Pogify only works for Spotify Premium members.
+
+We are looking into solutions for non Spotify Premium users.
+
 ## Features
 
 - A single host can control the playback of an almost unlimited audience live.
-- A host can play, pause, seek, and skip track and listeners will also live.
+- A host can play, pause, seek, and skip track and listeners will also be _in real time_.
 - A host an use any Spotify solution they want to control playback granted they keep `Pogify` open.
 - [planned feature] verified sessions with permalink.
+- [planned feature] Listeners can look ahead to upcoming tracks in queue.
+- [planned feature] Make song requests.
 - Want to see a feature? Request it with an issue.
 
 ## Mechanism
