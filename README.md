@@ -1,6 +1,9 @@
 # Pogify
 
-[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)
+<!-- FIXME: change to https when we don't need to redirect -->
+<!-- FIXME: change to badge monitor link when proper host -->
+
+[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fpogify.herokuapp.com)](http://www.pogify.net)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
 [![Discord](https://img.shields.io/discord/744265206816833617.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bU6E9Xj)
 
