@@ -1,68 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Pogify
 
-## Available Scripts
+Pogify allows a Spotify user to host a listening session with an almost unlimited audience.
 
-In the project directory, you can run:
+> ## 🚧⛔ Pogify is still in its infancy and undergoing rapid development. It is **NOT** production ready. Do **NOT** expect it to work at capacity. ⛔🚧
 
-### `yarn start`
+> ## ❗❗❗ Important Notice: Pogify does **NOT** stream audio of the host of a listening session. ❗❗❗
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Features
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+- A single host can control the playback of an almost unlimited audience.
+- A host an use any spotify solution they want to control playback granted they keep pogify open.
+- A host can play, pause, seek, and skip track and listeners will also.
+- (planned feature) verified sessions with permalink.
 
-### `yarn test`
+## Mechanism
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Pogify does **NOT** stream audio from the host of a listening session. Instead, pogify collects metadata of a host and broadcasts
 
-### `yarn build`
+## Known Issues / Limitations
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- ### Pogify does **NOT** work on Safari, or Mobile Browsers
+  - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
+  - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
+- Listeners cannot play pause their local spotify
+- Session member count is always 0.
+- Listener Player will stutter.
+- Listener player unexpectedly seek to beginning of track.
+- Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
+- Volume Control is not good.
+- 'Join Session' / 'Start session' buttons sometimes do not work
+- Incomplete error handling
+- Leftover console.logs
+- No nav bar or alternative
+- Sessions may timeout even if its active.
+- Navigating away from player screen shows an alert.
+- Overall buggy user experience (this project is still in alpha)
+- Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
+- And probably many more I forgot about
