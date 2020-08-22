@@ -22,7 +22,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "socket.io": "^2.3.0",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "url-join": "^4.0.1"
   },
   "scripts": {
     "start": "PORT=3006 react-scripts start",
