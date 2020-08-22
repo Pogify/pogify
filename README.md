@@ -154,14 +154,15 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    ```
 
 8. cd into `pogify-functions/functions` folder and run `npm run build`
-9. `firebase --project=any-name emulators:start` and note the host and port of the functions emulator (eg. "localhost:5001").
+9. `firebase --project=any-name emulators:start` and note the host, port and region of the emulated functions (eg. "localhost:5001/any-name/us-central1").
+   ![Emulator Endoint example](./img/emulator-endpoint-example.png)
 
 10. cd into the `pogify` repo and install dependencies with `yarn install`
 
-11. Declare the following env var in .env or .env.development.local, where host and port are the host and port of the functions emulator endpoint.
+11. Declare the following env var in .env or .env.development.local, where host, port, and region are the host, port, and region of the functions emulator endpoint and 'any-name' is consistent with the project name you used in step 9.
 
 ```
-  REACT_APP_CLOUD_FUNCTION_BASE_URL=http://{host}:{port}
+  REACT_APP_CLOUD_FUNCTION_BASE_URL=http://{host}:{port}/any-name/{region}
   REACT_APP_SUB=https://messages.pogify.net
 ```
 
