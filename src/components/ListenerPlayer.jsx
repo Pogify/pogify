@@ -280,10 +280,9 @@ export default class ListenerPlayer extends React.Component {
 
     return (
       <Layout>
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div style={{display: 'flex', alignItems: 'center'}}>
           <Player
             uri={{ title: titleURI, album: albumURI }}
-            dontShow={true}
             position={position / 1000}
             duration={duration / 1000}
             coverArtURL={coverArtURL}
@@ -297,33 +296,18 @@ export default class ListenerPlayer extends React.Component {
           />
           <div
             style={{
-              width: 300,
+              width: 400,
               textAlign: "center",
-              borderRadius: 10,
               padding: 30,
-              marginTop: 10,
             }}
           >
-            {/* TODO replace with modal */}
-            <Donations />
-            You are listening to session {this.props.sessionId}. <br />
-            Playback is controlled by the host. <br />
-            <del>
-              Pressing pause will pause playback locally only. On resume,
-              playback will resynchronize with the host. <br />
-            </del>
-            <h3>
-              Listener Pause/Play is not implemented at the moment. To pause
-              navigate away from this page or disconnect from 'Pogify Listener'
-              from another spotify instance.
-            </h3>{" "}
-            <h1>
-              PRESSING PLAY OR PAUSE ON SPOTIFY WILL NOT CONTROL LOCAL PLAYBACK
-              AS LONG AS YOU ARE CONNECTED TO "POGIFY LISTENER"
-            </h1>
-            <br />
-            {this.state.connections} in this session.
-          </div>
+            <h2>Hosting to {this.state.connections} listeners.</h2>
+            <p style={{textAlign: "justify"}}>You are listening to session: {this.props.sessionId}. Your playback is controlled by the host. Pressing pause will pause playback locally only. On resume, playback will resynchronise with the host. Controlling Spotify will not work ass long as you are connected to "Pogify Listener". The music is playing through the browser, <b> please do not close this tab.</b></p>
+          <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
+          {window.location.href}</p>
+          <p>Powered by Spotify</p>
+          <Donations />
+        </div>
         </div>
       </Layout>
     );
