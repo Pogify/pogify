@@ -25,6 +25,7 @@ export async function getToken(code) {
     Date.now() + res.data.expires_in * 1000
   );
   window.sessionStorage.setItem("access_token", res.data.access_token);
+
   return res.data;
 }
 
@@ -67,13 +68,22 @@ export function getPlayer(title) {
   let player = new window.Spotify.Player({
     volume: 0.2,
     name: title,
+    // TODO: refactor so its cleaner
     getOAuthToken: (callback) => {
       let token = window.sessionStorage.getItem("access_token");
       let rToken = window.sessionStorage.getItem("refresh_token");
       let expire = window.sessionStorage.getItem("expires_at");
       if (Date.now() > expire && rToken) {
-        return refreshToken(token)
+        return refreshToken(rtoken)
           .then((data) => {
+            // set new tokens
+            window.sessionStorage.setItem("access_token", data.access_token);
+            window.sessionStorage.setItem(
+              "expires_at",
+              Date.now() + data.expires_in * 1000
+            );
+            window.sessionStorage.setItem("refresh_token", data.refresh_token);
+
             callback(data.access_token);
           })
           .catch((e) => {
