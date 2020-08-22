@@ -302,9 +302,10 @@ export default class ListenerPlayer extends React.Component {
             }}
           >
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{textAlign: "justify"}}>You are listening to session: {this.props.sessionId}. Your playback is controlled by the host. Pressing pause will pause playback locally only. On resume, playback will resynchronise with the host. Controlling Spotify will not work ass long as you are connected to "Pogify Listener"."The music is playing through the browser, <b> please do not close this tab.</b></p>
+            <p style={{textAlign: "justify"}}>You are listening to session: {this.props.sessionId}. Your playback is controlled by the host. Pressing pause will pause playback locally only. On resume, playback will resynchronise with the host. Controlling Spotify will not work ass long as you are connected to "Pogify Listener". The music is playing through the browser, <b> please do not close this tab.</b></p>
           <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
           {window.location.href}</p>
+          <p>Powered by Spotify</p>
           <Donations />
         </div>
         </div>
