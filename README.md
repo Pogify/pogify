@@ -107,7 +107,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 - Navigating away from player screen shows an alert.
 - Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
 - State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
-- Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.
+- ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
 - there are no tests.
 - And probably many more I forgot about
 
