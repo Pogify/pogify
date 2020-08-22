@@ -15,7 +15,7 @@ Listen to music with your live audience without getting DMCA-striked!
 
 [View code on GitHub](https://github.com/pogify/pogify.github.io)
 /
-[Join Discord Server](https://discord.gg/bEfdQp)
+[Join Discord Server](https://discord.gg/bU6E9Xj)
 
 <!-- ![logo](./img/logo.png ) -->
 <p align="center">
