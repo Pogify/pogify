@@ -12,7 +12,7 @@ export const Terms = () => {
           By using the Pogify service or any software developed under the Pogify brand, you agree to be bound to the GNU Affero General Public License v3 and the terms outlined by such.
           Certain software developed by Pogify contributors may be subject to licensing or terms differing from those within the GNU Affero General Public License v3 and this document. 
           Should that be the case, the applicable license and other legal information will be explicitly written in an area reasonably prominent to those using the software who will be bound by the document.
-          pogify.net, and any software developed under the Pogify brand by the Pogify team, will henceforth be referred to as "Pogify's services and software".
+          Pogify.net, and any software developed under the Pogify brand by the Pogify team, will henceforth be referred to as "Pogify's services and software".
         </p>
         <p>
           Pogify refuses to deliver its services and software to the following users:
