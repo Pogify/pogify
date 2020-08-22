@@ -85,7 +85,7 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 ## Associated Repos
 - ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
-  - Google Firebase Cloud functions repo. 
+  - Pogify's Google Firebase Cloud functions repo 
 
 ## Known Issues / Limitations
 
