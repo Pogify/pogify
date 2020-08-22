@@ -16,7 +16,7 @@ function App() {
         <Route path="/session/:id" component={Room} />
         <Route path="/session" component={ConnectToSession} exact />
         <Route path="/privacy" component={Privacy} />
-        <Route path="/tos" component={Terms} />
+        <Route path="/tou" component={Terms} />
         <Route path="/">
           <Layout>
             <div style={{ textAlign: "center" }}>

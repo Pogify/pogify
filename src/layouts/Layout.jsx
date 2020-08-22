@@ -37,7 +37,7 @@ export default class Layout extends React.Component {
         <footer className="footer">
           ©{" "}
           <a href="https://www.pogify.net/">Pogify</a>{" "}|{" "}
-          <Link to="/tos">Terms of Service</Link>{" "}|{" "}
+          <Link to="/tou">Terms of Use</Link>{" "}|{" "}
           <Link to="/privacy">Privacy Policy</Link>{" "}|{" "}
           <button onClick={this.toggleDarkMode} className={"mode-toggle"}>Switch to {darkMode ? 'Light' : 'Dark'} Mode!</button>
           <br />
