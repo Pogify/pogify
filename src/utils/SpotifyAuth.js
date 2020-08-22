@@ -1,6 +1,6 @@
 import axios from "axios";
 import crypto from "crypto";
-export const CLIENT_ID = "f15b994280f345438a06222ca529dc94";
+export const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 
 let redirectURL = window.location.origin + "/auth";
 export async function getToken(code) {
