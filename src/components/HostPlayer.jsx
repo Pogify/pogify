@@ -234,6 +234,10 @@ export default class HostPlayer extends React.Component {
             <p style={{textAlign: "justify"}}>You can continue using Spotify as you normally would. The music is playing through this browser tab, you can open this tab in a new window to exclude it from OBS.<b> Please do not close this tab.</b></p>
           <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
           {window.location.href}</p>
+          <p>Playback powered by</p><br />
+          <a href="https://www.spotify.com">
+            <img alt="Spotify Logo" width="60px" style={{verticalAlign: "middle"}} src="/spotify-logo.png"/>
+          </a>
           <Donations />
         </div>
         </div>

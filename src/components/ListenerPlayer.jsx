@@ -305,7 +305,10 @@ export default class ListenerPlayer extends React.Component {
             <p style={{textAlign: "justify"}}>You are listening to session: {this.props.sessionId}. Your playback is controlled by the host. Pressing pause will pause playback locally only. On resume, playback will resynchronise with the host. Controlling Spotify will not work ass long as you are connected to "Pogify Listener". The music is playing through the browser, <b> please do not close this tab.</b></p>
           <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
           {window.location.href}</p>
-          <p>Powered by Spotify</p>
+          <p>Playback powered by</p><br />
+          <a href="https://www.spotify.com">
+            <img alt="Spotify Logo" width="60px" style={{verticalAlign: "middle"}} src="/spotify-logo.png"/>
+          </a>
           <Donations />
         </div>
         </div>
