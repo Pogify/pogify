@@ -2,8 +2,10 @@
   height: 100vh;
   width: 100vw;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .content {
@@ -54,9 +56,8 @@
 
 .footer {
   position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  height: 42px;
   text-align: center;
 }
 
