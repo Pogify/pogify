@@ -2,7 +2,7 @@ import React from "react";
 import * as auth from "../utils/SpotifyAuth";
 import * as SessionManager from "../utils/SessionManager";
 import axios from "axios";
-import { Player } from ".";
+import { Player, Donations } from ".";
 import { Layout } from "../layouts";
 
 export default class HostPlayer extends React.Component {
@@ -234,6 +234,7 @@ export default class HostPlayer extends React.Component {
             <p style={{textAlign: "justify"}}>You can continue using Spotify as you normally would. The music is playing through this browser tab, you can open this tab in a new window to exclude it from OBS.<b> Please do not close this tab.</b></p>
           <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
           {window.location.href}</p>
+          <Donations />
         </div>
         </div>
       </Layout>
