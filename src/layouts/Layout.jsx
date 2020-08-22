@@ -35,6 +35,7 @@ export const Layout = (props) => {
           color: "white",
         }}
       >
+        &nbsp;
         ©{" "}
         <a href="https://www.pogify.net/" style={{ color: "white" }}>
           Pogify
@@ -47,8 +48,16 @@ export const Layout = (props) => {
         <Link to="/privacy" style={{ color: "white" }}>
           Privacy Policy
         </Link>
+        <br/>
+        <center>
+          Powered by&nbsp;
+          <a href="https://spotify.com">
+            <img width="60px" style={{verticalAlign: "middle"}} src="/spotify-logo.png"/>
+          </a>
+        </center>
       </p>
-    </div>
+      
+    </div>    
   );
 };
 

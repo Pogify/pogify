@@ -15,7 +15,7 @@ Listen to music with your live audience without getting DMCA-striked!
 
 [View code on GitHub](https://github.com/pogify/pogify.github.io)
 /
-[Join Discord Server](https://discord.gg/bEfdQp)
+[Join Discord Server](https://discord.gg/bU6E9Xj)
 
 <!-- ![logo](./img/logo.png ) -->
 <p align="center">
@@ -40,7 +40,7 @@ We are looking into solutions for non Spotify Premium users.
 
 - A single host can control the playback of an almost unlimited audience live.
 - A host can play, pause, seek, and skip track and listeners will also be _in real time_.
-- A host an use any Spotify solution they want to control playback granted they keep `Pogify` open.
+- A host can use any Spotify solution they want to control playback granted they keep `Pogify` open.
 - [planned feature] verified sessions with permalink.
 - [planned feature] Listeners can look ahead to upcoming tracks in queue.
 - [planned feature] Make song requests.
@@ -98,7 +98,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 - Listener Player will stutter.
 - Listener player unexpectedly seek to beginning of track.
 - Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
-- Volume Control is not good.
+- ~~Volume Control is not good.~~
 - 'Join Session' / 'Start session' buttons sometimes do not work
 - Incomplete error handling
 - Leftover console.logs
@@ -107,14 +107,14 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 - Navigating away from player screen shows an alert.
 - Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
 - State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
-- Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.
+- ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
 - there are no tests.
 - And probably many more I forgot about
 
 ## Contributing and Communication
 
-- Make a pull request
+- Make a pull request on the `develop` branch
 - Open an issue
-- Message an admins
+- Message an admin
 - Join us on Discord: https://discord.gg/bU6E9Xj
 - [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
