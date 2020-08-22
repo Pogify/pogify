@@ -2,6 +2,7 @@
   "name": "pogify",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
