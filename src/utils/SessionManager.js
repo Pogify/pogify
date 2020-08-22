@@ -34,10 +34,9 @@ console.log(cloudFunctions);
 
 // lazy load firebase client sdk since only hosts need it
 let FBAuth;
-
 function initializeApp() {
-  if (process.env.NODE_ENV !== "production") {
-    firebase.initializeApp(firebaseConfig);
+  if (process.env.NODE_ENV === "production") {
+    app = firebase.initializeApp(firebaseConfig);
     FBAuth = firebase.auth();
   } else {
     // dev mock for firebase auth
