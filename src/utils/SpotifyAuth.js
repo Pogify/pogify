@@ -19,12 +19,16 @@ export async function getToken(code) {
   }
 
   let res = await axios.post("https://accounts.spotify.com/api/token", form);
+  // set items in sessionStorage
   window.sessionStorage.setItem("refresh_token", res.data.refresh_token);
   window.sessionStorage.setItem(
     "expires_at",
     Date.now() + res.data.expires_in * 1000
   );
   window.sessionStorage.setItem("access_token", res.data.access_token);
+
+  // remove the code used to get access token
+  window.sessionStorage.removeItem("code");
 
   return res.data;
 }
@@ -101,7 +105,6 @@ export function getPlayer(title) {
       let code = window.sessionStorage.getItem("code");
       if (code) {
         getToken(code).then((data) => {
-          window.sessionStorage.removeItem("code");
           console.log(data);
           this.setState({
             loggedIn: true,
