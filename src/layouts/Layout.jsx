@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Layout.css";
+
 export default class Layout extends React.Component {
   constructor(props) {
     super(props);
@@ -44,6 +45,7 @@ export default class Layout extends React.Component {
             maxHeight: "80%",
             overflow: "auto",
           }}
+          className={darkMode ? "darkMode" : ""}
         >
           {this.props.children}
         </div>

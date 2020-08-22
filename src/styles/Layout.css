@@ -18,3 +18,10 @@ button:focus {
   transition: box-shadow 50ms;
   box-shadow: 0 3px 7px 1pt rgba(0, 0, 0, 0.24);
 }
+
+.darkMode button {
+  transition: background-color 0.5s, border-color 0.5s, color 0.5s;
+  border-color: white;
+  background-color: #222222;
+  color: white;
+}
