@@ -55,7 +55,7 @@ Pogify does **NOT** stream audio from the host of a listening session. Instead, 
 - Nginx
   - with [push_stream_module](https://github.com/wandenberg/nginx-push-stream-module)
     - module enables us to handle 60k connections on one VPS (single core, 1GB).
-- Google Firebase
+- Google Firebase 
   - Realtime Database & Authentication
     - uses anonymous sign in and the realtime database to implement a rate limiter for cloud functions
   - Cloud Functions
@@ -82,6 +82,10 @@ Current Limit: 100 calls per 5 minutes.
 Pogify does not collect and store any of the metadata from its hosts beyond the five minute cache.
 
 Pogify uses Google Firebase's Authentication service to use its anonymous sign in method to enforce api rate limits. Pogify does not use anonymous sign in for any other use.
+
+## Associated Repos
+- ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
+  - Pogify's Google Firebase Cloud functions repo 
 
 ## Known Issues / Limitations
 
