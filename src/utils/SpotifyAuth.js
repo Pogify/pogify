@@ -2,8 +2,6 @@ import axios from "axios";
 import crypto from "crypto";
 export const CLIENT_ID = "f15b994280f345438a06222ca529dc94";
 
-require("dotenv").config();
-
 let redirectURL = window.location.origin + "/auth";
 export async function getToken(code) {
   let postData = {
@@ -19,12 +17,17 @@ export async function getToken(code) {
   }
 
   let res = await axios.post("https://accounts.spotify.com/api/token", form);
+  // set items in sessionStorage
   window.sessionStorage.setItem("refresh_token", res.data.refresh_token);
   window.sessionStorage.setItem(
     "expires_at",
     Date.now() + res.data.expires_in * 1000
   );
   window.sessionStorage.setItem("access_token", res.data.access_token);
+
+  // remove the code used to get access token
+  window.sessionStorage.removeItem("code");
+
   return res.data;
 }
 
@@ -67,13 +70,22 @@ export function getPlayer(title) {
   let player = new window.Spotify.Player({
     volume: 0.2,
     name: title,
+    // TODO: refactor so its cleaner
     getOAuthToken: (callback) => {
       let token = window.sessionStorage.getItem("access_token");
       let rToken = window.sessionStorage.getItem("refresh_token");
       let expire = window.sessionStorage.getItem("expires_at");
       if (Date.now() > expire && rToken) {
-        return refreshToken(token)
+        return refreshToken(rToken)
           .then((data) => {
+            // set new tokens
+            window.sessionStorage.setItem("access_token", data.access_token);
+            window.sessionStorage.setItem(
+              "expires_at",
+              Date.now() + data.expires_in * 1000
+            );
+            window.sessionStorage.setItem("refresh_token", data.refresh_token);
+
             callback(data.access_token);
           })
           .catch((e) => {
@@ -91,7 +103,6 @@ export function getPlayer(title) {
       let code = window.sessionStorage.getItem("code");
       if (code) {
         getToken(code).then((data) => {
-          window.sessionStorage.removeItem("code");
           console.log(data);
           this.setState({
             loggedIn: true,

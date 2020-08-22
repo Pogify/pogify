@@ -1,4 +1,5 @@
 import axios from "axios";
+import urlJoin from "url-join";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -10,21 +11,58 @@ var firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
-const FBAuth = firebase.auth();
+// ???: we can avoid all of this rewriting stuff if we use client sdk for endpoint.
+// would make dev toggle easier b/c would be using firebase.function dev toggle but idk if can initialize
+// without proper firebaseConfig.
+let cloudFunctionBaseURL =
+  "https://us-central1-pogify-database.cloudfunctions.net";
+
+if (process.env.NODE_ENV === "development") {
+  console.log(
+    process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL,
+    urlJoin(process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL, "/refreshToken")
+  );
+  cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL;
+}
+
+var cloudFunctions = {
+  refreshToken: urlJoin(cloudFunctionBaseURL, "refreshToken"),
+  startSession: urlJoin(cloudFunctionBaseURL, "startSession"),
+  postUpdate: urlJoin(cloudFunctionBaseURL, "postUpdate"),
+};
+console.log(cloudFunctions);
+
+// lazy load firebase client sdk since only hosts need it
+let FBAuth;
+function initializeApp() {
+  if (process.env.NODE_ENV !== "development") {
+    firebase.initializeApp(firebaseConfig);
+    FBAuth = firebase.auth();
+  } else {
+    // dev mock for firebase auth
+    FBAuth = {
+      signInAnonymously: () => {
+        return {
+          user: {
+            getIdToken: () => Promise.resolve("thisIsNotaToken"),
+          },
+        };
+      },
+    };
+  }
+}
 
 export const refreshToken = async (session_token) => {
+  if (!FBAuth) initializeApp();
+
   try {
     let user = await FBAuth.signInAnonymously();
-    let res = await axios.get(
-      "https://us-central1-pogify-database.cloudfunctions.net/refreshToken",
-      {
-        headers: {
-          "X-Session-Token": window.localStorage.getItem("pogify:token"),
-          Authorization: "Bearer " + (await user.user.getIdToken()),
-        },
-      }
-    );
+    let res = await axios.get(cloudFunctions.refreshToken, {
+      headers: {
+        "X-Session-Token": window.localStorage.getItem("pogify:token"),
+        Authorization: "Bearer " + (await user.user.getIdToken()),
+      },
+    });
 
     window.localStorage.setItem("pogify:token", res.data.token);
     window.localStorage.setItem(
@@ -33,28 +71,26 @@ export const refreshToken = async (session_token) => {
     );
     return res.data;
   } catch (error) {
-    console.error(error)
+    console.error(error);
     // TODO: error handling
-//     let { code: errorCode, message: errorMessage } = error;
+    //     let { code: errorCode, message: errorMessage } = error;
 
-//     if (errorCode === "auth/operation-not-allowed") {
-//     }
+    //     if (errorCode === "auth/operation-not-allowed") {
+    //     }
   }
 };
 
 export const createSession = async (i = 1) => {
+  if (!FBAuth) initializeApp();
+
   return new Promise(async (resolve, reject) => {
     try {
       const user = await FBAuth.signInAnonymously();
-      let { data } = await axios.post(
-        "https://us-central1-pogify-database.cloudfunctions.net/startSession",
-        undefined,
-        {
-          headers: {
-            Authorization: "Bearer " + (await user.user.getIdToken()),
-          },
-        }
-      );
+      let { data } = await axios.post(cloudFunctions.startSession, undefined, {
+        headers: {
+          Authorization: "Bearer " + (await user.user.getIdToken()),
+        },
+      });
 
       window.localStorage.setItem("pogify:token", data.token);
       window.localStorage.setItem(
@@ -76,10 +112,12 @@ export const createSession = async (i = 1) => {
 };
 
 export const publishUpdate = async (uri, position, playing, retries = 0) => {
+  if (!FBAuth) initializeApp();
+
   try {
     let user = await FBAuth.signInAnonymously();
     await axios.post(
-      "https://us-central1-pogify-database.cloudfunctions.net/postUpdate",
+      cloudFunctions.postUpdate,
       {
         uri,
         position,
