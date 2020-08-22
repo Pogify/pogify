@@ -113,8 +113,8 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 
 ## Contributing and Communication
 
-- Make a pull request
+- Make a pull request on the `develop` branch
 - Open an issue
-- Message an admins
+- Message an admin
 - Join us on Discord: https://discord.gg/bU6E9Xj
 - [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
