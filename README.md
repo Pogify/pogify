@@ -116,8 +116,83 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 
 ## Contributing and Communication
 
-- Make a pull request on the `develop` branch
+- Make a pull request on the `develop` branch. [Guidelines](#Pull-Request-Guidelines)
 - Open an issue
 - Message an admin
 - Join us on Discord: https://discord.gg/bU6E9Xj
 - [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
+
+### Set up for local development
+
+#### If you have difficulty setting up the environment, do _not_ open an issue. Message one of the admins or ask for help on the [discord server](https://discord.gg/bU6E9Xj).
+
+0. We use yarn for _this_ repo (`pogify-functions` uses npm); install yarn with
+
+   `npm i -g yarn`
+
+1. Clone this repo
+2. Clone [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
+3. Get a [spotify api client id](https://developer.spotify.com/dashboard/applications)
+4. cd into the `pogify-functions` repo
+5. Install [firebase-cli](https://firebase.google.com/docs/cli)
+6. `firebase init` and follow the instructions.
+
+   - Project only requires emulators for functions and database
+   - Select `Don't set up a default project` when prompted with project setup options.
+   - Designate `TypeScript` as the language for cloud functions.
+   - DO _NOT_ overwrite any existing files.
+   - _DO_ install dependencies.
+
+7. Declare env vars in `.runtimeconfig.json`
+
+   ```json
+   {
+     "jwt": {
+       "secret": "anysecretyoudlike"
+     }
+   }
+   ```
+
+8. `firebase --project=any-name emulators:start` and note the host and port of the functions emulator (eg. "localhost:5001").
+
+9. cd into `pogify-functions/functions` folder and run `npx tsc` (or just `tsc` if you have typescript installed globally)
+10. cd into the `pogify` repo and install dependencies with `yarn install`
+
+11. Declare the following env var in .env or .env.development.local, where host and port are the host and port of the functions emulator endpoint.
+
+```
+  REACT_APP_CLOUD_FUNCTION_BASE_URL=http://{host}:{port}
+  REACT_APP_SUB=https://messages.pogify.net
+```
+
+- messages.pogify.net is the current production endpoint for subscribing to events. It's ok to use this endpoint for dev.
+
+11. Make sure `pogify-functions` firebase emulators are running and `yarn start` to start the react dev servers.
+
+If everything is done right you should have a functioning dev environment.
+
+##### A couple notes:
+
+- Hosting a session from localhost will not push any events to production
+- If you click `join a session`, you will be stuck on the 'waiting for host' modal unless theres an active session.
+
+## Todo List
+
+- [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
+- [ ] code comments
+- [ ] tests
+- [ ] debouncer for client events (would fix no. 15 of Known Issues)
+
+## Pull Request Guidelines
+
+1. Only pull requests to the development branch will be honored.
+2. Explain what you did and how.
+3. If its a new feature, explain what it is.
+4. Add a screen shot if applicable.
+5. As it stands, pull requests that modify core components will not be honored. (unless otherwise discussed with maintainers).
+
+## Related Repos
+
+### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
+
+    Repo housing pogify's Google Cloud functions
