@@ -208,41 +208,35 @@ export default class HostPlayer extends React.Component {
     } = this.state.playbackStateObj.track_window.current_track;
 
     return (
-      <>
-        <Player
-          uri={{ title: titleURI, album: albumURI }}
-          position={position / 1000}
-          duration={duration / 1000}
-          coverArtURL={coverArtURL}
-          album={album}
-          title={title}
-          artists={artists}
-          togglePlay={() => this.player.togglePlay()}
-          playing={!paused}
-          volume={volume}
-          changeVolume={this.changeVolume}
-        />
-        <div
-          style={{
-            width: 300,
-            textAlign: "center",
-            backgroundColor: "#424242",
-            borderRadius: 10,
-            padding: 30,
-            marginTop: 10,
-          }}
-        >
-          You are the host of this session. <br />
-          Share the url below to listen with others:
-          <div style={{ margin: 10 }}>
-            <input type="text" readOnly value={window.location.href} />
-          </div>
-          Use Spotify as you usually would. <br />
-          Your music is being played in this browser window. Don't close this
-          window. <br />
-          {this.state.connections} in this session.
+      <Layout>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <Player
+            uri={{ title: titleURI, album: albumURI }}
+            position={position / 1000}
+            duration={duration / 1000}
+            coverArtURL={coverArtURL}
+            album={album}
+            title={title}
+            artists={artists}
+            togglePlay={() => this.player.togglePlay()}
+            playing={!paused}
+            volume={volume}
+            changeVolume={this.changeVolume}
+          />
+          <div
+            style={{
+              width: 400,
+              textAlign: "center",
+              padding: 30,
+            }}
+          >
+            <h2>Hosting to {this.state.connections} listeners.</h2>
+            <p style={{textAlign: "justify"}}>You can continue using Spotify as you normally would. The music is playing through this browser tab, you can open this tab in a new window to exclude it from OBS.<b> Please do not close this tab.</b></p>
+          <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
+          {window.location.href}</p>
         </div>
-      </>
+        </div>
+      </Layout>
     );
   }
 }
