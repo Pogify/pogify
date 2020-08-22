@@ -153,7 +153,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    }
    ```
 
-8. cd into `pogify-functions/functions` folder and run `npx tsc` (or just `tsc` if you have typescript installed globally)
+8. cd into `pogify-functions/functions` folder and run `npm run build`
 9. `firebase --project=any-name emulators:start` and note the host and port of the functions emulator (eg. "localhost:5001").
 
 10. cd into the `pogify` repo and install dependencies with `yarn install`
