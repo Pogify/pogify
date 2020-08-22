@@ -10,10 +10,18 @@ var firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
-const FBAuth = firebase.auth();
+// lazy load firebase client sdk since only hosts need it
+let app;
+let FBAuth;
+
+function initializeApp() {
+  app = firebase.initializeApp(firebaseConfig);
+  FBAuth = firebase.auth();
+}
 
 export const refreshToken = async (session_token) => {
+  if (!app || !FBAuth) initializeApp();
+
   try {
     let user = await FBAuth.signInAnonymously();
     let res = await axios.get(
@@ -33,16 +41,18 @@ export const refreshToken = async (session_token) => {
     );
     return res.data;
   } catch (error) {
-    console.error(error)
+    console.error(error);
     // TODO: error handling
-//     let { code: errorCode, message: errorMessage } = error;
+    //     let { code: errorCode, message: errorMessage } = error;
 
-//     if (errorCode === "auth/operation-not-allowed") {
-//     }
+    //     if (errorCode === "auth/operation-not-allowed") {
+    //     }
   }
 };
 
 export const createSession = async (i = 1) => {
+  if (!app || !FBAuth) initializeApp();
+
   return new Promise(async (resolve, reject) => {
     try {
       const user = await FBAuth.signInAnonymously();
@@ -76,6 +86,8 @@ export const createSession = async (i = 1) => {
 };
 
 export const publishUpdate = async (uri, position, playing, retries = 0) => {
+  if (!app || !FBAuth) initializeApp();
+
   try {
     let user = await FBAuth.signInAnonymously();
     await axios.post(
