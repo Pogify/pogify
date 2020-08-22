@@ -40,7 +40,7 @@ We are looking into solutions for non Spotify Premium users.
 
 - A single host can control the playback of an almost unlimited audience live.
 - A host can play, pause, seek, and skip track and listeners will also be _in real time_.
-- A host an use any Spotify solution they want to control playback granted they keep `Pogify` open.
+- A host can use any Spotify solution they want to control playback granted they keep `Pogify` open.
 - [planned feature] verified sessions with permalink.
 - [planned feature] Listeners can look ahead to upcoming tracks in queue.
 - [planned feature] Make song requests.
