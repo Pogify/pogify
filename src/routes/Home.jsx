@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../layouts";
+import { Donations } from "../components";
 
 export class Home extends React.Component {
   render() {
@@ -35,6 +36,8 @@ export class Home extends React.Component {
             </button>
           </Link>
         </div>
+        {/* TODO: figure out a better modal or something */}
+        <Donations />
       </Layout>
     );
   }
