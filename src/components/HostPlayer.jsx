@@ -2,7 +2,7 @@ import React from "react";
 import * as auth from "../utils/SpotifyAuth";
 import * as SessionManager from "../utils/SessionManager";
 import axios from "axios";
-import { Player } from ".";
+import { Player, Donations } from ".";
 import { Layout } from "../layouts";
 
 export default class HostPlayer extends React.Component {
@@ -241,6 +241,8 @@ export default class HostPlayer extends React.Component {
           Your music is being played in this browser window. Don't close this
           window. <br />
           {this.state.connections} in this session.
+          {/* TODO replace with modal */}
+          <Donations />
         </div>
       </>
     );

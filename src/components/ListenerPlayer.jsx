@@ -3,6 +3,7 @@ import * as auth from "../utils/SpotifyAuth";
 import axios from "axios";
 import { Player } from ".";
 import { Layout } from "../layouts";
+import { Donations } from "./Donations";
 
 export default class ListenerPlayer extends React.Component {
   playReq = false;
@@ -303,6 +304,8 @@ export default class ListenerPlayer extends React.Component {
               marginTop: 10,
             }}
           >
+            {/* TODO replace with modal */}
+            <Donations />
             You are listening to session {this.props.sessionId}. <br />
             Playback is controlled by the host. <br />
             <del>
