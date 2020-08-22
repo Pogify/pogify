@@ -89,27 +89,30 @@ This project is still in alpha and as such there are still lots of bugs.
 
 Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
 
-- ### Pogify does **NOT** work on Safari, or Mobile Browsers
-  - This is a limitation of the Spotify Web Playback SDK.
-  - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
-  - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
-- Listeners cannot play pause their local spotify
-- Session member count is always 0.
-- Listener Player will stutter.
-- Listener player unexpectedly seek to beginning of track.
-- Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
-- ~~Volume Control is not good.~~
-- 'Join Session' / 'Start session' buttons sometimes do not work
-- Incomplete error handling
-- Leftover console.logs
-- No nav bar or alternative
-- Sessions may timeout even if its active.
-- Navigating away from player screen shows an alert.
-- Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
-- State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
-- ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-- there are no tests.
-- And probably many more I forgot about
+1. ### Pogify does **NOT** work on Safari, or Mobile Browsers
+
+   - This is a limitation of the Spotify Web Playback SDK.
+   - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
+   - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
+
+2. Listeners cannot play pause their local spotify
+3. Session member count is always 0.
+4. Listener Player will stutter.
+5. Listener player unexpectedly seek to beginning of track.
+6. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
+7. ~~Volume Control is not good.~~
+8. 'Join Session' / 'Start session' buttons sometimes do not work
+9. Incomplete error handling
+10. Leftover console.logs
+11. No nav bar or alternative
+12. Sessions may timeout even if its active.
+13. Navigating away from player screen shows an alert.
+14. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
+15. State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
+16. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
+17. there are no tests.
+18. sparse code commenting
+19. And probably many more I forgot about
 
 ## Contributing and Communication
 
