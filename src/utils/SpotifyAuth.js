@@ -76,7 +76,7 @@ export function getPlayer(title) {
       let rToken = window.sessionStorage.getItem("refresh_token");
       let expire = window.sessionStorage.getItem("expires_at");
       if (Date.now() > expire && rToken) {
-        return refreshToken(rtoken)
+        return refreshToken(rToken)
           .then((data) => {
             // set new tokens
             window.sessionStorage.setItem("access_token", data.access_token);
