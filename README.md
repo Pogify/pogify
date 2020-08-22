@@ -98,7 +98,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 - Listener Player will stutter.
 - Listener player unexpectedly seek to beginning of track.
 - Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
-- Volume Control is not good.
+- ~~Volume Control is not good.~~
 - 'Join Session' / 'Start session' buttons sometimes do not work
 - Incomplete error handling
 - Leftover console.logs
