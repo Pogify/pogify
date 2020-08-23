@@ -23,7 +23,7 @@ If you are looking to help with UI/UX, please note that we do not have a style g
 - Git ([Windows](https://git-scm.com/download/win) | [MacOS](https://git-scm.com/download/mac) | [Linux](https://git-scm.com/download/linux))
 - Node.js 10+ & NPM 6+ ([Windows, MacOS, and Linux](https://nodejs.org/en/download))
 - Yarn (`npm i -g yarn` or [Yarn's Website](https://classic.yarnpkg.com/en/docs/install/))
-- A [Spotify API Client ID](https://developer.spotify.com/dashboard/applications)
+- A [Spotify API Client ID](https://developer.spotify.com/dashboard/applications) (In doing so, please ensure you configure the auth redirect correctly. The redirect for the app is `http://localhost:{PORT}/auth` where port is the port of the create-react-app dev server (default: 3000).
 
 ### Setting up the backend
 1. Clone [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions). (`git clone https://github.com/Pogify/pogify-functions.git`)
@@ -50,7 +50,8 @@ If you are looking to help with UI/UX, please note that we do not have a style g
    }
 6. Change directory `cd` into the `functions` folder within the repo and run `npm run build`.
 7. Run `firebase --project=any-name emulators:start` and note the URL of the emulated functions. (e.g. "localhost:5001/any-name/us-central1")
-   - Note: You must run this command, and keep it open, every time you wish to run a frontend environment.
+   ![Emulator Endpoint Example](./img/emulator-endpoint-example.png)
+   - Note: Keep the window open while you are working on the project!
 
 Congratulations, you should now be running a local environment for the backend of Pogify!
 
@@ -58,7 +59,7 @@ Congratulations, you should now be running a local environment for the backend o
 1. Clone this repo (`git clone https://github.com/Pogify/pogify.git`)
 2. Switch to the `develop` branch (`git checkout develop`)
 2. Change directory `cd` to the newly created `pogify` repo and install dependencies with `yarn install`.
-3. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from your Firebase CLI window) and {CLIENT_ID} with your Spotify API Client ID.
+3. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from your Firebase CLI window) and {CLIENT_ID} with your Spotify API Client ID from the prerequisites.
    ```
      REACT_APP_SUB=https://messages.pogify.net
      REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL={URL}
@@ -74,6 +75,7 @@ Congratulations, you should now be running a local environment for the frontend 
 
 ###### A couple notes:
 - Sessions hosted from local environments cannot be joined from the pogify.net service and vice versa.
+- Missing any one step wil throw an error. Be sure to read each and every single instruction carefully.
 - If you click `join a session`, you will be stuck on the 'waiting for host' modal unless there is an active sesion w/ a host. (We are working on something so people can develop the listener player with 2 accounts.)
 
 ## Starting up a local development environment
