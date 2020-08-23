@@ -1,6 +1,6 @@
 import React from "react";
-import * as auth from "../utils/SpotifyAuth";
-import * as SessionManager from "../utils/SessionManager";
+import * as auth from "../utils/spotifyAuth";
+import * as SessionManager from "../utils/sessionManager";
 import {debounce} from "../utils/debounce"
 import axios from "axios";
 import { Player, Donations } from ".";
