@@ -27,7 +27,7 @@
     "url-join": "^4.0.1"
   },
   "scripts": {
-    "start": "PORT=3006 react-scripts start",
+    "start": "react-scripts start",
     "start-build": "node index.js",
     "build": "react-scripts build && cp build/index.html build/404.html",
     "test": "react-scripts test",
@@ -49,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "prettier": "2.0.5"
   }
 }

@@ -20,7 +20,7 @@ export default class HostPlayer extends React.Component {
     volume: 0.2,
     hostConnected: false,
     loading: true,
-    connections: 0,
+    connections: "∞",
     viewPlayer: false,
     psoCounter: 0,
     session_token: "",
@@ -60,6 +60,7 @@ export default class HostPlayer extends React.Component {
     this.player.on("player_state_changed", (data) => {
       console.log(data);
       if (this.state.psoCounter && !data) {
+        // player has been played, but no data is coming from spotify
         // push disconnect update
         this.publishUpdate("", this.state.position, false);
 
@@ -69,7 +70,6 @@ export default class HostPlayer extends React.Component {
         );
       }
       if (data) {
-        console.log("alksdfe", data);
         this.setState({
           playbackStateObj: data,
           position: data.position,
@@ -160,6 +160,8 @@ export default class HostPlayer extends React.Component {
   }
 
   componentWillUnmount() {
+    this.player.removeListener("player_state_changed")
+    // remove player_state_changed listener on unmount
     this.publishUpdate("", this.state.position, false);
     window.onbeforeunload = null;
     this.player.disconnect();
@@ -209,7 +211,7 @@ export default class HostPlayer extends React.Component {
 
     return (
       <Layout>
-        <div style={{display: 'flex', alignItems: 'center'}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Player
             uri={{ title: titleURI, album: albumURI }}
             position={position / 1000}
@@ -231,15 +233,29 @@ export default class HostPlayer extends React.Component {
             }}
           >
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{textAlign: "justify"}}>You can continue using Spotify as you normally would. The music is playing through this browser tab, you can open this tab in a new window to exclude it from OBS.<b> Please do not close this tab.</b></p>
-          <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
-          {window.location.href}</p>
-          <p style={{marginBottom: 0}}>Playback powered by</p>
-          <a href="https://www.spotify.com">
-            <img alt="Spotify Logo" width="80px" height="24px" style={{verticalAlign: "middle", padding: 12}} src="/spotify-logo-green.png"/>
-          </a>
-          <Donations />
-        </div>
+            <p style={{ textAlign: "justify" }}>
+              You can continue using Spotify as you normally would. The music is
+              playing through this browser tab, you can open this tab in a new
+              window to exclude it from OBS.
+              <b> Please do not close this tab.</b>
+            </p>
+            <p style={{ marginTop: 40 }}>
+              Share the url below to listen with others:
+              <br />
+              {window.location.href}
+            </p>
+            <p style={{ marginBottom: 0 }}>Playback powered by</p>
+            <a href="https://www.spotify.com">
+              <img
+                alt="Spotify Logo"
+                width="80px"
+                height="24px"
+                style={{ verticalAlign: "middle", padding: 12 }}
+                src="/spotify-logo-green.png"
+              />
+            </a>
+            <Donations />
+          </div>
         </div>
       </Layout>
     );

@@ -55,7 +55,7 @@ Pogify does **NOT** stream audio from the host of a listening session. Instead, 
 - Nginx
   - with [push_stream_module](https://github.com/wandenberg/nginx-push-stream-module)
     - module enables us to handle 60k connections on one VPS (single core, 1GB).
-- Google Firebase 
+- Google Firebase
   - Realtime Database & Authentication
     - uses anonymous sign in and the realtime database to implement a rate limiter for cloud functions
   - Cloud Functions
@@ -90,7 +90,7 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 ## Known Issues / Limitations
 
-This project is still in alpha and as such there are still lots of bugs.
+This project is still in alpha and as such, there are still lots of bugs.
 
 Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
 
@@ -111,7 +111,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 10. Leftover console.logs
 11. No nav bar or alternative
 12. Sessions may timeout even if its active.
-13. Navigating away from player screen shows an alert.
+13. ~~Navigating away from player screen shows an alert.~~
 14. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
 15. State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
 16. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
