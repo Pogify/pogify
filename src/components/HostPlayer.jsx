@@ -20,7 +20,7 @@ export default class HostPlayer extends React.Component {
     volume: 0.2,
     hostConnected: false,
     loading: true,
-    connections: 0,
+    connections: "∞",
     viewPlayer: false,
     psoCounter: 0,
     session_token: "",
