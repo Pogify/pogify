@@ -113,7 +113,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 12. Sessions may timeout even if its active.
 13. ~~Navigating away from player screen shows an alert.~~
 14. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
-15. State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.
+15. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
 16. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
 17. there are no tests.
 18. sparse code commenting
@@ -131,7 +131,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
 - [ ] code comments
 - [ ] tests
-- [ ] debouncer for client events (would fix no. 15 of Known Issues)
+- [x] debouncer for client events (would fix no. 15 of Known Issues)
 
 ## Related Repos
 
