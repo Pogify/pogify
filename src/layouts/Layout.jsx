@@ -11,7 +11,20 @@ export default class Layout extends React.Component {
     this.toggleDarkMode = this.toggleDarkMode.bind(this);
   }
   componentDidMount() {
-    const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+    let storedDarkMode = false;
+    const darkQuery = window.matchMedia('prefers-color-scheme: dark)');
+    if (localStorage.getItem('darkMode') === null) {
+      storedDarkMode = window.matchMedia && darkQuery.matches;
+    } else {
+      storedDarkMode = localStorage.getItem('darkMode') === 'true';
+    }
+
+    darkQuery.addEventListener('change', function (event) {
+      if (event.matches && this.state.darkMode === true) return;
+      if (!event.matches && this.state.darkMode === false) return;
+      this.toggleDarkMode();
+    });
+
     this.setState({ darkMode: storedDarkMode })
   }
 
