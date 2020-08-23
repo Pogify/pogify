@@ -55,7 +55,7 @@ Pogify does **NOT** stream audio from the host of a listening session. Instead, 
 - Nginx
   - with [push_stream_module](https://github.com/wandenberg/nginx-push-stream-module)
     - module enables us to handle 60k connections on one VPS (single core, 1GB).
-- Google Firebase 
+- Google Firebase
   - Realtime Database & Authentication
     - uses anonymous sign in and the realtime database to implement a rate limiter for cloud functions
   - Cloud Functions
