@@ -1,5 +1,5 @@
 import React from "react";
-import * as auth from "../utils/SpotifyAuth";
+import * as auth from "../utils/spotifyAuth";
 
 /**
  * Component handles redirect after authentication from spotify.

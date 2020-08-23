@@ -1,5 +1,5 @@
 import React from "react";
-import * as auth from "../utils/SpotifyAuth";
+import * as auth from "../utils/spotifyAuth";
 import axios from "axios";
 import { Player } from ".";
 import { Layout } from "../layouts";
