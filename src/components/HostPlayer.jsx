@@ -1,9 +1,11 @@
 import React from "react";
 import * as auth from "../utils/SpotifyAuth";
 import * as SessionManager from "../utils/SessionManager";
+import {debounce} from "../utils/debounce"
 import axios from "axios";
 import { Player, Donations } from ".";
 import { Layout } from "../layouts";
+
 
 export default class HostPlayer extends React.Component {
   state = {
@@ -57,8 +59,10 @@ export default class HostPlayer extends React.Component {
   initializePlayer = () => {
     window.spotifyReady = true;
     this.player = auth.getPlayer("Pogify Host");
-    this.player.on("player_state_changed", (data) => {
-      console.log(data);
+
+
+    this.player.on("player_state_changed", debounce((data) => {
+    // debounce incoming data. 
       if (this.state.psoCounter && !data) {
         // player has been played, but no data is coming from spotify
         // push disconnect update
@@ -76,7 +80,9 @@ export default class HostPlayer extends React.Component {
           psoCounter: this.state.psoCounter + 1,
         });
       }
-    });
+      // it seems 300 is about a good sweet spot for debounce.
+      // Hesitant to raise it anymore because it would increase latency to listener
+    }, 300));
     this.setState({ loading: false });
   };
 
