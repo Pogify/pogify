@@ -7,7 +7,7 @@ import {
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import { secondsToTimeFormat } from '../utils/Formatters'
+import { secondsToTimeFormat } from '../utils/formatters'
 
 const InheritA = styled.a`
   color: inherit;
