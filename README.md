@@ -115,9 +115,10 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 14. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
 15. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
 16. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-17. there are no tests.
-18. sparse code commenting
-19. And probably many more I forgot about
+17. Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off
+18. there are no tests.
+19. sparse code commenting
+20. And probably many more I forgot about
 
 ## Contributing and Communication
 
