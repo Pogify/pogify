@@ -8,24 +8,27 @@ export default class Layout extends React.Component {
     this.state = {
       darkMode: 'false'
     }
-    this.toggleDarkMode = this.toggleDarkMode.bind(this);
+    this.toggleDarkMode = this.toggleDarkMode.bind(this)
+    this.updateDarkMode = this.updateDarkMode.bind(this)
   }
   componentDidMount() {
     let storedDarkMode = false;
-    const darkQuery = window.matchMedia('prefers-color-scheme: dark)');
+    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
     if (localStorage.getItem('darkMode') === null) {
-      storedDarkMode = window.matchMedia && darkQuery.matches;
+      console.log('darkmodenotexist')
+      storedDarkMode = darkQuery.matches === 'true';
     } else {
-      storedDarkMode = localStorage.getItem('darkMode') === 'true';
+      storedDarkMode = localStorage.getItem('darkMode');
     }
 
-    darkQuery.addEventListener('change', function (event) {
-      if (event.matches && this.state.darkMode === true) return;
-      if (!event.matches && this.state.darkMode === false) return;
-      this.toggleDarkMode();
-    });
-
+    darkQuery.addEventListener('change', this.updateDarkMode);
     this.setState({ darkMode: storedDarkMode })
+  }
+
+  updateDarkMode(event) {
+    if (event.matches && this.state.darkMode === true) return;
+    if (!event.matches && this.state.darkMode === false) return;
+    this.toggleDarkMode();
   }
 
   toggleDarkMode() {
