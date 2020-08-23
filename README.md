@@ -121,69 +121,10 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 
 ## Contributing and Communication
 
-- Make a pull request on the `develop` branch. [Guidelines](#Pull-Request-Guidelines)
-- Open an issue
-- Message an admin
-- Join us on Discord: https://discord.gg/bU6E9Xj
-- [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url) to keep our dev servers running
+Currently, Pogify is open to contributors but please note that Pogify is stil in its infancy and undergoing rapid development which means we will not be assigning particular tasks to non-maintainers. This also means that we may be liable to reject pull requests that cause **major** conflicts with a mainatiner's local repository. Due to this, please first discuss the change you may wish to make via Github issue or with someone with the Developer role on our [Discord](https://discord.gg/bU6E9Xj) before making a change. With that said, do not be afraid to make a pull request if you have already gotten approval from a maintainer! Pogify is also looking for potential contributors with skills that extend beyond code. If you think you have skills that could be of any benefit to Pogify, please do reach out to us on our [Discord server](https://discord.gg/bU6E9Xj)!
 
-### Set up for local development
-
-#### If you have difficulty setting up the environment, do _not_ open an issue. Message one of the admins or ask for help on the [discord server](https://discord.gg/bU6E9Xj).
-
-0. We use yarn for _this_ repo (`pogify-functions` uses npm); install yarn with
-
-   `npm i -g yarn`
-
-1. Clone this repo
-2. Clone [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
-3. Get a [spotify api client id](https://developer.spotify.com/dashboard/applications)
-4. make sure you configure the auth redirect correctly. The redirect for the app is `http://localhost:{PORT}/auth` where port is the port of the create-react-app dev server (default: 3000).
-5. cd into the `pogify-functions` repo
-6. Install [firebase-cli](https://firebase.google.com/docs/cli)
-7. `firebase init` and follow the instructions.
-
-   - Project only requires emulators for functions and database
-   - Select `Don't set up a default project` when prompted with project setup options.
-   - Designate `TypeScript` as the language for cloud functions.
-   - DO _NOT_ overwrite any existing files.
-   - _DO_ install dependencies.
-
-8) cd into `pogify-functions/functions` folder and run `npm run build`
-9) In the same folder, declare env vars in `.runtimeconfig.json`
-
-   ```json
-   {
-     "jwt": {
-       "secret": "anysecretyoudlike"
-     }
-   }
-   ```
-
-10) `firebase --project=any-name emulators:start` and note the host, port and region of the emulated functions (eg. "localhost:5001/any-name/us-central1").
-    ![Emulator Endoint example](./img/emulator-endpoint-example.png)
-
-11) cd into the `pogify` repo and install dependencies with `yarn install`
-
-12) Declare the following env var in .env or .env.development.local, where host, port, and region are the host, port, and region of the functions emulator endpoint, 'any-name' is consistent with the project name you used in step 9, and spotify_client_id is consistent with the one obtained in step 3.
-
-```
-  REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL=http://{host}:{port}/any-name/{region}
-  REACT_APP_SUB=https://messages.pogify.net
-  REACT_APP_SPOTIFY_CLIENT_ID=the-client-id-you-got-in-step-3
-```
-
-- messages.pogify.net is the current production endpoint for subscribing to events. It's ok to use this endpoint for dev.
-
-11. Make sure `pogify-functions` firebase emulators are running and `yarn start` to start the react dev servers.
-
-If everything is done right you should have a functioning dev environment.
-
-##### A couple notes:
-
-- Hosting a session from localhost will not push any events to production.
-- If you click `join a session`, you will be stuck on the 'waiting for host' modal unless theres an active session.
-- Missing any one step will throw an error. make sure not to make a mistake
+The above paragraph is verbatim from the [Contributing Guidelines](https://github.com/Pogify/pogify/blob/master/CONTRIBUTING.md) which all contributors must read before attempting to contribute!
+All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md).
 
 ## Todo List
 
@@ -191,14 +132,6 @@ If everything is done right you should have a functioning dev environment.
 - [ ] code comments
 - [ ] tests
 - [ ] debouncer for client events (would fix no. 15 of Known Issues)
-
-## Pull Request Guidelines
-
-1. Only pull requests to the development branch will be honored.
-2. Explain what you did and how.
-3. If its a new feature, explain what it is.
-4. Add a screen shot if applicable.
-5. As it stands, pull requests that modify core components will not be honored. (unless otherwise discussed with maintainers).
 
 ## Related Repos
 
