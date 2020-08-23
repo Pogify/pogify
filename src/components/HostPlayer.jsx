@@ -60,6 +60,7 @@ export default class HostPlayer extends React.Component {
     this.player.on("player_state_changed", (data) => {
       console.log(data);
       if (this.state.psoCounter && !data) {
+        // player has been played, but no data is coming from spotify
         // push disconnect update
         this.publishUpdate("", this.state.position, false);
 
@@ -69,7 +70,6 @@ export default class HostPlayer extends React.Component {
         );
       }
       if (data) {
-        console.log("alksdfe", data);
         this.setState({
           playbackStateObj: data,
           position: data.position,
@@ -160,6 +160,8 @@ export default class HostPlayer extends React.Component {
   }
 
   componentWillUnmount() {
+    this.player.removeListener("player_state_changed")
+    // remove player_state_changed listener on unmount
     this.publishUpdate("", this.state.position, false);
     window.onbeforeunload = null;
     this.player.disconnect();
