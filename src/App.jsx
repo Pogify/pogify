@@ -11,7 +11,6 @@ import {
   FourOhFour,
 } from "./routes";
 import "./styles/App.css";
-import { Layout } from "./layouts";
 
 function App() {
   return (
