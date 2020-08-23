@@ -95,4 +95,32 @@ Congratulations, you should now be running a local environment for the backend o
 4. Change directory `cd` into the `pogify` repo.
 5. Run `yarn start`.
 
-**Thanks for contributing to Pogify! We can't wait to see what you do with it!**
+## Naming Scheme Conventions
+
+- React components are PascalCased
+- non React js files are camelCased
+- folders are hyphen-cased
+- test files are cased according to the file that the test runs
+- CSS files are PascalCased
+  - Note: we are transitioning away from separate CSS files as well as inline styles for styled components. Please refrain from using either separate CSS files or inline
+
+## Directory structure
+
+- `/src` all source files
+  - `/src/routes` components that react-router
+  - `/src/components` other components
+  - `/src/layouts` layout related HOCs
+  - `/src/modals` modal components
+  - `/src/stores` mobx stores
+  - `/src/context` contexts
+  - `/src/hooks` react hooks
+  - `/src/styles` CSS files for component styling
+    - Note: avoid writing CSS files and use styled-components instead
+  - `/src/utils` utility functions
+- `/__tests__` all tests
+  - `__tests__/unit` unit tests
+  - `__tests__/integration` integration tests
+- `/__mocks__` test mocks
+- `/__utils__` test utils
+
+## **Thanks for contributing to Pogify! We can't wait to see what you do with it!**
