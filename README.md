@@ -84,8 +84,9 @@ Pogify does not collect and store any of the metadata from its hosts beyond the 
 Pogify uses Google Firebase's Authentication service to use its anonymous sign in method to enforce api rate limits. Pogify does not use anonymous sign in for any other use.
 
 ## Associated Repos
+
 - ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
-  - Pogify's Google Firebase Cloud functions repo 
+  - Pogify's Google Firebase Cloud functions repo
 
 ## Known Issues / Limitations
 
@@ -137,9 +138,10 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 1. Clone this repo
 2. Clone [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
 3. Get a [spotify api client id](https://developer.spotify.com/dashboard/applications)
-4. cd into the `pogify-functions` repo
-5. Install [firebase-cli](https://firebase.google.com/docs/cli)
-6. `firebase init` and follow the instructions.
+4. make sure you configure the auth redirect correctly. The redirect for the app is `http://localhost:{PORT}/auth` where port is the port of the create-react-app dev server (default: 3000).
+5. cd into the `pogify-functions` repo
+6. Install [firebase-cli](https://firebase.google.com/docs/cli)
+7. `firebase init` and follow the instructions.
 
    - Project only requires emulators for functions and database
    - Select `Don't set up a default project` when prompted with project setup options.
@@ -147,7 +149,8 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    - DO _NOT_ overwrite any existing files.
    - _DO_ install dependencies.
 
-7. Declare env vars in `.runtimeconfig.json`
+8) cd into `pogify-functions/functions` folder and run `npm run build`
+9) In the same folder, declare env vars in `.runtimeconfig.json`
 
    ```json
    {
@@ -157,17 +160,17 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    }
    ```
 
-8. cd into `pogify-functions/functions` folder and run `npm run build`
-9. `firebase --project=any-name emulators:start` and note the host, port and region of the emulated functions (eg. "localhost:5001/any-name/us-central1").
-   ![Emulator Endoint example](./img/emulator-endpoint-example.png)
+10) `firebase --project=any-name emulators:start` and note the host, port and region of the emulated functions (eg. "localhost:5001/any-name/us-central1").
+    ![Emulator Endoint example](./img/emulator-endpoint-example.png)
 
-10. cd into the `pogify` repo and install dependencies with `yarn install`
+11) cd into the `pogify` repo and install dependencies with `yarn install`
 
-11. Declare the following env var in .env or .env.development.local, where host, port, and region are the host, port, and region of the functions emulator endpoint and 'any-name' is consistent with the project name you used in step 9.
+12) Declare the following env var in .env or .env.development.local, where host, port, and region are the host, port, and region of the functions emulator endpoint, 'any-name' is consistent with the project name you used in step 9, and spotify_client_id is consistent with the one obtained in step 3.
 
 ```
-  REACT_APP_CLOUD_FUNCTION_BASE_URL=http://{host}:{port}/any-name/{region}
+  REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL=http://{host}:{port}/any-name/{region}
   REACT_APP_SUB=https://messages.pogify.net
+  REACT_APP_SPOTIFY_CLIENT_ID=the-client-id-you-got-in-step-3
 ```
 
 - messages.pogify.net is the current production endpoint for subscribing to events. It's ok to use this endpoint for dev.
@@ -178,8 +181,9 @@ If everything is done right you should have a functioning dev environment.
 
 ##### A couple notes:
 
-- Hosting a session from localhost will not push any events to production
+- Hosting a session from localhost will not push any events to production.
 - If you click `join a session`, you will be stuck on the 'waiting for host' modal unless theres an active session.
+- Missing any one step will throw an error. make sure not to make a mistake
 
 ## Todo List
 
