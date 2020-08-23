@@ -15,7 +15,7 @@ If you are looking to help with UI/UX, please note that we do not have a style g
 5. As it stands, pull requests that modify core components will not be honored. (unless otherwise discussed with maintainers, as above).
 
 ## Set up a local development environment
-**Refer to 'Starting up a local development environment' if you have already set up a local development environment**
+**Refer to '[Starting up a local development environment](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md#starting-up-a-local-development-environment)' if you have already set up a local development environment**
 
 **If you have difficulty setting up this environment, do *not* open an issue. Message one of the admins or ask for help on this [Discord server](https://discord.gg/bU6E9Xj).**
 
@@ -77,7 +77,7 @@ Congratulations, you should now be running a local environment for the frontend 
 - If you click `join a session`, you will be stuck on the 'waiting for host' modal unless there is an active sesion w/ a host. (We are working on something so people can develop the listener player with 2 accounts.)
 
 ## Starting up a local development environment
-**Refer to 'Setting up a local development environment' if you have not yet set up a local development environment with the instructions provided above.**
+**Refer to '[Set up a local development environment](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md#set-up-a-local-development-environment)' if you have not yet set up a local development environment with the instructions provided above.**
 **If you have difficulty starting up your environments, do *not* open an issue. Message one of the admins or ask for help on the [discord server](https://discord.gg/bU6E9Xj).**
 
 1. Change directory `cd` into the `pogify-functions` repo.
