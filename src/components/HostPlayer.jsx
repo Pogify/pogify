@@ -209,7 +209,7 @@ export default class HostPlayer extends React.Component {
 
     return (
       <Layout>
-        <div style={{display: 'flex', alignItems: 'center'}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Player
             uri={{ title: titleURI, album: albumURI }}
             position={position / 1000}
@@ -231,15 +231,29 @@ export default class HostPlayer extends React.Component {
             }}
           >
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{textAlign: "justify"}}>You can continue using Spotify as you normally would. The music is playing through this browser tab, you can open this tab in a new window to exclude it from OBS.<b> Please do not close this tab.</b></p>
-          <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
-          {window.location.href}</p>
-          <p style={{marginBottom: 0}}>Playback powered by</p>
-          <a href="https://www.spotify.com">
-            <img alt="Spotify Logo" width="80px" height="24px" style={{verticalAlign: "middle", padding: 12}} src="/spotify-logo-green.png"/>
-          </a>
-          <Donations />
-        </div>
+            <p style={{ textAlign: "justify" }}>
+              You can continue using Spotify as you normally would. The music is
+              playing through this browser tab, you can open this tab in a new
+              window to exclude it from OBS.
+              <b> Please do not close this tab.</b>
+            </p>
+            <p style={{ marginTop: 40 }}>
+              Share the url below to listen with others:
+              <br />
+              {window.location.href}
+            </p>
+            <p style={{ marginBottom: 0 }}>Playback powered by</p>
+            <a href="https://www.spotify.com">
+              <img
+                alt="Spotify Logo"
+                width="80px"
+                height="24px"
+                style={{ verticalAlign: "middle", padding: 12 }}
+                src="/spotify-logo-green.png"
+              />
+            </a>
+            <Donations />
+          </div>
         </div>
       </Layout>
     );
