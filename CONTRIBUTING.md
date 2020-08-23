@@ -15,17 +15,20 @@ If you are looking to help with UI/UX, please note that we do not have a style g
 5. As it stands, pull requests that modify core components will not be honored. (unless otherwise discussed with maintainers, as above).
 
 ## Set up a local development environment
+
 **Refer to '[Starting up a local development environment](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md#starting-up-a-local-development-environment)' if you have already set up a local development environment**
 
-**If you have difficulty setting up this environment, do *not* open an issue. Message one of the admins or ask for help on this [Discord server](https://discord.gg/bU6E9Xj).**
+**If you have difficulty setting up this environment, do _not_ open an issue. Message one of the admins or ask for help on this [Discord server](https://discord.gg/bU6E9Xj).**
 
 ### Prerequisites
+
 - Git ([Windows](https://git-scm.com/download/win) | [MacOS](https://git-scm.com/download/mac) | [Linux](https://git-scm.com/download/linux))
 - Node.js 10+ & NPM 6+ ([Windows, MacOS, and Linux](https://nodejs.org/en/download))
 - Yarn (`npm i -g yarn` or [Yarn's Website](https://classic.yarnpkg.com/en/docs/install/))
 - A [Spotify API Client ID](https://developer.spotify.com/dashboard/applications) (In doing so, please ensure you configure the auth redirect correctly. The redirect for the app is `http://localhost:{PORT}/auth` where port is the port of the create-react-app dev server (default: 3000).
 
 ### Setting up the backend
+
 1. Clone [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions). (`git clone https://github.com/Pogify/pogify-functions.git`)
 2. Change directory `cd` into the newly created `pogify-functions` repo
 3. Install the standalone Firebase CLI from [their website](https://firebase.google.com/docs/cli) or, install the firebase command globally with `npm i -g firebase-tools`
@@ -48,6 +51,7 @@ If you are looking to help with UI/UX, please note that we do not have a style g
        "secret": "anysecretyoudlike"
      }
    }
+   ```
 6. Change directory `cd` into the `functions` folder within the repo and run `npm run build`.
 7. Run `firebase --project=any-name emulators:start` and note the URL of the emulated functions. (e.g. "localhost:5001/any-name/us-central1")
    ![Emulator Endpoint Example](./img/emulator-endpoint-example.png)
@@ -56,6 +60,7 @@ If you are looking to help with UI/UX, please note that we do not have a style g
 Congratulations, you should now be running a local environment for the backend of Pogify!
 
 ### Setting up the frontend
+
 1. Clone this repo (`git clone https://github.com/Pogify/pogify.git`)
 2. Switch to the `develop` branch (`git checkout develop`)
 2. Change directory `cd` to the newly created `pogify` repo and install dependencies with `yarn install`.
@@ -70,23 +75,23 @@ Congratulations, you should now be running a local environment for the backend o
 
 4. Make sure `pogify-functions` firebase emulators are running (If not, follow the above backend setup!)
 5. Run `yarn start`.
-Congratulations, you should now be running a local environment for the frontend of Pogify!
-
+   Congratulations, you should now be running a local environment for the frontend of Pogify!
 
 ###### A couple notes:
-- Sessions hosted from local environments cannot be joined from the pogify.net service and vice versa.
+- Sessions hosted from local environments cannot be joined from the pogify.net production deployment.
+- Sessions hosted on a pogify.net production deployment can be joined from a local environment.
 - Missing any one step wil throw an error. Be sure to read each and every single instruction carefully.
 - If you click `join a session`, you will be stuck on the 'waiting for host' modal unless there is an active sesion w/ a host. (We are working on something so people can develop the listener player with 2 accounts.)
 
 ## Starting up a local development environment
+
 **Refer to '[Set up a local development environment](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md#set-up-a-local-development-environment)' if you have not yet set up a local development environment with the instructions provided above.**
-**If you have difficulty starting up your environments, do *not* open an issue. Message one of the admins or ask for help on the [discord server](https://discord.gg/bU6E9Xj).**
+**If you have difficulty starting up your environments, do _not_ open an issue. Message one of the admins or ask for help on the [discord server](https://discord.gg/bU6E9Xj).**
 
 1. Change directory `cd` into the `pogify-functions` repo.
 2. Run `firebase --project=any-name emulators:start` and note the URL of the emulated functions (e.g. "localhost:5001/any-name/us-central1") and leave the window running.
 3. If the URL of the emulated functions does not match the one in your `.env` or `.env.development.local` file, change the file.
 4. Change directory `cd` into the `pogify` repo.
 5. Run `yarn start`.
-
 
 **Thanks for contributing to Pogify! We can't wait to see what you do with it!**
