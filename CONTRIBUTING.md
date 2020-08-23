@@ -58,7 +58,7 @@ Congratulations, you should now be running a local environment for the backend o
 1. Clone this repo (`git clone https://github.com/Pogify/pogify.git`)
 2. Switch to the `develop` branch (`git checkout develop`)
 2. Change directory `cd` to the newly created `pogify` repo and install dependencies with `yarn install`.
-3. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from step 8 of the backend setup or step 3 of the startup instructions) and {CLIENT_ID} with your Spotify API Client ID.
+3. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from your Firebase CLI window) and {CLIENT_ID} with your Spotify API Client ID.
    ```
      REACT_APP_SUB=https://messages.pogify.net
      REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL={URL}
