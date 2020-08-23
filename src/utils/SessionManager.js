@@ -14,15 +14,10 @@ var firebaseConfig = {
 // ???: we can avoid all of this rewriting stuff if we use client sdk for endpoint.
 // would make dev toggle easier b/c would be using firebase.function dev toggle but idk if can initialize
 // without proper firebaseConfig.
-let cloudFunctionBaseURL =
-  "https://us-central1-pogify-database.cloudfunctions.net";
+let cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL;
 
 if (process.env.NODE_ENV === "development") {
-  console.log(
-    process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL,
-    urlJoin(process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL, "/refreshToken")
-  );
-  cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL;
+  cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL;
 }
 
 var cloudFunctions = {

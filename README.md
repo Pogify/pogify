@@ -55,7 +55,7 @@ Pogify does **NOT** stream audio from the host of a listening session. Instead, 
 - Nginx
   - with [push_stream_module](https://github.com/wandenberg/nginx-push-stream-module)
     - module enables us to handle 60k connections on one VPS (single core, 1GB).
-- Google Firebase 
+- Google Firebase
   - Realtime Database & Authentication
     - uses anonymous sign in and the realtime database to implement a rate limiter for cloud functions
   - Cloud Functions
@@ -84,8 +84,9 @@ Pogify does not collect and store any of the metadata from its hosts beyond the 
 Pogify uses Google Firebase's Authentication service to use its anonymous sign in method to enforce api rate limits. Pogify does not use anonymous sign in for any other use.
 
 ## Associated Repos
+
 - ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
-  - Pogify's Google Firebase Cloud functions repo 
+  - Pogify's Google Firebase Cloud functions repo
 
 ## Known Issues / Limitations
 
@@ -167,7 +168,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 12) Declare the following env var in .env or .env.development.local, where host, port, and region are the host, port, and region of the functions emulator endpoint, 'any-name' is consistent with the project name you used in step 9, and spotify_client_id is consistent with the one obtained in step 3.
 
 ```
-  REACT_APP_CLOUD_FUNCTION_BASE_URL=http://{host}:{port}/any-name/{region}
+  REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL=http://{host}:{port}/any-name/{region}
   REACT_APP_SUB=https://messages.pogify.net
   REACT_APP_SPOTIFY_CLIENT_ID=the-client-id-you-got-in-step-3
 ```

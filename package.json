@@ -27,7 +27,7 @@
     "url-join": "^4.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3006 react-scripts start",
     "start-build": "node index.js",
     "build": "react-scripts build && cp build/index.html build/404.html",
     "test": "react-scripts test",
@@ -35,7 +35,6 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "proxy": "https://spotify-together-1.herokuapp.com/",
   "eslintConfig": {
     "extends": "react-app"
   },
