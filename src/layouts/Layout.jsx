@@ -33,5 +33,4 @@ const Layout = ({children}) => {
   )
 }
 
-
 export default observer(Layout)
