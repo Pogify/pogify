@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../styles/Layout.css";
 
 export default class Layout extends React.Component {
@@ -47,16 +49,16 @@ export default class Layout extends React.Component {
 
     return (
       <div className="layout">
+        <button onClick={this.toggleDarkMode} className={"mode-toggle"} id={"colourToggle"}>{darkMode ? <FontAwesomeIcon icon={faSun} size="5x" style={{ color: '#222222' }}/> : <FontAwesomeIcon icon={faMoon} size="5x"/>}</button>
         <div className={contentClass}>
           {this.props.children}
         </div>
         <footer className="footer">
           ©{" "}
-          <a href="https://www.pogify.net/">Pogify</a>{" "}|{" "}
-          <Link to="/tou">Terms of Use</Link>{" "}|{" "}
-          <Link to="/privacy">Privacy Policy</Link>{" "}|{" "}
-          <button onClick={this.toggleDarkMode} className={"mode-toggle"}>Switch to {darkMode ? 'Light' : 'Dark'} Mode!</button>
-          <br />
+          <a href="https://www.pogify.net/">Pogify</a> |&nbsp;
+          <Link to="/tou">Terms of Use</Link> |&nbsp;
+          <Link to="/privacy">Privacy Policy</Link>
+          <br/>
           <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB and is not affiliated with Pogify.
         </footer>
 
