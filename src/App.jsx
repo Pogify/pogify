@@ -1,7 +1,7 @@
 import React from "react";
 import { Privacy } from "./routes/Privacy";
 import { Terms } from "./routes/Terms";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   AuthRedirect,
   Room,
