@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Catamaran&display=swap');
+
 .layout {
   height: 100vh;
   width: 100vw;
@@ -8,10 +10,18 @@
   overflow: hidden;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Catamaran", sans-serif;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+}
+
 .content {
   transition: background-color 0.5s, color 0.5s;
-  background-color: white;
-  color: #222222;
+  background-color: #FFFCF2;
+  color: #252422;
   padding: 2rem;
   border-radius: 12.5px;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
@@ -22,13 +32,17 @@
 
 .content button {
   cursor: pointer;
-  border: 1px solid #2c3a3a;
-  padding: 5px 10px;
-  border-radius: 12px;
+  padding: 0.75rem 2rem;
+  border-radius: 500px;
   cursor: pointer;
   transition: box-shadow 0.3s;
+  border: none;
   margin: 5px;
-  background-color: white;
+  background-color: #eb5e28;
+  outline: none;
+  color: white;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
 }
 
 .content button:hover {
@@ -43,15 +57,12 @@
 }
 
 .darkContent {
-  background-color: #222222;
-  color: white;
+  background-color: #252422;
+  color: #FFFCF2;
 }
 
 .darkContent button {
-  transition: background-color 0.5s, border-color 0.5s, color 0.5s;
-  border-color: white;
-  background-color: #222222;
-  color: white;
+  color: #FFFCF2;
 }
 
 .footer {
