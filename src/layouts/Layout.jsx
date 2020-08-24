@@ -18,13 +18,13 @@ const Layout = ({children}) => {
 
   return (
       <div className="layout">
-        <button onClick={toggleTheme} className={"mode-toggle"} id={"colourToggle"}><FontAwesomeIcon icon={darkMode ? faSun : faMoon} size="5x" style={{ color: darkMode ? '#ffffff' : '#222222' }}/></button>
+        <button onClick={toggleTheme} className={"mode-toggle"}><FontAwesomeIcon icon={darkMode ? faSun : faMoon} size="3x" style={{ color: darkMode ? '#ffffff' : '#222222' }}/></button>
         <div className={contentClass}>{children}</div>
         <footer className="footer">
           © <a href="https://www.pogify.net/">Pogify</a> |&nbsp;
           <Link to="/tou">Terms of Use</Link> |&nbsp;
           <Link to="/privacy">Privacy Policy</Link>
-          <br />
+          <br/>
           <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB
           and is not affiliated with Pogify.
         </footer>
