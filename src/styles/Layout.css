@@ -57,7 +57,7 @@
 .footer {
   position: absolute;
   bottom: 0;
-  height: 42px;
+  height: 47px;
   text-align: center;
 }
 
@@ -70,13 +70,8 @@
   color: inherit;
   border: none;
   padding: 0;
-  font: inherit;
   cursor: pointer;
   outline: inherit;
-  text-decoration: underline;
-}
-
-#colourToggle{
   position:absolute;
   right: 20px;
   top: 20px;
