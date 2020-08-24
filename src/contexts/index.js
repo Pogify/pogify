@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeStore } from "../stores";
+import { ThemeStore, ModalStore } from "../stores";
 import { useLocalStore } from "mobx-react";
 
 export const storesContext = React.createContext(null);
@@ -7,6 +7,7 @@ export const storesContext = React.createContext(null);
 export const createStores = () => {
   return {
     themeStore: new ThemeStore(),
+    modalStore: new ModalStore(),
   };
 };
 
