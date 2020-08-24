@@ -37,6 +37,7 @@ export const ConnectToSession = () => {
             placeholder="Code"
             onChange={(e) => setCode(e.target.value)}
             style={{}}
+            required
           />
         </div>
         <div>
