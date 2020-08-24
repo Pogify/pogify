@@ -117,10 +117,11 @@ Congratulations, you should now be running a local environment for the backend o
   - `/src/styles` CSS files for component styling
     - Note: avoid writing CSS files and use styled-components instead
   - `/src/utils` utility functions
-- `/__tests__` all tests
-  - `__tests__/unit` unit tests
-  - `__tests__/integration` integration tests
-- `/__mocks__` test mocks
-- `/__utils__` test utils
+- `src/__tests__` all tests
+  - `src/__tests__/unit` unit tests
+    - follows structure of src files
+  - `src/__tests__/integration` integration tests
+- `src/__mocks__` test mocks
+- `src/__utils__` test utils
 
 ## **Thanks for contributing to Pogify! We can't wait to see what you do with it!**
