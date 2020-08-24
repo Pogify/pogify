@@ -114,8 +114,9 @@ Congratulations, you should now be running a local environment for the backend o
   - `/src/stores` mobx stores
   - `/src/context` contexts
   - `/src/hooks` react hooks
-  - `/src/styles` CSS files for component styling
+  - `/src/styles` CSS files for component styling or reused style wrappers (ie styled-component)
     - Note: avoid writing CSS files and use styled-components instead
+    - styled-components should be named with the extension .style.jsx
   - `/src/utils` utility functions
 - `src/__tests__` all tests
   - `src/__tests__/unit` unit tests
