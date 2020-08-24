@@ -28,7 +28,7 @@ export const ModalSystem = observer(() => {
   let {modalStore, themeStore} = useStores()
 
   if (modalStore.current) {
-    return <ModalDiv theme={themeStore.theme}><modalStore.current /></ModalDiv>
+    return <ModalDiv theme={themeStore.theme}>{modalStore.current}</ModalDiv>
 
   } else {
     return <div></div> 

@@ -12,11 +12,11 @@ The modal system is implemented using mobx.
    - arguments passed into closeModal will then be passed to the callback function.
 2. queue it on the modal store with the `queue` method
    - queue method takes three params
-     - `modal`: a jsx.
-       - not a called jsx element
-       - ie. `Component` not `<Component />`
+     - `modal`: a jsx element
+       - ie. `<Component />`
      - `timeout`: optional number
        - how long to persist the modal
+       - passing `0` or undefined will keep the modal open indefinitely.
      - `callback`: optional function
        - function to call when modal is closed
        - callback will be called with the args passed in from `closeModule`

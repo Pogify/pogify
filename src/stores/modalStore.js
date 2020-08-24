@@ -19,18 +19,19 @@ export class ModalStore {
     // if an item is shifted then show
     if (item) {
       // assign current modal to current property
+      // this.current = this.inject(<div>item.modal</div>);
       this.current = this.inject(item.modal);
       // if modal has timeout set it
+      // create method for callback
+      this.currentCallback = () => {
+        if (item.callback) {
+          this.currentCallback = null;
+          item.callback();
+        }
+        this.show();
+      };
+      // set the timeout for modal
       if (item.timeout) {
-        // create method for callback
-        this.currentCallback = () => {
-          if (item.callback) {
-            this.currentCallback = null;
-            item.callback();
-          }
-          this.show();
-        };
-        // set the timeout for modal
         this.currentTimeout = setTimeout(this.currentCallback, item.timeout);
       }
     } else {
@@ -44,7 +45,7 @@ export class ModalStore {
    *
    * If no modals are showing queued modal will show.
    *
-   * @param {JSX} modal JSXElement (not rendered)
+   * @param {JSX} modal JSXElement
    * @param {number} timeout
    * @param {Function} callback
    */
@@ -78,11 +79,15 @@ export class ModalStore {
    *
    * @param {JSX} Modal
    */
-  inject = (Modal) => (props) => {
-    if (props.closeModal) {
+  inject = (element) => {
+    if (element.props.closeModal) {
       console.error("modal has closeModal defined already, will be replaced");
     }
 
-    return <Modal {...props} closeModal={this.closeModal} />;
+    return React.cloneElement(
+      element,
+      { closeModal: this.closeModal },
+      element.children
+    );
   };
 }
