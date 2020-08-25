@@ -80,7 +80,7 @@ export default class ListenerPlayer extends React.Component {
         });
         return;
       }
-
+      let t0 = performance.now()
       this.setState(({lastTimestamp}) => {
         // if the incoming timestamp is older than the set timestamp, it is stale. ignore it
         if (timestamp < lastTimestamp) {
@@ -88,7 +88,7 @@ export default class ListenerPlayer extends React.Component {
         }
 
         // if this is playing connect calc position if is playing
-        let calcPos = playing ? position + Date.now() - timestamp : position;
+        let calcPos = playing ? position + Date.now() - timestamp + performance.now() - t0: position;
         return {
           lastTimestamp: timestamp,
           hostUri: uri,
