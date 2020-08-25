@@ -100,25 +100,29 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
    - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
 
-2. Listeners cannot play pause their local spotify
-3. Session member count is always 0.
-4. Listener Player will stutter.
-5. Listener player unexpectedly seek to beginning of track.
-6. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.
-7. ~~Volume Control is not good.~~
-8. 'Join Session' / 'Start session' buttons sometimes do not work
-9. Incomplete error handling
-10. Leftover console.logs
-11. No nav bar or alternative
-12. Sessions may timeout even if its active.
-13. ~~Navigating away from player screen shows an alert.~~
-14. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
-15. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
-16. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-17. Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off
-18. ~~there are no tests.~~ there is one test.
-19. sparse code commenting
-20. And probably many more I forgot about
+2. ~~Listeners cannot play pause their local spotify~~ Fixed by d09acac
+3. ~~Problem in firefox where there is excessive stuttering as a listener~~ Fixed by d09acac
+   - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
+   - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
+4. Session member count is always 0.
+5. ~~Listener Player will stutter.~~ Listener player stutters at end of a track.
+   - diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.
+6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
+7. ~~Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.~~ Fixed by d09acac
+8. ~~Volume Control is not good.~~ Fixed by f11b003
+9. 'Join Session' / 'Start session' buttons sometimes do not work
+10. Incomplete error handling
+11. Leftover console.logs
+12. No nav bar or alternative
+13. Sessions may timeout even if its active.
+14. ~~Navigating away from player screen shows an alert.~~
+15. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
+16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
+17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
+18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
+19. ~~there are no tests.~~ there are two tests.
+20. sparse code commenting
+21. And probably many more I forgot about
 
 ## Contributing and Communication
 
@@ -133,6 +137,8 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [ ] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
+- [ ] verified sessions
+  - [ ] twitch
 
 ## Related Repos
 

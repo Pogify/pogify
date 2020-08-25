@@ -8,19 +8,18 @@ import { Donations } from "./Donations";
 export default class ListenerPlayer extends React.Component {
   playReq = false;
   state = {
-    hostConnected: false,
-    subConnected: false,
-    spotConnected: false,
-    loading: true,
-    artists: [],
-    position: 0,
-    uri: "",
-    duration: 0,
     volume: 0.2,
-    playing: false,
-    title: "",
-    album: "",
-    connections: 0,
+    device_id: "",
+    loading: true,
+    lastTimestamp: 0,
+    subConnected: false,
+    hostUri: "",
+    hostConnected: false,
+    hostPlaying: false,
+    hostPosition: 0,
+    listenerUri: "",
+    listenerPosition: 0,
+    listenerPlaying: false,
   };
 
   play = (uri, pos_ms) => {
@@ -69,8 +68,7 @@ export default class ListenerPlayer extends React.Component {
     this.eventListener.onmessage = (event) => {
       console.log(event.data);
       let { timestamp, uri, position, playing } = JSON.parse(event.data);
-      console.log(event.data);
-      if (this.state.uri && !uri) {
+      if (this.state.hostUri && !uri) {
         this.setState({
           playing: false,
         });
@@ -82,24 +80,20 @@ export default class ListenerPlayer extends React.Component {
         });
         return;
       }
-
-      this.setState((prevState) => {
+      let t0 = performance.now()
+      this.setState(({lastTimestamp}) => {
         // if the incoming timestamp is older than the set timestamp, it is stale. ignore it
-        if (prevState.timestamp && timestamp < prevState.timestamp) {
+        if (timestamp < lastTimestamp) {
           return {};
         }
-        // if spotify is doing the divide by 1000 bug don't do anything
-        // if (Math.abs(prevState.timestamp / 1000 - timestamp) > 2) {
-        //   return {};
-        // }
 
         // if this is playing connect calc position if is playing
-        let calcPos = playing ? position + Date.now() - timestamp : position;
+        let calcPos = playing ? position + Date.now() - timestamp + performance.now() - t0: position;
         return {
-          timestamp,
-          uri,
-          position: calcPos,
-          playing,
+          lastTimestamp: timestamp,
+          hostUri: uri,
+          hostPosition: calcPos,
+          hostPlaying: playing,
           hostConnected: true,
         };
       });
@@ -113,44 +107,82 @@ export default class ListenerPlayer extends React.Component {
 
       this.setState({
         pso: data,
-        uri: data.uri,
-        position: data.position,
-        duration: data.duration,
+        listenerUri: data.track_window.current_track.uri,
+        listenerPosition: data.position,
       });
     });
   };
 
+
   async componentDidUpdate(_prevProps, prevState) {
     if (this.state.hostConnected && this.state.pso) {
-      if (this.state.playing !== !this.state.pso.paused) {
-        if (this.state.playing) {
-          this.player.resume();
-          if (!this.tick) {
-            this.tick = setInterval(() => {
-              this.setState({
-                position: this.state.position + 100,
-              });
-            }, 100);
-          }
-        } else {
-          clearInterval(this.tick);
-          delete this.tick;
-          this.player.pause();
-          this.setState({
-            pso: await this.player.getCurrentState(),
-          });
-        }
-      }
-      if (Math.abs(this.state.position - prevState.position) > 200) {
-        this.player.seek(this.state.position);
+
+      // if hostPosition and listenerPosition are far apart then seek to host Position
+      if (Math.abs(this.state.hostPosition - this.state.listenerPosition) > 200 && this.state.listenerPlaying) {
+        console.log("stutter",this.state.hostPosition, this.state.listenerPosition,this.state.hostPosition - this.state.listenerPosition)
+        this.setState(({hostPosition})=> {
+          this.player.seek(hostPosition)
+          this.l_p0 = hostPosition
+          this.l_t0 = performance.now()
+          this.h_p0 = hostPosition
+          this.h_t0 = performance.now()
+
+        })
       }
 
-      if (
-        (prevState.uri !== this.state.uri ||
-          this.state.uri !== this.state.pso.uri) &&
-        this.state.uri
-      ) {
-        this.play(this.state.uri, this.state.position);
+      // if host is paused           and listener is paused         but is player is playing then pause
+      if (!this.state.hostPlaying && !this.state.listenerPlaying && !this.state.pso.paused) {
+        this.player.pause()
+      }
+
+      // local var for if listener should play.
+      // since state doesn't change within function set a var and change it 
+      let shouldListenerPlay = this.state.listenerPlaying
+
+      // if  host starts playing then set tick
+      if (this.state.hostPlaying && !this.hostTick) {
+        // if listener is also playing then 
+        if (this.state.listenerPlaying) {
+          this.player.resume()
+        }
+        this.h_t0 = performance.now()
+        this.h_p0 = this.state.hostPosition
+        this.hostTick = setInterval(()=>{
+          window.requestAnimationFrame((time)=>{
+            this.setState({
+              hostPosition: time - this.h_t0 + this.h_p0
+            })
+          })
+        }, 100)
+      } else if (!this.state.hostPlaying) {
+        clearInterval(this.hostTick)
+        clearInterval(this.listenerTick)
+        this.player.pause()
+        shouldListenerPlay = false
+        this.hostTick = undefined
+        this.listenerTick = undefined
+      }
+
+      if (this.state.hostUri !== this.state.listenerUri) {
+        this.play(this.state.hostUri, this.state.hostPosition)
+      }
+
+      // if the listener is listening then set tick for listener
+      if (shouldListenerPlay && !this.listenerTick) {
+        this.player.resume()
+        this.l_t0 = performance.now()
+        this.l_p0 = this.state.listenerPosition
+        this.listenerTick = setInterval(()=>{
+          window.requestAnimationFrame(time=>{
+            this.setState({
+              listenerPosition: time - this.l_t0 + this.l_p0
+            })
+          })
+        }, 100)
+      } else if (!shouldListenerPlay) {
+        this.player.pause()
+        clearInterval(this.listenerTick)
+        this.listenerTick = undefined
       }
     }
   }
@@ -171,6 +203,7 @@ export default class ListenerPlayer extends React.Component {
     });
 
     this.player.connect().then(console.log);
+    window.player = this.player
   };
 
   componentWillUnmount() {
@@ -263,9 +296,9 @@ export default class ListenerPlayer extends React.Component {
         </Layout>
       );
     }
-    let { paused, duration } = this.state.pso;
+    let { duration } = this.state.pso;
     let volume = this.state.volume;
-    let position = this.state.position;
+    let position = this.state.listenerPosition;
     let coverArtURL = this.state.pso.track_window.current_track.album.images[0]
       .url;
     let {
@@ -289,11 +322,19 @@ export default class ListenerPlayer extends React.Component {
             album={album}
             title={title}
             artists={artists}
-            togglePlay={() => this.player.togglePlay()}
-            playing={!paused}
+            togglePlay={() => this.setState({
+              listenerPlaying: !this.state.listenerPlaying
+            })}
+            playing={this.state.listenerPlaying}
             volume={volume}
             changeVolume={this.changeVolume}
-          />
+          >
+            <div>
+              {!this.state.hostPlaying && "Paused by host"}
+              {this.state.hostPlaying && <div style={{height:"1rem"}}/>}
+            </div>
+          </Player>
+
           <div
             style={{
               width: 400,
