@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Catamaran&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 .layout {
   height: 100vh;
@@ -11,7 +11,7 @@
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Catamaran", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 p {
@@ -23,7 +23,7 @@ p {
   background-color: #FFFCF2;
   color: #252422;
   padding: 2rem;
-  border-radius: 12.5px;
+  border-radius: 20px;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
   max-width: 90%;
   max-height: 80%;
@@ -37,8 +37,7 @@ p {
   cursor: pointer;
   transition: box-shadow 0.3s;
   border: none;
-  margin: 5px;
-  background-color: #eb5e28;
+  background-color: #72a1e5;
   outline: none;
   color: white;
   font-family: "Roboto", sans-serif;
@@ -67,13 +66,27 @@ p {
 
 .footer {
   position: absolute;
-  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  bottom: 30px;
   height: 47px;
   text-align: center;
 }
 
 .footer a {
   color: white !important;
+}
+
+.footer-links {
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer-links a {
+  font-weight: bold;
+  text-decoration: none;
 }
 
 .mode-toggle {

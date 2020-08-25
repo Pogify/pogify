@@ -7,12 +7,14 @@ export class Home extends React.Component {
   render() {
     return (
       <Layout>
-        <h1 style={{textAlign: "center", fontSize: "5rem", letterSpacing: "5px", margin: 0}}>POGIFY</h1>
-        <h2 style={{textAlign: "center", marginTop: 0}}>What is Pogify?</h2>
-        <p style={{textAlign: "center"}}>Pogify is a website that allows you to listen to music with<br /> your live audience without getting DMCA-striked!</p>
-        <div style={{display: "flex", justifyContent: "space-evenly", marginTop: 24}}>
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "4.5rem"}}>
+          <img alt="Pogify Logo" src="/logo192.png" style={{height: "100%", marginRight: "20px"}}></img>
+          <h1 style={{textAlign: "center", fontSize: "3.5rem", fontWeight: "normal"}}>POGIFY</h1>
+        </div>
+        <p style={{textAlign: "center", fontSize: "1rem", margin: "2rem 0"}}>Listen to music with your live audience without getting DMCA-striked!</p>
+        <div style={{display: "flex", justifyContent: "space-around", width: "100%"}}>
         <Link to="/session">
-            <button style={{marginRight: 120 }}>
+            <button>
               Join a Session
             </button>
           </Link>
@@ -22,6 +24,11 @@ export class Home extends React.Component {
             </button>
           </Link>
         </div>
+        {/*<div style={{padding: "10px", backgroundColor: "#FFE8B3", display: "flex", borderRadius: 10, alignItems: "center"}}>
+          <p>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
+          <Donations />
+    </div>*/}
+        
       </Layout>
     );
   }
