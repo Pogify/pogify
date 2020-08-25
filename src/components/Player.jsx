@@ -116,6 +116,7 @@ export const Player = (props) => {
           {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
+      {props.children}
     </div>
   );
 };
