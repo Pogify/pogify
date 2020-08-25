@@ -7,10 +7,12 @@ import {
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
+import { secondsToTimeFormat } from '../utils/formatters'
 
 const InheritA = styled.a`
   color: inherit;
   text-decoration: inherit;
+  margin: 0 3px;
 
   &:hover {
     /* color: grey; */
@@ -117,20 +119,4 @@ export const Player = (props) => {
     </div>
   );
 };
-function secondsToTimeFormat(duration) {
-  // Hours, minutes and seconds
-  var hrs = ~~(duration / 3600);
-  var mins = ~~((duration % 3600) / 60);
-  var secs = ~~duration % 60;
 
-  // Output like "1:01" or "4:03:59" or "123:03:59"
-  var ret = "";
-
-  if (hrs > 0) {
-    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-  }
-
-  ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-  ret += "" + secs;
-  return ret;
-}

@@ -1,5 +1,5 @@
 import React from "react";
-import * as auth from "../utils/SpotifyAuth";
+import * as auth from "../utils/spotifyAuth";
 import axios from "axios";
 import { Player } from ".";
 import { Layout } from "../layouts";
@@ -280,7 +280,7 @@ export default class ListenerPlayer extends React.Component {
 
     return (
       <Layout>
-        <div style={{display: 'flex', alignItems: 'center'}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Player
             uri={{ title: titleURI, album: albumURI }}
             position={position / 1000}
@@ -302,15 +302,31 @@ export default class ListenerPlayer extends React.Component {
             }}
           >
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{textAlign: "justify"}}>You are listening to session: {this.props.sessionId}. Your playback is controlled by the host. Pressing pause will pause playback locally only. On resume, playback will resynchronise with the host. Controlling Spotify will not work ass long as you are connected to "Pogify Listener". The music is playing through the browser, <b> please do not close this tab.</b></p>
-          <p style={{marginTop: 40}}>Share the url below to listen with others:<br />
-          {window.location.href}</p>
-          <p style={{marginBottom: 5}}>Playback powered by</p>
-          <a href="https://www.spotify.com">
-            <img alt="Spotify Logo" width="80px" height="24px" style={{verticalAlign: "middle", padding: 12}} src="/spotify-logo-green.png"/>
-          </a>
-          <Donations />
-        </div>
+            <p style={{ textAlign: "justify" }}>
+              You are listening to session: {this.props.sessionId}. Your
+              playback is controlled by the host. Pressing pause will pause
+              playback locally only. On resume, playback will resynchronise with
+              the host. Controlling Spotify will not work ass long as you are
+              connected to "Pogify Listener". The music is playing through the
+              browser, <b> please do not close this tab.</b>
+            </p>
+            <p style={{ marginTop: 40 }}>
+              Share the url below to listen with others:
+              <br />
+              {window.location.href}
+            </p>
+            <p style={{ marginBottom: 5 }}>Playback powered by</p>
+            <a href="https://www.spotify.com">
+              <img
+                alt="Spotify Logo"
+                width="80px"
+                height="24px"
+                style={{ verticalAlign: "middle", padding: 12 }}
+                src="/spotify-logo-green.png"
+              />
+            </a>
+            <Donations />
+          </div>
         </div>
       </Layout>
     );
