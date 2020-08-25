@@ -133,6 +133,8 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [ ] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
+- [ ] verified sessions
+  - [ ] twitch
 
 ## Related Repos
 
