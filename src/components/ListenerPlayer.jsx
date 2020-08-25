@@ -118,13 +118,15 @@ export default class ListenerPlayer extends React.Component {
     if (this.state.hostConnected && this.state.pso) {
 
       // if hostPosition and listenerPosition are far apart then seek to host Position
-      if (Math.abs(this.state.hostPosition - this.state.listenerPosition) > 300 && this.state.listenerPlaying) {
-        console.log("stutter")
+      if (Math.abs(this.state.hostPosition - this.state.listenerPosition) > 200 && this.state.listenerPlaying) {
+        console.log("stutter",this.state.hostPosition, this.state.listenerPosition,this.state.hostPosition - this.state.listenerPosition)
         this.setState(({hostPosition})=> {
           this.player.seek(hostPosition)
-          return {
-            listenerPosition: hostPosition
-          }
+          this.l_p0 = hostPosition
+          this.l_t0 = performance.now()
+          this.h_p0 = hostPosition
+          this.h_t0 = performance.now()
+
         })
       }
 
@@ -143,11 +145,13 @@ export default class ListenerPlayer extends React.Component {
         if (this.state.listenerPlaying) {
           this.player.resume()
         }
+        this.h_t0 = performance.now()
+        this.h_p0 = this.state.hostPosition
         this.hostTick = setInterval(()=>{
-          this.setState(({hostPosition})=>{
-            return {
-              hostPosition: hostPosition + 100
-            }
+          window.requestAnimationFrame((time)=>{
+            this.setState({
+              hostPosition: time - this.h_t0 + this.h_p0
+            })
           })
         }, 100)
       } else if (!this.state.hostPlaying) {
@@ -163,15 +167,16 @@ export default class ListenerPlayer extends React.Component {
         this.play(this.state.hostUri, this.state.hostPosition)
       }
 
-
       // if the listener is listening then set tick for listener
       if (shouldListenerPlay && !this.listenerTick) {
         this.player.resume()
+        this.l_t0 = performance.now()
+        this.l_p0 = this.state.listenerPosition
         this.listenerTick = setInterval(()=>{
-          this.setState(({listenerPosition})=> {
-            return {
-              listenerPosition: listenerPosition + 100
-            }
+          window.requestAnimationFrame(time=>{
+            this.setState({
+              listenerPosition: time - this.l_t0 + this.l_p0
+            })
           })
         }, 100)
       } else if (!shouldListenerPlay) {
