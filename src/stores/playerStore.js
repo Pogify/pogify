@@ -151,7 +151,7 @@ export class PlayerStore {
         this.p0 = data.position;
         this.t0 = performance.now();
         this.uri = data.track_window.current_track.uri;
-        if (!host) {
+        if (!this.host) {
           if (this.playing !== !data.paused) {
             if (this.playing) {
               this.player.resume();
@@ -160,7 +160,11 @@ export class PlayerStore {
             }
           }
         } else {
-          this.playing = !data.paused;
+          if (!data.paused) {
+            this.resume();
+          } else {
+            this.pause();
+          }
         }
 
         this.data = data;
