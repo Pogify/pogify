@@ -4,7 +4,7 @@ import React from "react";
 /**
  * ModalStore manages state for the ModalSystem.
  */
-export class ModalStore {
+class ModalStore {
   constructor() {
     extendObservable(this, {
       current: undefined,
@@ -91,3 +91,5 @@ export class ModalStore {
     );
   };
 }
+
+export const modalStore = new ModalStore();

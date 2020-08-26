@@ -2,7 +2,7 @@ import { action, extendObservable } from "mobx";
 
 const AvailableThemes = ["light", "dark"];
 
-export class ThemeStore {
+class ThemeStore {
   theme = "light";
 
   constructor() {
@@ -35,3 +35,5 @@ export class ThemeStore {
     window.localStorage.setItem("theme", this.theme);
   });
 }
+
+export const themeStore = new ThemeStore();
