@@ -1,14 +1,19 @@
-import { extendObservable, action } from "mobx";
+import { extendObservable, action, reaction } from "mobx";
 import React from "react";
 
 /**
  * ModalStore manages state for the ModalSystem.
  */
 export class ModalStore {
-  constructor() {
+  constructor(messenger) {
+    this.messenger = messenger;
     extendObservable(this, {
       current: undefined,
       modalQueue: [],
+    });
+
+    this.messenger.on("POST_MODAL", (modal, timeout, callback) => {
+      this.queue(modal, timeout, callback);
     });
   }
 

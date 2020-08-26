@@ -1,9 +1,12 @@
 import { ModalStore } from "../../../stores";
 import React from "react";
+import EventEmitter from "events";
+
+let messenger = new EventEmitter();
 
 let modalStore;
 beforeEach(() => {
-  modalStore = new ModalStore();
+  modalStore = new ModalStore(messenger);
 });
 
 test("test observable properties exists", () => {

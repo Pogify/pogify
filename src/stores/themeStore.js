@@ -5,7 +5,8 @@ const AvailableThemes = ["light", "dark"];
 export class ThemeStore {
   theme = "light";
 
-  constructor() {
+  constructor(messenger) {
+    this.messenger = messenger;
     // get system default
     let systemDefault = window.matchMedia("(prefers-color-scheme: dark)")
       ? "dark"

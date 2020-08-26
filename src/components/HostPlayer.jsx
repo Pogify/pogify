@@ -5,27 +5,14 @@ import {debounce} from "../utils/debounce"
 import axios from "axios";
 import { Player, Donations } from ".";
 import { Layout } from "../layouts";
+import { storesContext } from "../contexts";
 
 
 export default class HostPlayer extends React.Component {
+  static contextType = storesContext
   state = {
-    position: 0,
-    duration: 0,
-    connected: false,
-    uri: "",
-    playing: false,
-    coverArtURL: "",
-    title: "",
-    artists: [],
-    album: "",
-    device_id: "",
-    volume: 0.2,
-    hostConnected: false,
-    loading: true,
-    connections: "∞",
-    viewPlayer: false,
-    psoCounter: 0,
-    session_token: "",
+    loading: false,
+    pso: undefined
   };
 
   setTokenRefreshInterval = () => {
@@ -41,73 +28,25 @@ export default class HostPlayer extends React.Component {
     SessionManager.publishUpdate(uri, position, playing);
   }
 
-  connect = () => {
-    this.player.addListener("ready", (e) => {
-      console.log(e);
-      this.connectToPlayer(e.device_id);
-      this.setTokenRefreshInterval();
-      console.log(window.sessionStorage.getItem("expires_at"));
 
-      this.setState({
-        device_id: e.device_id,
-        loggedIn: true,
-      });
-    });
-    this.player.connect();
-  };
-
-  initializePlayer = () => {
+  initializePlayer = async () => {
+    this.setState({
+      loading: true
+    })
     window.spotifyReady = true;
-    this.player = auth.getPlayer("Pogify Host");
+    await this.context.playerStore.initializePlayer("Pogify Host", true)
 
-
-    this.player.on("player_state_changed", debounce((data) => {
+    this.context.playerStore.player.on("player_state_changed", debounce((data) => {
     // debounce incoming data. 
-      if (this.state.psoCounter && !data) {
-        // player has been played, but no data is coming from spotify
-        // push disconnect update
-        this.publishUpdate("", this.state.position, false);
-
-        // show a modal and/or send a notification on disconnect
-        alert(
-          "Spotify disconnected. Check that you are connected to 'Pogify Host' on Spotify"
-        );
-      }
       if (data) {
-        this.setState({
-          playbackStateObj: data,
-          position: data.position,
-          psoCounter: this.state.psoCounter + 1,
-        });
+        this.publishUpdate(data.track_window.current_track.uri, data.position, !data.paused)
+      } else {
+        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri)
       }
       // it seems 300 is about a good sweet spot for debounce.
       // Hesitant to raise it anymore because it would increase latency to listener
     }, 300));
     this.setState({ loading: false });
-  };
-
-  connectToPlayer = (device_id) => {
-    return axios
-      .put(
-        `https://api.spotify.com/v1/me/player`,
-        {
-          device_ids: [device_id || this.state.device_id],
-          play: false,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${window.sessionStorage.getItem(
-              "access_token"
-            )}`,
-          },
-        }
-      )
-      .then(() => {
-        this.setState({
-          connected: true,
-        });
-      });
   };
 
   changeVolume = (e) => {
@@ -122,68 +61,32 @@ export default class HostPlayer extends React.Component {
       this.publishUpdate("", this.state.position, false);
     };
 
-    this.setState({
-      session_token: window.localStorage.getItem("pogify:token"),
-    });
-
-    if (window.spotifyReady) {
-      this.initializePlayer();
-    } else {
-      window.onSpotifyWebPlaybackSDKReady = this.initializePlayer;
-    }
-  }
-
-  componentDidUpdate(
-    _prevProps,
-    { playbackStateObj: pPSO, psoCounter: ppsoC }
-  ) {
-    if (!pPSO) {
-      return;
-    }
-
-    if (ppsoC !== this.state.psoCounter) {
-      let {
-        track_window: {
-          current_track: { uri },
-        },
-        position,
-        paused,
-      } = this.state.playbackStateObj;
-      this.publishUpdate(uri, position, !paused);
-
-      if (pPSO.paused !== paused) {
-        if (paused) {
-          clearInterval(this.tickInterval);
-        } else {
-          this.tickInterval = setInterval(() => {
-            this.setState({
-              position: this.state.position + 1000,
-            });
-          }, 1000);
-        }
-      }
-    }
   }
 
   componentWillUnmount() {
-    this.player.removeListener("player_state_changed")
+    this.context.playerStore.player.removeListener("player_state_changed")
     // remove player_state_changed listener on unmount
     this.publishUpdate("", this.state.position, false);
     window.onbeforeunload = null;
-    this.player.disconnect();
     clearInterval(this.refreshInterval);
   }
 
   render() {
-    if (Date.now() > window.sessionStorage.getItem("expires_at")) {
+    if (!window.localStorage.getItem("spotify:refresh_token")) {
       return (
         <Layout>
-          <button onClick={this.connect}>Login with Spotify</button>
+          <button onClick={this.initializePlayer}>Login with Spotify</button>
         </Layout>
       );
     }
 
-    if (this.state.loading) {
+    if (!this.context.playerStore.player) {
+      return <Layout>
+        <button onClick={this.initializePlayer}>Start Session</button>
+      </Layout>
+    }
+
+    if (this.state.loading && this.state.pso) {
       return (
         <Layout>
           <div>Loading</div>
@@ -191,46 +94,13 @@ export default class HostPlayer extends React.Component {
       );
     }
 
-    if (!this.state.playbackStateObj) {
-      return (
-        <Layout>
-          <button onClick={this.connect}>Start Session</button>
-        </Layout>
-      );
-    }
+    
 
-    let { paused, duration } = this.state.playbackStateObj;
-    let { volume } = this.state;
-    let position = this.state.position;
-    let coverArtURL = this.state.playbackStateObj.track_window.current_track
-      .album.images[0].url;
-    let {
-      name: album,
-      uri: albumURI,
-    } = this.state.playbackStateObj.track_window.current_track.album;
-    let artists = this.state.playbackStateObj.track_window.current_track
-      .artists;
-    let {
-      name: title,
-      uri: titleURI,
-    } = this.state.playbackStateObj.track_window.current_track;
-
+    // return <div>done</div>
     return (
       <Layout>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Player
-            uri={{ title: titleURI, album: albumURI }}
-            position={position / 1000}
-            duration={duration / 1000}
-            coverArtURL={coverArtURL}
-            album={album}
-            title={title}
-            artists={artists}
-            togglePlay={() => this.player.togglePlay()}
-            playing={!paused}
-            volume={volume}
-            changeVolume={this.changeVolume}
-          />
+          <Player />
           <div
             style={{
               width: 400,
