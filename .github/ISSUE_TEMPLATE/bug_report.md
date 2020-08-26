@@ -6,6 +6,9 @@ labels: ""
 assignees: ""
 ---
 
+**Do you understand that Pogify does not support Safari, Mobile, or Spotify Free at this time?**
+(Yes / No)
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
