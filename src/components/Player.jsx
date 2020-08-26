@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -8,6 +8,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import { secondsToTimeFormat } from '../utils/formatters'
+import { observer } from "mobx-react";
+import { useStores } from "../hooks/useStores";
 
 const InheritA = styled.a`
   color: inherit;
@@ -44,13 +46,32 @@ const output = (vol) => {
   return vol > 0 ? untransform(vol) : sig(vol);
 };
 
-export const Player = (props) => {
-  const setVolume = (e) => {
-    props.changeVolume({
-      target: {
-        value: output(parseFloat(e.target.value)),
+export const Player = observer((props) => {
+  const {playerStore} = useStores()
+
+  if (!Object.keys(playerStore.data).length) {
+    return <div></div>
+  }
+  
+  
+  const {
+    volume,
+    playing,
+    data: {
+      duration,
+      track_window: {
+        current_track
       },
-    });
+    },
+    player,
+    
+  } = playerStore
+
+
+
+  const setVolume = (e) => {
+    playerStore.setVolume( output(parseFloat(e.target.value)))
+
   };
 
   return (
@@ -69,33 +90,33 @@ export const Player = (props) => {
           overflow: "hidden",
         }}
       >
-        <img src={props.coverArtURL} alt={`Cover art for ${props.album}`} />
+        <img src={current_track.album.images[0].url} alt={`Cover art for ${current_track.album.name}`} />
       </div>
       <div style={{ paddingBottom: 10 }}>
         <h3>
-          <InheritA href={props.uri.title}>{props.title}</InheritA>
+          <InheritA href={current_track.uri}>{current_track.name}</InheritA>
         </h3>
-        {props.artists.map(({ name, uri }, i) => (
+        {current_track.artists.map(({ name, uri }, i) => (
           <InheritA href={uri} key={i}>
             {name}
           </InheritA>
         ))}{" "}
         <br />
-        <InheritA href={props.uri.album}>{props.album}</InheritA>
+        <InheritA href={current_track.album.uri}>{current_track.album.name}</InheritA>
       </div>
       <div>
-        {secondsToTimeFormat(props.position)}
+        {secondsToTimeFormat((playerStore.position)/1000)}
         <input
           style={{ width: "70%" }}
-          type="range"
+          type="range" 
           name="position"
           id="position"
-          value={props.position}
+          value={(playerStore.position)/1000}
           min={0}
-          max={props.duration}
+          max={duration/1000}
           readOnly
         />
-        {secondsToTimeFormat(props.duration)}
+        {secondsToTimeFormat(duration/1000)}
       </div>
       <div>
         <FAI icon={faVolumeMute} />
@@ -103,7 +124,7 @@ export const Player = (props) => {
           type="range"
           name="volume"
           id="volume"
-          value={input(parseFloat(props.volume))}
+          value={input(parseFloat(volume))}
           onChange={setVolume}
           min={-1}
           max={1}
@@ -112,12 +133,12 @@ export const Player = (props) => {
         <FAI icon={faVolumeUp} />
       </div>
       {!props.dontShow && (
-        <div style={{ cursor: "pointer" }} onClick={() => props.togglePlay()}>
-          {props.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+        <div style={{ cursor: "pointer" }} onClick={()=>playerStore.togglePlay()}>
+          {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
       {props.children}
     </div>
   );
-};
+})
 

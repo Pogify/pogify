@@ -2,10 +2,11 @@ import { action, extendObservable } from "mobx";
 
 const AvailableThemes = ["light", "dark"];
 
-class ThemeStore {
+export class ThemeStore {
   theme = "light";
 
-  constructor() {
+  constructor(messenger) {
+    this.messenger = messenger;
     // get system default
     let systemDefault = window.matchMedia("(prefers-color-scheme: dark)")
       ? "dark"
@@ -35,5 +36,3 @@ class ThemeStore {
     window.localStorage.setItem("theme", this.theme);
   });
 }
-
-export const themeStore = new ThemeStore();
