@@ -11,6 +11,7 @@ export class PlayerStore {
     this.messenger = messenger;
     this.tick = undefined;
     extendObservable(this, {
+      host: false,
       player: undefined,
       device_id: "",
       access_token: "",
@@ -88,14 +89,15 @@ export class PlayerStore {
     // this.t0 = t0 || performance.now();
   });
 
-  initializePlayer = action((title, connect = true) => {
+  initializePlayer = action((title, host = false, connect = true) => {
     return new Promise(async (resolve, reject) => {
       // if player is already connected set name then return
       if (this.player && this.player.setName) {
         await this.player.setName(title);
         resolve();
+        return;
       }
-
+      this.host = host;
       // if spotify is not ready then wait till ready then call this function
       if (!window.spotifyReady) {
         window.onSpotifyWebPlaybackSDKReady = () => {
@@ -149,12 +151,16 @@ export class PlayerStore {
         this.p0 = data.position;
         this.t0 = performance.now();
         this.uri = data.track_window.current_track.uri;
-        if (this.playing !== !data.paused) {
-          if (this.playing) {
-            this.player.resume();
-          } else {
-            this.player.pause();
+        if (!host) {
+          if (this.playing !== !data.paused) {
+            if (this.playing) {
+              this.player.resume();
+            } else {
+              this.player.pause();
+            }
           }
+        } else {
+          this.playing = !data.paused;
         }
 
         this.data = data;

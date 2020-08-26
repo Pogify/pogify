@@ -34,7 +34,7 @@ export default class HostPlayer extends React.Component {
       loading: true
     })
     window.spotifyReady = true;
-    await this.context.playerStore.initializePlayer("Pogify Host")
+    await this.context.playerStore.initializePlayer("Pogify Host", true)
 
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
     // debounce incoming data. 

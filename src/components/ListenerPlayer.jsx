@@ -138,7 +138,7 @@ export default class ListenerPlayer extends React.Component {
 
   connect = async () => {
     console.log("once");
-    await this.context.playerStore.initializePlayer("Pogify Listener")
+    await this.context.playerStore.initializePlayer("Pogify Listener", false)
     this.setListenerListeners();
     this.setState({
       spotConnected: true,
