@@ -116,13 +116,16 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 12. No nav bar or alternative
 13. Sessions may timeout even if its active.
 14. ~~Navigating away from player screen shows an alert.~~
-15. Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.
+15. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
 16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
 17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
 18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
-19. ~~there are no tests.~~ there are two tests.
-20. sparse code commenting
-21. And probably many more I forgot about
+19. Excessive skipping forward or backwards will break listener.
+    - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
+    - solution:
+20. ~~there are no tests.~~ there are two tests.
+21. sparse code commenting
+22. And probably many more I forgot about
 
 ## Contributing and Communication
 
@@ -139,6 +142,9 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
 - [ ] verified sessions
   - [ ] twitch
+- [ ] move all player (host and listener) logic into stores so that player can be used outside of `/session/{id}`.
+  - [x] player logic moved to mobx store.
+- [ ] readme `Fixed by {SHA}` should have proper links to commits.
 
 ## Related Repos
 
