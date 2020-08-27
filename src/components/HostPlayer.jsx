@@ -1,8 +1,6 @@
 import React from "react";
-import * as auth from "../utils/spotifyAuth";
 import * as SessionManager from "../utils/sessionManager";
 import {debounce} from "../utils/debounce"
-import axios from "axios";
 import { Player, Donations } from ".";
 import { Layout } from "../layouts";
 import { storesContext } from "../contexts";
@@ -41,7 +39,6 @@ export default class HostPlayer extends React.Component {
     // debounce incoming data. 
       let uri, position, playing
       if (data) {
-        // TODO: 
         uri = data.track_window.current_track.uri
         position = data.position
         playing = !data.paused
@@ -50,8 +47,7 @@ export default class HostPlayer extends React.Component {
           SessionManager.publishUpdate(uri, position, playing);
         } else {
           // if uri and playing didn't change then,
-          // TODO: check that difference is beyond threshold to update 
-          // ???: how to differentiate stutters from seek. 
+          // check that difference is beyond threshold to update 
           // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
           console.log(Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))), position,this.lastUpdate.position, (Date.now() - this.lastUpdate.time))
           if (Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))) > 1000) {
