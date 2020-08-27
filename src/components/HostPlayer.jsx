@@ -67,7 +67,7 @@ export default class HostPlayer extends React.Component {
       if (data) {
         this.publishUpdate(data.track_window.current_track.uri, data.position, !data.paused)
       } else {
-        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri, !data.paused)
+        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri, false)
       }
       // it seems 300 is about a good sweet spot for debounce.
       // Hesitant to raise it anymore because it would increase latency to listener
