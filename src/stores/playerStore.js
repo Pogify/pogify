@@ -153,6 +153,7 @@ export class PlayerStore {
           return;
         }
         this.uri = data.track_window.current_track.uri;
+        console.log(this.position.value, data);
         if (!this.host) {
           if (data.paused) {
             this.p0 = data.position;
