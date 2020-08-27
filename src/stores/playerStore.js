@@ -1,8 +1,6 @@
 import { extendObservable, action, computed } from "mobx";
 import Axios from "axios";
 import crypto from "crypto";
-import React from "react";
-import { secondsToTimeFormat } from "../utils/formatters";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";

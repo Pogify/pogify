@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -63,8 +63,7 @@ export const Player = observer((props) => {
         current_track
       },
     },
-    player,
-    
+   
   } = playerStore
 
 

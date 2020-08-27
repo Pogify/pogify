@@ -98,11 +98,6 @@ export default class ListenerPlayer extends React.Component {
       if (!this.state.hostPlaying && playerStore.playing) {
         this.context.playerStore.pause()
       }
-
-      // local var for if listener should play.
-      // since state doesn't change within function set a var and change it 
-      let shouldListenerPlay = this.state.listenerPlaying
-
       // if  host starts playing then set tick
       if (this.state.hostPlaying && !this.hostTick) {
         console.log(this.state.hostPausedWhileListenerListening)

@@ -1,5 +1,4 @@
 import React from "react";
-import * as auth from "../utils/spotifyAuth";
 import { storesContext } from "../contexts";
 
 /**

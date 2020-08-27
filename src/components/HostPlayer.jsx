@@ -43,7 +43,7 @@ export default class HostPlayer extends React.Component {
         position = data.position
         playing = !data.paused
         // check that uri or playing changed
-        if (this.lastUpdate.uri != uri || this.lastUpdate.playing != playing) {
+        if (this.lastUpdate.uri !== uri || this.lastUpdate.playing !== playing) {
           SessionManager.publishUpdate(uri, position, playing);
         } else {
           // if uri and playing didn't change then,
