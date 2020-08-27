@@ -2,6 +2,7 @@ import { extendObservable, action, computed } from "mobx";
 import Axios from "axios";
 import crypto from "crypto";
 import React from "react";
+import { secondsToTimeFormat } from "../utils/formatters";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -21,6 +22,7 @@ export class PlayerStore {
       p0: 0,
       t0: performance.now(),
       t1: performance.now(),
+      diffOnLastUpdate: 0,
       playing: false,
       volume: 0.2,
       uri: "",
@@ -147,9 +149,17 @@ export class PlayerStore {
           this.data = {};
           return;
         }
-        console.log(data);
+        console.log(
+          this.position.value,
+          data.position,
+          this.position.value - data.position,
+          secondsToTimeFormat(data.position / 1000),
+          secondsToTimeFormat(this.position.value / 1000),
+          secondsToTimeFormat(this.data.duration / 1000)
+        );
         this.p0 = data.position;
         this.t0 = performance.now();
+        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
         this.uri = data.track_window.current_track.uri;
         if (!this.host) {
           if (this.playing !== !data.paused) {
