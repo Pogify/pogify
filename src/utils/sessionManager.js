@@ -108,9 +108,9 @@ export const createSession = async (i = 1) => {
 
 export const publishUpdate = async (uri, position, playing, retries = 0) => {
   if (!FBAuth) initializeApp();
-
   try {
     let user = await FBAuth.signInAnonymously();
+    console.log("publishUpdate", uri, position, playing);
     await axios.post(
       cloudFunctions.postUpdate,
       {

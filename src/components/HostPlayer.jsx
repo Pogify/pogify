@@ -14,6 +14,7 @@ export default class HostPlayer extends React.Component {
     uri: "",
     playing: undefined,
     position:0,
+    time: Date.now()
   }
   state = {
     loading: false,
@@ -29,23 +30,6 @@ export default class HostPlayer extends React.Component {
     );
   };
 
-  async publishUpdate(uri, position, playing) {
-    
-    // check that uri or playing changed
-    if (this.lastUpdate.uri != uri || this.lastUpdate.playing != playing) {
-      SessionManager.publishUpdate(uri, position, playing);
-      this.lastUpdate = {
-        uri, playing
-      }
-    } else {
-      // if uri and playing didn't change then,
-      // TODO: check that difference is beyond threshold to update 
-      // ???: how to differentiate stutters from seek. 
-      SessionManager.publishUpdate(uri, position, playing);
-    }
-  }
-
-
   initializePlayer = async () => {
     this.setState({
       loading: true
@@ -55,11 +39,33 @@ export default class HostPlayer extends React.Component {
 
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
     // debounce incoming data. 
+      let uri, position, playing
       if (data) {
         // TODO: 
-        this.publishUpdate(data.track_window.current_track.uri, data.position, !data.paused)
+        uri = data.track_window.current_track.uri
+        position = data.position
+        playing = !data.paused
+        // check that uri or playing changed
+        if (this.lastUpdate.uri != uri || this.lastUpdate.playing != playing) {
+          SessionManager.publishUpdate(uri, position, playing);
+        } else {
+          // if uri and playing didn't change then,
+          // TODO: check that difference is beyond threshold to update 
+          // ???: how to differentiate stutters from seek. 
+          // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
+          console.log(Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))), position,this.lastUpdate.position, (Date.now() - this.lastUpdate.time))
+          if (Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))) > 1000) {
+            SessionManager.publishUpdate(uri, position, playing);
+          }
+        }
       } else {
-        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri, false)
+        uri = ""
+        position = this.context.playerStore.position
+        playing = false
+        SessionManager.publishUpdate(uri, position, playing)
+      }
+      this.lastUpdate = {
+        uri, playing, position, time: Date.now()
       }
       // it seems 300 is about a good sweet spot for debounce.
       // Hesitant to raise it anymore because it would increase latency to listener
