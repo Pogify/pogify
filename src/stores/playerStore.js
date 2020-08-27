@@ -87,6 +87,9 @@ export class PlayerStore {
 
   seek = action((pos_ms, t0) => {
     this.player.seek(pos_ms);
+    this.p0 = pos_ms;
+    this.t0 = performance.now();
+
     // this.p0 = pos_ms;
     // this.t0 = t0 || performance.now();
   });
@@ -149,12 +152,11 @@ export class PlayerStore {
           this.data = {};
           return;
         }
-        console.log(data);
-        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
-        this.p0 = data.position;
-        this.t0 = performance.now();
         this.uri = data.track_window.current_track.uri;
         if (!this.host) {
+          if (data.paused) {
+            this.p0 = data.position;
+          }
           if (this.playing !== !data.paused) {
             if (this.playing) {
               this.player.resume();
@@ -163,6 +165,8 @@ export class PlayerStore {
             }
           }
         } else {
+          this.p0 = data.position;
+          this.t0 = performance.now();
           if (!data.paused) {
             this.resume();
           } else {
@@ -274,11 +278,9 @@ export class PlayerStore {
       this.expires_at = Date.now() + res.data.expires_in * 1000;
     } catch (e) {
       // TODO: error handling
-      console.log(e);
-      if (e.status.match(/5\d\d/)) {
-        const ErrorDiv = () => {
-          return <div>Soptify Error {e.status}</div>;
-        };
+      console.log(e.response.data);
+      if (e.response.data.error_description === "Refresh token revoked") {
+        this.goAuth(window.location.pathname);
       }
     }
   });
