@@ -36,17 +36,22 @@ export default class HostPlayer extends React.Component {
       // because player_state_changed is debounced diffOnLastUpdate is guaranteed to be set for the relevant update
       console.log("publishUpdate", uri, position, playing, this.context.playerStore.diffOnLastUpdate)
       SessionManager.publishUpdate(uri, position, playing);
+      this.lastUpdate = {
+        uri, playing
+      }
+
     } else {
       // if uri and playing didn't change then,
       // check that difference is beyond threshold to update 
-      if (this.context.playerStore.diffOnLastUpdate > 200) {
+      if (this.context.playerStore.diffOnLastUpdate > 1000) {
         console.log("publishUpdate", uri, position, playing, this.context.playerStore.diffOnLastUpdate)
         SessionManager.publishUpdate(uri, position, playing);
+        this.lastUpdate = {
+          uri, playing
+        }
+
       }
     }
-            this.lastUpdate = {
-              uri, playing
-            }
   }
 
 
