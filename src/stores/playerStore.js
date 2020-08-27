@@ -152,8 +152,6 @@ export class PlayerStore {
           this.data = {};
           return;
         }
-        console.log(data);
-        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
         this.uri = data.track_window.current_track.uri;
         if (!this.host) {
           if (data.paused) {

@@ -33,24 +33,15 @@ export default class HostPlayer extends React.Component {
     
     // check that uri or playing changed
     if (this.lastUpdate.uri != uri || this.lastUpdate.playing != playing) {
-      // because player_state_changed is debounced diffOnLastUpdate is guaranteed to be set for the relevant update
-      console.log("publishUpdate", uri, position, playing, this.context.playerStore.diffOnLastUpdate)
       SessionManager.publishUpdate(uri, position, playing);
       this.lastUpdate = {
         uri, playing
       }
-
     } else {
       // if uri and playing didn't change then,
-      // check that difference is beyond threshold to update 
-      if (this.context.playerStore.diffOnLastUpdate > 1000) {
-        console.log("publishUpdate", uri, position, playing, this.context.playerStore.diffOnLastUpdate)
-        SessionManager.publishUpdate(uri, position, playing);
-        this.lastUpdate = {
-          uri, playing
-        }
-
-      }
+      // TODO: check that difference is beyond threshold to update 
+      // ???: how to differentiate stutters from seek. 
+      SessionManager.publishUpdate(uri, position, playing);
     }
   }
 
@@ -65,6 +56,7 @@ export default class HostPlayer extends React.Component {
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
     // debounce incoming data. 
       if (data) {
+        // TODO: 
         this.publishUpdate(data.track_window.current_track.uri, data.position, !data.paused)
       } else {
         this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri, false)
