@@ -105,27 +105,33 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
    - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
 4. Session member count is always 0.
-5. ~~Listener Player will stutter.~~ Listener player stutters at end of a track.
-   - diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.
-6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
-7. ~~Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.~~ Fixed by d09acac
-8. ~~Volume Control is not good.~~ Fixed by f11b003
-9. 'Join Session' / 'Start session' buttons sometimes do not work
-10. Incomplete error handling
-11. Leftover console.logs
-12. No nav bar or alternative
-13. Sessions may timeout even if its active.
-14. ~~Navigating away from player screen shows an alert.~~
-15. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
-16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
-17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
-19. Excessive skipping forward or backwards will break listener.
+5. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ Fixed by 02cb5dd
+   - ~~diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.~~
+6. Listener can seek freely.
+   - should add some button to resync.
+7. Listener player may cut out a couple seconds to the end of a track.
+   - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
+   - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
+   - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
+8. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
+9. ~~Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.~~ Fixed by d09acac
+10. ~~Volume Control is not good.~~ Fixed by f11b003
+11. 'Join Session' / 'Start session' buttons sometimes do not work
+12. Incomplete error handling
+13. Leftover console.logs
+14. No nav bar or alternative
+15. Sessions may timeout even if its active.
+16. ~~Navigating away from player screen shows an alert.~~
+17. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
+18. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
+19. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
+20. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
+21. Excessive skipping forward or backwards will break listener.
     - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
     - solution:
-20. ~~there are no tests.~~ there are two tests.
-21. sparse code commenting
-22. And probably many more I forgot about
+22. ~~there are no tests.~~ there are two tests.
+23. sparse code commenting
+24. And probably many more I forgot about
 
 ## Contributing and Communication
 
