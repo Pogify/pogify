@@ -149,17 +149,10 @@ export class PlayerStore {
           this.data = {};
           return;
         }
-        console.log(
-          this.position.value,
-          data.position,
-          this.position.value - data.position,
-          secondsToTimeFormat(data.position / 1000),
-          secondsToTimeFormat(this.position.value / 1000),
-          secondsToTimeFormat(this.data.duration / 1000)
-        );
+        console.log(data);
+        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
         this.p0 = data.position;
         this.t0 = performance.now();
-        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
         this.uri = data.track_window.current_track.uri;
         if (!this.host) {
           if (this.playing !== !data.paused) {
@@ -230,20 +223,8 @@ export class PlayerStore {
       return;
     }
 
-    try {
-      // throw new Error("abc");
-      await this.refreshAccessToken();
-      return this.access_token;
-    } catch (e) {
-      console.log(e);
-      console.log(e.response.data.error_description);
-      switch (e.response.data.error_description) {
-        case "Refresh Token Revoked":
-          break;
-        default:
-          throw e;
-      }
-    }
+    await this.refreshAccessToken();
+    return this.access_token;
   });
 
   getToken = action(async (code) => {
