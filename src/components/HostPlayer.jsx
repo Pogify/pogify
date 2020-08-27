@@ -60,10 +60,9 @@ export default class HostPlayer extends React.Component {
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
     // debounce incoming data. 
       if (data) {
-        // if everything is the same as before *but* position change. only change if beyond threshold of 200
         this.publishUpdate(data.track_window.current_track.uri, data.position, !data.paused)
       } else {
-        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri)
+        this.publishUpdate("",this.context.playerStore.position, this.context.playerStore.uri, !data.paused)
       }
       // it seems 300 is about a good sweet spot for debounce.
       // Hesitant to raise it anymore because it would increase latency to listener
