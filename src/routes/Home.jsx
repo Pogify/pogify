@@ -24,10 +24,10 @@ export class Home extends React.Component {
             </button>
           </Link>
         </div>
-        {/*<div style={{padding: "10px", backgroundColor: "#FFE8B3", display: "flex", borderRadius: 10, alignItems: "center"}}>
+        <div style={{padding: 10, textAlign:"center", display: "flex", flexDirection:"column", alignItems:"center"}}>
           <p>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
           <Donations />
-    </div>*/}
+    </div>
         
       </Layout>
     );
