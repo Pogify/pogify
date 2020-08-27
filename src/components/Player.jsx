@@ -11,6 +11,7 @@ import { secondsToTimeFormat } from '../utils/formatters'
 import { observer } from "mobx-react";
 import { useStores } from "../hooks/useStores";
 
+// inherit style from parents
 const InheritA = styled.a`
   color: inherit;
   text-decoration: inherit;
@@ -22,14 +23,20 @@ const InheritA = styled.a`
   }
 `;
 
+// transform [0,1] => [-1,1]
 const transform = (a) => a * 2 - 1;
+// transform [-1.1] => [0,1]
 const untransform = (b) => {
   return (b + 1) / 2;
 };
+
+// transform into sigmoid
 const sig = (x) => 1 / (1 + Math.E ** -(5 * x));
 
+// transform sigmoid back to linear
 const invSig = (y) => Math.log(y / (1 - y)) / 5;
 
+// transforms linear input volume to sigmoid if <0.5
 const input = (vol) => {
   if (vol >= 0.5) {
     return transform(vol);
@@ -39,6 +46,8 @@ const input = (vol) => {
     return invSig(vol);
   }
 };
+
+// transforms sigmoid into linear
 const output = (vol) => {
   if (vol === -1) {
     return 0;
@@ -46,14 +55,18 @@ const output = (vol) => {
   return vol > 0 ? untransform(vol) : sig(vol);
 };
 
+/**
+ * Player component
+ */
 export const Player = observer((props) => {
   const {playerStore} = useStores()
 
+  // if playerStore doesn't have data then player not connected
   if (!Object.keys(playerStore.data).length) {
-    return <div></div>
+    return <div>Spotify not connected</div>
   }
   
-  
+  // deconstruct playerStore stuff
   const {
     volume,
     playing,
@@ -67,7 +80,7 @@ export const Player = observer((props) => {
   } = playerStore
 
 
-
+  // set volume handler
   const setVolume = (e) => {
     playerStore.setVolume( output(parseFloat(e.target.value)))
 

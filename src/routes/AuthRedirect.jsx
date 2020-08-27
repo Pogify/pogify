@@ -3,7 +3,7 @@ import { storesContext } from "../contexts";
 
 /**
  * Component handles redirect after authentication from spotify.
- *
+ * Shows Empty div.
  */
 export class AuthRedirect extends React.Component {
   static contextType = storesContext

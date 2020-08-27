@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * Donations button from PayPal
+ */
 export const Donations = () => {
   return (
     <form

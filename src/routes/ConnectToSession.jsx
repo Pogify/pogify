@@ -19,10 +19,14 @@ const CodeInput = styled.input`
   }
 `;
 
+/**
+ * Code input to connect to a session.
+ */
 export const ConnectToSession = () => {
   const [code, setCode] = React.useState("");
   const history = useHistory();
 
+  // submit handler. redirects to session
   const submit = () => {
     history.push("/session/" + code);
   };
@@ -36,7 +40,6 @@ export const ConnectToSession = () => {
             type="text"
             placeholder="Code"
             onChange={(e) => setCode(e.target.value)}
-            style={{}}
             required
           />
         </div>

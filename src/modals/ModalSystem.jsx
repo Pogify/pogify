@@ -20,10 +20,12 @@ const ModalDiv = styled.div`
   top: 0;
   left: 0;
   background-color: ${props=> props.theme==="dark"? "rgba(0,0,0,0.5)" : "rgba(255,255,255, 0.5)"};
-  animation: ${rotate} 100ms ease-in-out
+  animation: ${rotate} 100ms ease-in-out;
 `
 
-
+/**
+ * Shows current modal from modal store
+ */
 export const ModalSystem = observer(() => {
   let {modalStore, themeStore} = useStores()
 

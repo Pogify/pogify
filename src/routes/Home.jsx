@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { Layout } from "../layouts";
 import { Donations } from "../components";
 
+/**
+ * Landing page
+ */
 export class Home extends React.Component {
   render() {
     return (

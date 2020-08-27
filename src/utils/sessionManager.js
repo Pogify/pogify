@@ -16,16 +16,17 @@ var firebaseConfig = {
 // without proper firebaseConfig.
 let cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_BASE_URL;
 
+// toggles dev endpoint
 if (process.env.NODE_ENV === "development") {
   cloudFunctionBaseURL = process.env.REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL;
 }
 
+// set endpoints
 var cloudFunctions = {
   refreshToken: urlJoin(cloudFunctionBaseURL, "refreshToken"),
   startSession: urlJoin(cloudFunctionBaseURL, "startSession"),
   postUpdate: urlJoin(cloudFunctionBaseURL, "postUpdate"),
 };
-console.log(cloudFunctions);
 
 // lazy load firebase client sdk since only hosts need it
 let FBAuth;
@@ -47,6 +48,9 @@ function initializeApp() {
   }
 }
 
+/**
+ * Refresh session token and stick it in localStorage
+ */
 export const refreshToken = async () => {
   if (!FBAuth) initializeApp();
 
@@ -76,6 +80,10 @@ export const refreshToken = async () => {
   }
 };
 
+/**
+ * create session
+ *
+ */
 export const createSession = async (i = 1) => {
   if (!FBAuth) initializeApp();
 
@@ -96,6 +104,7 @@ export const createSession = async (i = 1) => {
       window.localStorage.setItem("pogify:session", data.session);
       resolve(data);
     } catch (e) {
+      // TODO: flesh out error handling
       // backoff retry implementation
       if (i === 10) {
         return reject(new Error("max retries reached"));

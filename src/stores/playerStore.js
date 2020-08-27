@@ -5,54 +5,94 @@ import crypto from "crypto";
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
 
+/**
+ * PlayerStore manages state and logic for spotify playback sdk.
+ */
 export class PlayerStore {
   constructor(messenger) {
     this.messenger = messenger;
     this.tick = undefined;
     extendObservable(this, {
+      // property on whether or player is host
       host: false,
+      // Spotify playback sdk object
       player: undefined,
+      // Device id of Spotify playback sdk
       device_id: "",
+      // Access token to spotify
       access_token: "",
+      // when access_token expires
       expires_at: 0,
+      // error stuff
+      // TODO: replace with proper handling
       error_type: "",
       error_message: "",
       p0: 0,
+      // when position was stamped
       t0: performance.now(),
+      // rolling stamp to force computed position to update
       t1: performance.now(),
-      diffOnLastUpdate: 0,
+      // Whether player is playing
       playing: false,
+      // volume
       volume: 0.2,
+      // uri for current track
       uri: "",
+      // WebPlaybackStateObject
       data: {},
-      test: "",
     });
   }
 
+  /**
+   * Computed position based on previous timestamps and current time
+   */
   position = computed(() => {
+    // if playing calculate based on timestamps
     if (this.playing) {
       return Math.floor(this.p0 + this.t1 - this.t0);
     } else {
+      // if paused return return based on set position
       return Math.floor(this.p0);
     }
   });
 
+  /**
+   * Resume player.
+   * Should be called here instead of calling directly to spotify player object
+   */
   resume = action(() => {
+    // player resume method
     this.player.resume();
+    // set state playing
     this.playing = true;
+    // start ticking if tick not exists
     if (!this.tick) {
+      // forces compute to recalculate and update state of player component
       this.tick = setInterval(() => {
         this.t1 = performance.now();
       }, 100);
     }
   });
+
+  /**
+   * Pause player.
+   * Should be called here instead of calling directly to spotify player object
+   */
   pause = action(() => {
+    // spotify player pause method
     this.player.pause();
+    // set pause state
     this.playing = false;
+    // clear clock updating current time
     clearInterval(this.tick);
+    // set clock to undefined
     this.tick = undefined;
   });
 
+  /**
+   * Toggle playback.
+   * Should call here instead of calling directly to spotify player object.
+   */
   togglePlay = action(() => {
     if (this.playing) {
       this.pause();
@@ -60,11 +100,21 @@ export class PlayerStore {
       this.resume();
     }
   });
+
+  /**
+   * Sets volume
+   */
   setVolume = action((volume) => {
     this.volume = volume;
     this.player.setVolume(volume);
   });
 
+  /**
+   * Sets new track.
+   *
+   * @param {string} uri track uri
+   * @param {number} pos_ms millisecond position
+   */
   newTrack = async (uri, pos_ms) => {
     this.prevPlaying = this.playing;
     let res = await Axios.put(
@@ -81,27 +131,41 @@ export class PlayerStore {
       }
     );
     return res.data;
+    // TODO: error handlers.
   };
 
-  seek = action((pos_ms, t0) => {
+  /**
+   * Seeks to a location.
+   * Call this instead of using seek on spotify playback object
+   *
+   * @param {number} pos_ms millisecond position
+   */
+  seek = action((pos_ms) => {
+    // seek spotify playback sdk
     this.player.seek(pos_ms);
+    // reset stamps
     this.p0 = pos_ms;
     this.t0 = performance.now();
-
-    // this.p0 = pos_ms;
-    // this.t0 = t0 || performance.now();
   });
 
+  /**
+   * Initialize spotify playback object
+   *
+   * @param {string} title
+   * @param {boolean} host optional. whether
+   * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
+   */
   initializePlayer = action((title, host = false, connect = true) => {
     return new Promise(async (resolve, reject) => {
-      // if player is already connected set name then return
+      // if player is already connected update name and whether its host, then return
       if (this.player && this.player.setName) {
         await this.player.setName(title);
-        resolve();
-        return;
+        this.host = host;
+        return resolve();
       }
       this.host = host;
       // if spotify is not ready then wait till ready then call this function
+      // TODO: add timeout for waiting or something (care for slow connections)
       if (!window.spotifyReady) {
         window.onSpotifyWebPlaybackSDKReady = () => {
           // set global tracker to true
@@ -118,6 +182,7 @@ export class PlayerStore {
         };
       }
 
+      // make spotify playback sdk object
       let player = new window.Spotify.Player({
         volume: this.volume,
         name: title,
@@ -132,6 +197,8 @@ export class PlayerStore {
         this.error_type = "authentication_error";
         this.error_message = message;
       });
+
+      // TODO: proper error handling
       player.on("account_error", ({ message }) => {
         this.error_type = "account_error";
         this.error_message = message;
@@ -145,17 +212,30 @@ export class PlayerStore {
         this.error_message = "Player not Ready";
       });
 
+      // update this player stuff on player state
       player.on("player_state_changed", (data) => {
+        // if no data then do nothing
+        // TODO: host connected to pogify property
         if (!data) {
           this.data = {};
           return;
         }
+        // set player uri to update's uri
         this.uri = data.track_window.current_track.uri;
+
         console.log(this.position.value, data);
+        // handling is different whether is host or listener
+        // if host seeking on some other client should move stuff here
+        // if not host then seeking on another client shouldn't seek here
+        // because seeking triggers update on listenerPlayer
+        // TODO: figure out a elegant way to do this
         if (!this.host) {
+          // if not host...
+          // when paused set position in player state
           if (data.paused) {
             this.p0 = data.position;
           }
+          // if spotify sdk playing state doesn't align with playerStore playing state then make them align
           if (this.playing !== !data.paused) {
             if (this.playing) {
               this.player.resume();
@@ -164,38 +244,50 @@ export class PlayerStore {
             }
           }
         } else {
+          // if host...
+          // set positions
           this.p0 = data.position;
           this.t0 = performance.now();
+          // if pause or play set
           if (!data.paused) {
             this.resume();
           } else {
             this.pause();
           }
         }
-
+        // set data property
         this.data = data;
       });
 
+      // ready callback
       player.on("ready", ({ device_id }) => {
+        // set device id
         this.device_id = device_id;
+        // clear player object if it already exists
         this.player = undefined;
         this.player = player;
-        window.player = this.player;
+
+        // if connect is true call connect to player
         if (connect) {
           this.connectToPlayer(device_id).then(() => {
             resolve();
           });
+          // TODO: error handling
         } else {
           resolve();
         }
       });
 
+      // start connecting player
       player.connect();
     });
   });
 
   connectToPlayer = async (device_id) => {
+    // get current access token
+    // TODO: error handling
     let access_token = await this.getOAuthToken();
+    // call connect to device endpoint
     return Axios.put(
       `https://api.spotify.com/v1/me/player`,
       {
@@ -211,26 +303,45 @@ export class PlayerStore {
     );
   };
 
+  /**
+   * Disconnect player
+   */
   disconnectPlayer = action(() => {
     this.player.disconnect();
     this.player = undefined;
   });
 
+  /**
+   * Get spotify OAuth token
+   */
   getOAuthToken = action(async () => {
+    // if there is an access token already and it hasn't expired then return that
     if (this.access_token && Date.now() < this.expires_at) {
       return this.access_token;
     }
 
+    // if localStorage doesn't have an access token then go get it
     if (!window.localStorage.getItem("spotify:refresh_token")) {
+      // TODO: show a warning modal. that there will be a redirect to login
       this.goAuth(window.location.pathname);
       return;
     }
 
+    // if there is a refresh token and access token expired then get a new token
+    //  TODO: error handling
     await this.refreshAccessToken();
+    // return access token
     return this.access_token;
   });
 
+  /**
+   * Gets access token based on authorization code in spotify auth callback.
+   * Used by AuthRedirect component.
+   *
+   * @param {string} code authorization code
+   */
   getToken = action(async (code) => {
+    // url params
     const postData = {
       client_id: CLIENT_ID,
       grant_type: "authorization_code",
@@ -243,6 +354,8 @@ export class PlayerStore {
       form.append(key, postData[key]);
     }
 
+    // go get token
+    // TODO: error handling
     const res = await Axios.post(
       "https://accounts.spotify.com/api/token",
       form
@@ -251,10 +364,16 @@ export class PlayerStore {
       "spotify:refresh_token",
       res.data.refresh_token
     );
+
+    // set expire_at
     this.expires_at = Date.now() + res.data.expires_in * 1000;
   });
 
+  /**
+   * Refreshes access token in state using refresh token in localStorage
+   */
   refreshAccessToken = action(async () => {
+    // url params
     let postData = {
       client_id: CLIENT_ID,
       grant_type: "refresh_token",
@@ -265,6 +384,7 @@ export class PlayerStore {
       form.append(key, postData[key]);
     }
     try {
+      // send request
       let res = await Axios.post(
         "https://accounts.spotify.com/api/token",
         form
@@ -284,11 +404,20 @@ export class PlayerStore {
     }
   });
 
+  /**
+   * redirects to spotify auth endpoint
+   *
+   * @param {string} redirectTo where to return to after auth
+   */
   goAuth = async (redirectTo) => {
+    // save redirect path in sessionStorage
     window.sessionStorage.setItem("redirectTo", redirectTo);
+    // create hash key and hash for PKCE
     let hash = await getVerifierAndChallenge(128);
 
+    // set hashkey in sessionStorage
     window.sessionStorage.setItem("hashKey", hash[0]);
+    // redirect to spotify
     window.location.href = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${

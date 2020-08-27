@@ -17,6 +17,11 @@ const ErrorMessageDiv = styled.div`
   border-radius: 10; 
 `
 
+/**
+ * Default error modal
+ * 
+ * @param {{errorCode: string|number, errorMessage: string}} props code and message to show
+ */
 export default function ErrorModal(props) {
   return (
     <FlexDiv>

@@ -6,8 +6,12 @@ import { Layout } from "../layouts";
 import { storesContext } from "../contexts";
 
 
+/**
+ * HostPlayer handles logic for Pogify Host
+ */
 export default class HostPlayer extends React.Component {
   static contextType = storesContext
+  // lastUpdate property keeps track the data sent in the last publish update
   lastUpdate = {
     uri: "",
     playing: undefined,
@@ -19,6 +23,9 @@ export default class HostPlayer extends React.Component {
     pso: undefined
   };
 
+  /**
+   * Sets interval for token refresh
+   */
   setTokenRefreshInterval = () => {
     // refresh token
     this.refreshInterval = setInterval(
@@ -28,11 +35,13 @@ export default class HostPlayer extends React.Component {
     );
   };
 
+  /**
+   * Initializes spotify player in the player store as host
+   */
   initializePlayer = async () => {
     this.setState({
       loading: true
     })
-    window.spotifyReady = true;
     await this.context.playerStore.initializePlayer("Pogify Host", true)
 
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
@@ -63,49 +72,38 @@ export default class HostPlayer extends React.Component {
       this.lastUpdate = {
         uri, playing, position, time: Date.now()
       }
-      // it seems 300 is about a good sweet spot for debounce.
+      // it seems 400 is about a good sweet spot for debounce.
       // Hesitant to raise it anymore because it would increase latency to listener
     }, 400));
     this.setState({ loading: false });
   };
-
-  changeVolume = (e) => {
-    this.player.setVolume(e.target.value);
-    this.setState({
-      volume: e.target.value,
-    });
-  };
-
+  
   componentDidMount() {
+    
     window.onbeforeunload = () => {
+      // publish empty string uri on disconnect. Empty string uri means host disconnected
       this.publishUpdate("", this.state.position, false);
     };
-
+    // set the token refresh interval
+    this.setTokenRefreshInterval()
   }
 
   componentWillUnmount() {
+    // remove listener on unmount. prevents host disconnected alert
+    // DEFUNCT: should replace it with something else
     this.context.playerStore.player.removeListener("player_state_changed")
-    // remove player_state_changed listener on unmount
+
+    // publish unload update when unmounting player
+    // TODO: cleanup when all logic is moved to stores
     this.publishUpdate("", this.state.position, false);
+    // remove listener
     window.onbeforeunload = null;
+    // clear refresh interval 
     clearInterval(this.refreshInterval);
   }
 
   render() {
-    if (!window.localStorage.getItem("spotify:refresh_token")) {
-      return (
-        <Layout>
-          <button onClick={this.initializePlayer}>Login with Spotify</button>
-        </Layout>
-      );
-    }
-
-    if (!this.context.playerStore.player) {
-      return <Layout>
-        <button onClick={this.initializePlayer}>Start Session</button>
-      </Layout>
-    }
-
+    // loading 
     if (this.state.loading && this.state.pso) {
       return (
         <Layout>
@@ -114,9 +112,25 @@ export default class HostPlayer extends React.Component {
       );
     }
 
+    // check that there exists a refresh token
+    if (!window.localStorage.getItem("spotify:refresh_token")) {
+      return (
+        <Layout>
+          <button onClick={this.initializePlayer}>Login with Spotify</button>
+        </Layout>
+      );
+    }
+
+    // check that player is mounted in playerStore
+    if (!this.context.playerStore.player) {
+      return <Layout>
+        <button onClick={this.initializePlayer}>Start Session</button>
+      </Layout>
+    }
+
+
     
 
-    // return <div>done</div>
     return (
       <Layout>
         <div style={{ display: "flex", alignItems: "center" }}>

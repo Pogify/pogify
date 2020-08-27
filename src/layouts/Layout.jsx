@@ -4,7 +4,10 @@ import "../styles/Layout.css";
 import {observer} from "mobx-react"
 import { useStores } from "../hooks/useStores";
 
-
+/** 
+ * Default layout component. 
+ * Center content view with footer 
+ */
 const Layout = ({children}) => {
   let {theme/*, toggleTheme*/} = useStores().themeStore
   

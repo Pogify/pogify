@@ -1,3 +1,10 @@
+/**
+ * Debounce
+ *
+ * @param {Function} func any function that returns void
+ * @param {number} wait amount of time to debounce
+ * @returns {Function}
+ */
 export function debounce(func, wait) {
   // timeout closure
   let timeout;
