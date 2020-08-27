@@ -2,6 +2,7 @@ import { extendObservable, action, computed } from "mobx";
 import Axios from "axios";
 import crypto from "crypto";
 import React from "react";
+import { secondsToTimeFormat } from "../utils/formatters";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -21,6 +22,7 @@ export class PlayerStore {
       p0: 0,
       t0: performance.now(),
       t1: performance.now(),
+      diffOnLastUpdate: 0,
       playing: false,
       volume: 0.2,
       uri: "",
@@ -148,6 +150,7 @@ export class PlayerStore {
           return;
         }
         console.log(data);
+        this.diffOnLastUpdate = Math.abs(this.position.value - data.position);
         this.p0 = data.position;
         this.t0 = performance.now();
         this.uri = data.track_window.current_track.uri;
@@ -220,20 +223,8 @@ export class PlayerStore {
       return;
     }
 
-    try {
-      // throw new Error("abc");
-      await this.refreshAccessToken();
-      return this.access_token;
-    } catch (e) {
-      console.log(e);
-      console.log(e.response.data.error_description);
-      switch (e.response.data.error_description) {
-        case "Refresh Token Revoked":
-          break;
-        default:
-          throw e;
-      }
-    }
+    await this.refreshAccessToken();
+    return this.access_token;
   });
 
   getToken = action(async (code) => {
