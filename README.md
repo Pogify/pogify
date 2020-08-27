@@ -146,6 +146,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
     - the URL in the env variable `REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL` to match the URL of the functions endpoint in the Firebase emulator (typically of the form: `http://localhost:5001/theprojectyoucreated/us-central1`)
     - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
     Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
+    - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
 
 ## Todo List
 
