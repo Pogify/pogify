@@ -47,7 +47,7 @@ function initializeApp() {
   }
 }
 
-export const refreshToken = async (session_token) => {
+export const refreshToken = async () => {
   if (!FBAuth) initializeApp();
 
   try {
@@ -67,6 +67,7 @@ export const refreshToken = async (session_token) => {
     return res.data;
   } catch (error) {
     console.error(error);
+    throw error;
     // TODO: error handling
     //     let { code: errorCode, message: errorMessage } = error;
 
@@ -132,6 +133,13 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
       if (e.response.status === 401) {
         // session expired modal or something
         console.error("sessionExpired");
+        // try to refresh token
+        try {
+          await refreshToken();
+        } catch (e) {
+          // TODO: if error refreshing token then show session expired modal with redirect to create.
+          throw e;
+        }
       } else if (e.response.status === 429) {
       }
     }
