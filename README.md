@@ -105,15 +105,15 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
    - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
 4. Session member count is always 0.
-5. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ Fixed by 02cb5dd
+5. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ ~~Fixed by 02cb5dd~~ Fixed by 3061378
    - ~~diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.~~
-   - should add some button to resync.
 6. Listener player may cut out a couple seconds to the end of a track.
    - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
 7. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
 8. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
+   - should add some button to resync.
 9. ~~Volume Control is not good.~~ Fixed by f11b003
 10. 'Join Session' / 'Start session' buttons sometimes do not work
 11. Incomplete error handling
@@ -150,6 +150,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [ ] move all player (host and listener) logic into stores so that player can be used outside of `/session/{id}`.
   - [x] player logic moved to mobx store.
 - [ ] readme `Fixed by {SHA}` should have proper links to commits.
+- [ ] `'playImmediately'` button
 
 ## Related Repos
 
