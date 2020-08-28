@@ -104,36 +104,35 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 3. ~~Problem in firefox where there is excessive stuttering as a listener~~ Fixed by d09acac
    - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
    - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
-4. Session member count is always 0.
-5. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ ~~Fixed by 02cb5dd~~ Fixed by 3061378
+4. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ ~~Fixed by 02cb5dd~~ Fixed by 3061378
    - ~~diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.~~
-6. Listener player may cut out a couple seconds to the end of a track.
+5. Listener player may cut out a couple seconds to the end of a track.
    - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
-7. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
-8. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
+6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
+7. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
    - should add some button to resync.
-9. ~~Volume Control is not good.~~ Fixed by f11b003
-10. 'Join Session' / 'Start session' buttons sometimes do not work
-11. Incomplete error handling
-12. Leftover console.logs
-13. No nav bar or alternative
-14. Sessions may timeout even if its active.
-15. ~~Navigating away from player screen shows an alert.~~
-16. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
-17. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
-18. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-19. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
-20. Excessive skipping forward or backwards will break listener.
+8. ~~Volume Control is not good.~~ Fixed by f11b003
+9. 'Join Session' / 'Start session' buttons sometimes do not work
+10. Incomplete error handling
+11. Leftover console.logs
+12. No nav bar or alternative
+13. Sessions may timeout even if its active.
+14. ~~Navigating away from player screen shows an alert.~~
+15. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
+16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
+17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
+18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
+19. Excessive skipping forward or backwards will break listener.
     - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
     - solution:
-21. ~~there are no tests.~~ there are two tests.
-22. ~~sparse code commenting~~ Fixed by c2e4f26
-23. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
+20. ~~there are no tests.~~ there are two tests.
+21. ~~sparse code commenting~~ Fixed by c2e4f26
+22. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
     - diagnosis: Spotify doesn't fire a state change event when seeking to 0 if already seeked to 0 once, so Pogify misses it.
     - solution: poll for spotify data periodically (ie once a second) using player.getCurrentState()
-24. And probably many more I forgot about
+23. And probably many more I forgot about
 
 ## Contributing and Communication
 
