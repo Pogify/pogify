@@ -1,12 +1,15 @@
 import React from "react";
-import { playerStore, modalStore } from "../stores";
+import { playerStore, modalStore } from "../../stores";
 import { autorun } from "mobx";
-import { Layout } from "../layouts";
+import { Layout } from "../../layouts";
 
-import { Player } from ".";
-import WarningModal from "../modals/WarningModal";
-import PoweredBySpotify from "./utils/PoweredBySpotify";
-import Donations from "./utils/Donations";
+import { Player } from "..";
+import WarningModal from "../../modals/WarningModal";
+import PoweredBySpotify from "../utils/PoweredBySpotify";
+import Donations from "../utils/Donations";
+import CopyLink from "../utils/CopyLink";
+
+import styles from "./index.module.css";
 
 /**
  * ListenerPlayer handles logic for listeners
@@ -242,7 +245,7 @@ export default class ListenerPlayer extends React.Component {
     if (!this.state.hostConnected || !this.state.firstPlay) {
       return (
         <Layout>
-          <h2 style={{ marginTop: 0 }}>Waiting for Host...</h2>{" "}
+          <h2 className={styles.h2}>Waiting for Host...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
           {/* TODO: button to start play immediately
               BODY have music play immediately on first connect. 
@@ -266,7 +269,7 @@ export default class ListenerPlayer extends React.Component {
 
     return (
       <Layout>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="flexContainer">
           <Player isHost={false}>
             <div>
               {!this.state.hostPlaying && "Paused by host"}
@@ -283,25 +286,25 @@ export default class ListenerPlayer extends React.Component {
           </Player>
 
           <div
-            style={{
-              width: 400,
-              textAlign: "center",
-              padding: 30,
-            }}
+            className={`textAlignCenter ${styles.textWrapper}`}
           >
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{ textAlign: "justify" }}>
+            <p className=".textAlignLeft">
               You are listening to session: {this.props.sessionId}. Your
               playback is controlled by the host. Pressing pause will pause
-              playback locally only. On resume, playback will resynchronise with
+              playback locally only. On resume, playback will be resynchronised with
               the host. Controlling Spotify will not work as long as you are
               connected to "Pogify Listener". The music is playing through the
-              browser, <b> please do not close this tab.</b>
+              browser, so <b> please do not close this tab.</b>
             </p>
-            <p style={{ marginTop: 40 }}>
+            <p className={styles.shareExplanations}>
               Share the url below to listen with others:
               <br />
-              {window.location.href}
+              <CopyLink
+                href={window.location.href}
+              >
+                {window.location.href}
+              </CopyLink>
             </p>
             <PoweredBySpotify />
             <Donations />

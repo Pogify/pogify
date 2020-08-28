@@ -6,9 +6,9 @@ import { playerStore } from "../../stores";
 import { Layout } from "../../layouts";
 
 import { Player } from "../";
-import NewTabLink from "../utils/NewTabLink";
 import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
+import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
 
@@ -105,13 +105,6 @@ export default class HostPlayer extends React.Component {
     // Hesitant to raise it anymore because it would increase latency to listener
   }, 400);
 
-  copyLink(evt) {
-    evt.preventDefault();
-    if (navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(evt.target.href);
-    }
-  }
-
   componentDidMount() {
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
@@ -179,14 +172,13 @@ export default class HostPlayer extends React.Component {
             <p className={styles.shareExplanations}>
               Share the url below to listen with others:
               <br />
-              <NewTabLink
+              <CopyLink
                 href={window.location.href}
                 className={styles.shareLink}
-                onClick={this.copyLink}
                 title="Click to copy and share to your audience"
               >
                 {window.location.href}
-              </NewTabLink>
+              </CopyLink>
             </p>
             <PoweredBySpotify />
             <Donations />
