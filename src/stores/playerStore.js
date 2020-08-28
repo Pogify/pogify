@@ -77,8 +77,7 @@ export class PlayerStore {
     this.disposeVolumeAutorun = autorun(async () => {
       now(100)
       if (!this.debouncedVolumeChange.pending())
-        this.volume = await this.player.getVolume()
-    })
+        this.volume = (await this.player.getVolume()) ?? 0;
   });
 
   /**
