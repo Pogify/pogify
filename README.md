@@ -129,7 +129,7 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
     - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
     - solution:
 21. ~~there are no tests.~~ there are two tests.
-22. sparse code commenting
+22. ~~sparse code commenting~~ Fixed by c2e4f26
 23. And probably many more I forgot about
 
 ## Contributing and Communication
@@ -143,15 +143,15 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 
 1. Execute `yarn` into the folder of this repository
 2. Copy the file `.env.development` to `.env.development.local` and edit the following:
-    - the URL in the env variable `REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL` to match the URL of the functions endpoint in the Firebase emulator (typically of the form: `http://localhost:5001/theprojectyoucreated/us-central1`)
-    - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
-    Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
-    - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
+   - the URL in the env variable `REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL` to match the URL of the functions endpoint in the Firebase emulator (typically of the form: `http://localhost:5001/theprojectyoucreated/us-central1`)
+   - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
+     Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
+   - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
 
 ## Todo List
 
 - [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
-- [ ] code comments
+- [x] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
 - [ ] verified sessions
