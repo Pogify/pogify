@@ -113,6 +113,12 @@ export const Player = observer((props) => {
     playerStore.setVolume(output(parseFloat(e.target.value)))
   };
 
+  const seek = (e) => {
+    if (props.isHost) {
+      playerStore.seek(e.target.value * 1000)
+    }
+  }
+
   return (
     <div
       style={{
@@ -132,6 +138,7 @@ export const Player = observer((props) => {
           name="position"
           id="position"
           value={(playerStore.position) / 1000}
+          onChange={seek}
           min={0}
           max={duration / 1000}
           readOnly

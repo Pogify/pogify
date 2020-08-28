@@ -151,12 +151,16 @@ export class PlayerStore {
    *
    * @param {number} pos_ms millisecond position
    */
-  seek = action((pos_ms) => {
+
+  debouncedSeek = debounce((pos_ms) => {
     // seek spotify playback sdk
     this.player.seek(pos_ms);
+  }, 50)
+  seek = action((pos_ms) => {
     // reset stamps
     this.p0 = pos_ms;
     this.t0 = Date.now();
+    this.debouncedSeek(pos_ms)
   });
 
   /**
