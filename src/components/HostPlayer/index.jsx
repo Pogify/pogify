@@ -1,7 +1,7 @@
 import React from "react";
 import * as SessionManager from "../../utils/sessionManager";
 import { debounce } from "../../utils/debounce";
-import { storesContext } from "../../contexts";
+import { playerStore } from "../../contexts";
 
 import { Layout } from "../../layouts";
 
@@ -15,7 +15,7 @@ import styles from "./index.module.css";
  * HostPlayer handles logic for Pogify Host
  */
 export default class HostPlayer extends React.Component {
-  static contextType = storesContext;
+  // static contextType = storesContext;
   // lastUpdate property keeps track the data sent in the last publish update
   lastUpdate = {
     uri: "",
@@ -47,9 +47,9 @@ export default class HostPlayer extends React.Component {
     this.setState({
       loading: true,
     });
-    await this.context.playerStore.initializePlayer("Pogify Host");
+    await playerStore.initializePlayer("Pogify Host");
 
-    this.context.playerStore.player.on(
+    playerStore.player.on(
       "player_state_changed",
       this.handleData.bind(this)
     );
@@ -73,7 +73,7 @@ export default class HostPlayer extends React.Component {
         console.log(
           Math.abs(
             position -
-              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ),
           position,
           this.lastUpdate.position,
@@ -82,7 +82,7 @@ export default class HostPlayer extends React.Component {
         if (
           Math.abs(
             position -
-              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ) > 1000
         ) {
           SessionManager.publishUpdate(uri, position, playing);
@@ -90,7 +90,7 @@ export default class HostPlayer extends React.Component {
       }
     } else {
       uri = "";
-      position = this.context.playerStore.position;
+      position = playerStore.position;
       playing = false;
       SessionManager.publishUpdate(uri, position, playing);
     }
@@ -123,10 +123,10 @@ export default class HostPlayer extends React.Component {
   componentWillUnmount() {
     // remove listener on unmount. prevents host disconnected alert
     // DEFUNCT: should replace it with something else
-    this.context.playerStore.player.disconnect();
+    playerStore.player.disconnect();
     // publish unload update when unmounting player
     // TODO: cleanup when all logic is moved to stores
-    this.publishUpdate("", this.state.position, false);
+    // this.publishUpdate("", this.state.position, false);
     // remove listener
     window.onbeforeunload = null;
     // clear refresh interval
@@ -153,7 +153,7 @@ export default class HostPlayer extends React.Component {
     }
 
     // check that player is mounted in playerStore
-    if (!this.context.playerStore.player) {
+    if (!playerStore.player) {
       return (
         <Layout>
           <button onClick={this.initializePlayer}>Start Session</button>

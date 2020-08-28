@@ -23,3 +23,7 @@ code {
 .textAlignCenter {
   text-align: center;
 }
+
+a:visited {
+  color: white;
+}

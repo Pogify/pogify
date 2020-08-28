@@ -1,4 +1,6 @@
-import { extendObservable, action, computed } from "mobx";
+import { extendObservable, action, computed, autorun } from "mobx";
+import { now } from "mobx-utils";
+import debounce from "lodash/debounce";
 import Axios from "axios";
 import crypto from "crypto";
 
@@ -11,7 +13,8 @@ const REDIRECT_URI = window.location.origin + "/auth";
 export class PlayerStore {
   constructor(messenger) {
     this.messenger = messenger;
-    this.tick = undefined;
+    this.disposeTimeAutorun = undefined;
+    this.disposeVolumeAutorun = undefined;
     extendObservable(this, {
       // property on whether or player should be strict
       // strict means that it only allows play pause seek track change by pogify
@@ -31,9 +34,9 @@ export class PlayerStore {
       error_message: "",
       p0: 0,
       // when position was stamped
-      t0: performance.now(),
+      t0: Date.now(),
       // rolling stamp to force computed position to update
-      t1: performance.now(),
+      t1: Date.now(),
       // Whether player is playing
       playing: false,
       // volume
@@ -67,13 +70,15 @@ export class PlayerStore {
     this.player.resume();
     // set state playing
     this.playing = true;
-    // start ticking if tick not exists
-    if (!this.tick) {
-      // forces compute to recalculate and update state of player component
-      this.tick = setInterval(() => {
-        this.t1 = performance.now();
-      }, 100);
-    }
+    // replaced ticking with autorun and now() from mobxUtils
+    this.disposeTimeAutorun = autorun(async () => {
+      this.t1 = now(500)
+    })
+    this.disposeVolumeAutorun = autorun(async () => {
+      now(100)
+      if (!this.debouncedVolumeChange.pending())
+        this.volume = await this.player.getVolume()
+    })
   });
 
   /**
@@ -85,10 +90,8 @@ export class PlayerStore {
     this.player.pause();
     // set pause state
     this.playing = false;
-    // clear clock updating current time
-    clearInterval(this.tick);
-    // set clock to undefined
-    this.tick = undefined;
+    // dispose autorun
+    if (typeof this.disposeAutorun === "function") this.disposeAutorun()
   });
 
   /**
@@ -106,9 +109,15 @@ export class PlayerStore {
   /**
    * Sets volume
    */
+  debouncedVolumeChange = debounce((volume) => {
+    this.player.setVolume(volume);
+  }, 50, {
+    maxWait: 100,
+    leading: true
+  })
   setVolume = action((volume) => {
     this.volume = volume;
-    this.player.setVolume(volume);
+    this.debouncedVolumeChange(volume)
   });
 
   /**
@@ -147,7 +156,7 @@ export class PlayerStore {
     this.player.seek(pos_ms);
     // reset stamps
     this.p0 = pos_ms;
-    this.t0 = performance.now();
+    this.t0 = Date.now();
   });
 
   /**
@@ -212,7 +221,7 @@ export class PlayerStore {
       });
 
       // update this player stuff on player state
-      player.on("player_state_changed", (data) => {
+      player.on("player_state_changed", async (data) => {
         // if no data then do nothing
         // TODO: host connected to pogify property
         if (!data) {
@@ -223,7 +232,7 @@ export class PlayerStore {
         this.uri = data.track_window.current_track.uri;
 
         this.p0 = data.position;
-        this.t0 = performance.now();
+        this.t0 = Date.now();
 
         if (!data.paused) {
           this.resume();
@@ -399,7 +408,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-    }`;
+      }`;
   };
 }
 

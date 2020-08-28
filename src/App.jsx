@@ -12,25 +12,23 @@ import {
 } from "./routes";
 import { ModalSystem, ErrorModal } from "./modals";
 import "./styles/App.css";
-import { StoreProvider, messenger } from "./contexts";
+import { messenger } from "./contexts";
 
 function App() {
   return (
-    <StoreProvider>
-      <BrowserRouter>
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/create" exact component={Create} />
-          <Route path="/auth" exact component={AuthRedirect} />
-          <Route path="/session/:id" component={Room} />
-          <Route path="/session" component={ConnectToSession} exact />
-          <Route path="/privacy" component={Privacy} />
-          <Route path="/tou" component={Terms} />
-          <Route path="/" component={FourOhFour} />
-        </Switch>
-        <ModalSystem />
-      </BrowserRouter>
-    </StoreProvider>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/create" exact component={Create} />
+        <Route path="/auth" exact component={AuthRedirect} />
+        <Route path="/session/:id" component={Room} />
+        <Route path="/session" component={ConnectToSession} exact />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/tou" component={Terms} />
+        <Route path="/" component={FourOhFour} />
+      </Switch>
+      <ModalSystem />
+    </BrowserRouter>
   );
 }
 export default App;

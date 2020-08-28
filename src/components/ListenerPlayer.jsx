@@ -2,7 +2,7 @@ import React from "react";
 import { Player } from ".";
 import { Layout } from "../layouts";
 import { Donations } from "./Donations";
-import { storesContext } from "../contexts";
+import { playerStore } from "../contexts";
 import { autorun } from "mobx";
 import PoweredBySpotify from "./utils/PoweredBySpotify";
 
@@ -10,7 +10,6 @@ import PoweredBySpotify from "./utils/PoweredBySpotify";
  * ListenerPlayer handles logic for listeners
  */
 export default class ListenerPlayer extends React.Component {
-  static contextType = storesContext;
   state = {
     device_id: "",
     loading: false,
@@ -51,7 +50,6 @@ export default class ListenerPlayer extends React.Component {
       // if message timestamp is less than previously received timestamp it is stale. don't act on it
       if (this.state.lastTimestamp > timestamp) return;
 
-      const { playerStore } = this.context;
       // if there is a hostUri before but this
       if (this.state.hostUri && !uri) {
         // TODO: have a separate state for disconnect
@@ -113,7 +111,7 @@ export default class ListenerPlayer extends React.Component {
     };
 
     // synchronization checker
-    this.context.playerStore.player.on("player_state_changed", (data) => {
+    playerStore.player.on("player_state_changed", (data) => {
       const {
         hostPosition,
         hostUri,
@@ -157,7 +155,7 @@ export default class ListenerPlayer extends React.Component {
 
     console.log("once");
     // TODO: listener title based on session code?
-    await this.context.playerStore.initializePlayer("Pogify Listener");
+    await playerStore.initializePlayer("Pogify Listener");
     // set listener event listeners
     this.setListenerListeners();
 
@@ -168,7 +166,7 @@ export default class ListenerPlayer extends React.Component {
     // autorun to trigger when playerstore is first playing.
     // made it like this to allow client to click play button on player
     autorun((reaction) => {
-      if (this.context.playerStore.playing) {
+      if (playerStore.playing) {
         this.setState({
           playImmediate: true,
         });
@@ -180,9 +178,9 @@ export default class ListenerPlayer extends React.Component {
     this.forceUpdateAutorunDisposer = autorun((reaction) => {
       const { hostPosition, updateTimestamp } = this.state;
 
-      if (this.context.playerStore.playing) {
+      if (playerStore.playing) {
         console.log("autorun playing");
-        this.context.playerStore.seek(
+        playerStore.seek(
           hostPosition + Date.now() - updateTimestamp
         );
         reaction.dispose();
@@ -195,8 +193,8 @@ export default class ListenerPlayer extends React.Component {
       this.eventListener.close();
     }
     // disconnect current player
-    if (this.context.playerStore.player) {
-      this.context.playerStore.player.disconnect();
+    if (playerStore.player) {
+      playerStore.player.disconnect();
     }
     // dispose auto run
     this.forceUpdateAutorunDisposer();

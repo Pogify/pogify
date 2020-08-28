@@ -7226,6 +7226,10 @@ lodash@^4.17.19:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
+lodash@lodash/lodash#86a852fe763935bb64c12589df5391fd7d3bb14d:
+  version "5.0.0"
+  resolved "https://codeload.github.com/lodash/lodash/tar.gz/86a852fe763935bb64c12589df5391fd7d3bb14d"
+
 loglevel@^1.6.8:
   version "1.6.8"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.8.tgz#8a25fb75d092230ecd4457270d80b54e28011171"
@@ -7550,17 +7554,22 @@ mkdirp@^0.5.5:
   dependencies:
     minimist "^1.2.5"
 
-mobx-react-lite@>=2.0.6:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-2.0.7.tgz#1bfb3b4272668e288047cf0c7940b14e91cba284"
-  integrity sha512-YKAh2gThC6WooPnVZCoC+rV1bODAKFwkhxikzgH18wpBjkgTkkR9Sb0IesQAH5QrAEH/JQVmy47jcpQkf2Au3Q==
+mobx-react-lite@>=2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-2.2.0.tgz#95eecde237367af1087cc5c51d962ae081b6d1de"
+  integrity sha512-FUPacb4bk21qp/wrEv2vPcqC314nGRgHQzzIPHVBGAT5GtzaYiwvMHx192/Vy8TyI4+8H5JY9689jnvDOvLRuQ==
 
-mobx-react@^6.2.5:
-  version "6.2.5"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.2.5.tgz#9020a17b79cc6dc3d124ad89ab36eb9ea540a45b"
-  integrity sha512-LxtXXW0GkOAO6VOIg2m/6WL6ZuKlzOWwESIFdrWelI0ZMIvtKCMZVUuulcO5GAWSDsH0ApaMkGLoaPqKjzyziQ==
+mobx-react@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-6.3.0.tgz#7d11799f988bbdadc49e725081993b18baa20329"
+  integrity sha512-C14yya2nqEBRSEiJjPkhoWJLlV8pcCX3m2JRV7w1KivwANJqipoiPx9UMH4pm6QNMbqDdvJqoyl+LqNu9AhvEQ==
   dependencies:
-    mobx-react-lite ">=2.0.6"
+    mobx-react-lite ">=2.2.0"
+
+mobx-utils@^5.6.1:
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/mobx-utils/-/mobx-utils-5.6.1.tgz#b7d9184b7442fe704be367d4363a2e9961be28cc"
+  integrity sha512-bpTJzM8MXniGnXCZY+ImjPDqBKQ3+G3g/QFSPtNkH6HM3x14DAPqKH7No7NDyhbXBMv3FaVetsgnoEPozbi45Q==
 
 mobx@^5.15.6:
   version "5.15.6"

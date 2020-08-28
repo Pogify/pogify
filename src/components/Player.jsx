@@ -1,4 +1,8 @@
 import React from "react";
+import styled from "styled-components";
+import { observer } from "mobx-react";
+import { playerStore } from "../contexts";
+import { secondsToTimeFormat } from '../utils/formatters'
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -6,13 +10,11 @@ import {
   faVolumeUp,
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-import { secondsToTimeFormat } from '../utils/formatters'
-import { observer } from "mobx-react";
-import { useStores } from "../hooks/useStores";
+
+import NewTabLink from "./utils/NewTabLink"
 
 // inherit style from parents
-const InheritA = styled.a`
+const InheritA = styled(NewTabLink)`
   color: inherit;
   text-decoration: inherit;
   margin: 0 3px;
@@ -22,6 +24,37 @@ const InheritA = styled.a`
     text-decoration: underline;
   }
 `;
+
+
+// Allow MobX to optimize data that does not change regularly
+const TrackMetadata = observer(() => {
+  const trackData = playerStore.data.track_window.current_track
+  return (
+    <div>
+      <div
+        style={{
+          height: 300,
+          width: 300,
+          overflow: "hidden",
+        }}
+      >
+        <img src={trackData.album.images[0].url} alt={`Cover art for ${trackData.album.name}`} />
+      </div>
+      <div style={{ paddingBottom: 10 }}>
+        <h3>
+          <InheritA href={trackData.uri}>{trackData.name}</InheritA>
+        </h3>
+        {trackData.artists.map(({ name, uri }, i) => (
+          <InheritA href={uri} key={i}>
+            {name}
+          </InheritA>
+        ))}{" "}
+        <br />
+        <InheritA href={trackData.album.uri}>{trackData.album.name}</InheritA>
+      </div>
+    </div>
+  )
+})
 
 // transform [0,1] => [-1,1]
 const transform = (a) => a * 2 - 1;
@@ -59,31 +92,25 @@ const output = (vol) => {
  * Player component
  */
 export const Player = observer((props) => {
-  const {playerStore} = useStores()
 
   // if playerStore doesn't have data then player not connected
   if (!Object.keys(playerStore.data).length) {
     return <div>Spotify not connected</div>
   }
-  
+
   // deconstruct playerStore stuff
   const {
     volume,
     playing,
     data: {
-      duration,
-      track_window: {
-        current_track
-      },
-    },
-   
+      duration
+    }
   } = playerStore
 
 
   // set volume handler
   const setVolume = (e) => {
-    playerStore.setVolume( output(parseFloat(e.target.value)))
-
+    playerStore.setVolume(output(parseFloat(e.target.value)))
   };
 
   return (
@@ -95,40 +122,21 @@ export const Player = observer((props) => {
         padding: 30,
       }}
     >
-      <div
-        style={{
-          height: 300,
-          width: 300,
-          overflow: "hidden",
-        }}
-      >
-        <img src={current_track.album.images[0].url} alt={`Cover art for ${current_track.album.name}`} />
-      </div>
-      <div style={{ paddingBottom: 10 }}>
-        <h3>
-          <InheritA href={current_track.uri}>{current_track.name}</InheritA>
-        </h3>
-        {current_track.artists.map(({ name, uri }, i) => (
-          <InheritA href={uri} key={i}>
-            {name}
-          </InheritA>
-        ))}{" "}
-        <br />
-        <InheritA href={current_track.album.uri}>{current_track.album.name}</InheritA>
-      </div>
+
+      <TrackMetadata />
       <div>
-        {secondsToTimeFormat((playerStore.position)/1000)}
+        {secondsToTimeFormat((playerStore.position) / 1000)}
         <input
           style={{ width: "70%" }}
-          type="range" 
+          type="range"
           name="position"
           id="position"
-          value={(playerStore.position)/1000}
+          value={(playerStore.position) / 1000}
           min={0}
-          max={duration/1000}
+          max={duration / 1000}
           readOnly
         />
-        {secondsToTimeFormat(duration/1000)}
+        {secondsToTimeFormat(duration / 1000)}
       </div>
       <div>
         <FAI icon={faVolumeMute} />
@@ -145,7 +153,7 @@ export const Player = observer((props) => {
         <FAI icon={faVolumeUp} />
       </div>
       {!props.dontShow && (
-        <div style={{ cursor: "pointer" }} onClick={()=>playerStore.togglePlay()}>
+        <div style={{ cursor: "pointer" }} onClick={() => playerStore.togglePlay()}>
           {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
