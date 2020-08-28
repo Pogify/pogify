@@ -2,6 +2,8 @@ import React from "react";
 import { playerStore, modalStore } from "../../stores";
 import { autorun } from "mobx";
 import { Layout } from "../../layouts";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
@@ -307,14 +309,14 @@ export default class ListenerPlayer extends React.Component {
                 <div style={{ height: "1.3rem" }} />
               )}
               {!this.state.playImmediate &&
-                "Press Play to Synchronize With Host"}
+                ". Press Play to Synchronize With Host"}
               {/* TODO: clean up this button
                     BODY
                 */}
               {!this.state.synced && (
                 <div>
-                  Not synced with host
-                  <button onClick={this.syncOnClick}>Sync</button>
+                  Sync with host &nbsp;
+                  <FontAwesomeIcon onClick={this.syncOnClick} icon={faSync} />
                 </div>
               )}
             </div>
