@@ -75,24 +75,7 @@ export default class ListenerPlayer extends React.Component {
 
       // if listener player is not in synced state with host then pass player updates and only update state
       if (this.state.synced) {
-        if (uri !== playerStore.uri) {
-          await playerStore.newTrack(uri, calcPos);
-        }
-        if (
-          !this.state.hostPlaying &&
-          playing &&
-          this.state.hostPausedWhileListenerListening
-        ) {
-          // if host goes from pause to play and listener was listening when host paused, then resume and seek
-          playerStore.resume();
-          playerStore.seek(calcPos);
-        } else if (!playing) {
-          // if host pauses, pause
-          playerStore.pause();
-        } else {
-          // if host is still playing then only seek
-          playerStore.seek(calcPos);
-        }
+        await this.syncListener(uri, calcPos, playing);
       }
 
       this.setState({
@@ -163,6 +146,34 @@ export default class ListenerPlayer extends React.Component {
     this.setState({ loading: false, spotConnected: true });
   };
 
+  /**
+   * Method syncs listener to provided params
+   *
+   * @param {string} uri spotify track uri
+   * @param {number} position position in milliseconds
+   * @param {boolean} playing playing state
+   */
+  async syncListener(uri, position, playing) {
+    if (uri !== playerStore.uri) {
+      await playerStore.newTrack(uri, position);
+    }
+    if (
+      !this.state.hostPlaying &&
+      playing &&
+      this.state.hostPausedWhileListenerListening
+    ) {
+      // if host goes from pause to play and listener was listening when host paused, then resume and seek
+      playerStore.resume();
+      playerStore.seek(position);
+    } else if (!playing) {
+      // if host pauses, pause
+      playerStore.pause();
+    } else {
+      // if host is still playing then only seek
+      playerStore.seek(position);
+    }
+  }
+
   componentDidMount() {
     // autorun to trigger when playerstore is first playing.
     // made it like this to allow client to click play button on player
@@ -181,9 +192,7 @@ export default class ListenerPlayer extends React.Component {
 
       if (playerStore.playing) {
         console.log("autorun playing");
-        playerStore.seek(
-          hostPosition + Date.now() - updateTimestamp
-        );
+        playerStore.seek(hostPosition + Date.now() - updateTimestamp);
         reaction.dispose();
       }
     });

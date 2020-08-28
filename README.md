@@ -130,7 +130,10 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
     - solution:
 21. ~~there are no tests.~~ there are two tests.
 22. ~~sparse code commenting~~ Fixed by c2e4f26
-23. And probably many more I forgot about
+23. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
+    - diagnosis: Spotify doesn't fire a state change event when seeking to 0 if already seeked to 0 once, so Pogify misses it.
+    - solution: poll for spotify data periodically (ie once a second) using player.getCurrentState()
+24. And probably many more I forgot about
 
 ## Contributing and Communication
 
