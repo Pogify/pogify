@@ -72,7 +72,7 @@ export const refreshToken = async () => {
   } catch (error) {
     console.error(error);
     throw error;
-    // TODO: error handling
+    // NTODO: error handling
     //     let { code: errorCode, message: errorMessage } = error;
 
     //     if (errorCode === "auth/operation-not-allowed") {
@@ -104,7 +104,7 @@ export const createSession = async (i = 1) => {
       window.localStorage.setItem("pogify:session", data.session);
       resolve(data);
     } catch (e) {
-      // TODO: flesh out error handling
+      // NTODO: flesh out error handling
       // backoff retry implementation
       if (i === 10) {
         return reject(new Error("max retries reached"));
@@ -146,7 +146,7 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
         try {
           await refreshToken();
         } catch (e) {
-          // TODO: if error refreshing token then show session expired modal with redirect to create.
+          // NTODO: if error refreshing token then show session expired modal with redirect to create.
           throw e;
         }
       } else if (e.response.status === 429) {

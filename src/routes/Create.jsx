@@ -19,7 +19,7 @@ export class Create extends React.Component {
 
   // waits to create session
   async create() {
-    // TODO: handle errors
+    // NTODO: handle errors
     let res = await createSession();
     // redirect on successful session creation
     this.props.history.push("/session/" + res.session);

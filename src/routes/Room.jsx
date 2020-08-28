@@ -2,7 +2,7 @@ import React from "react";
 import { Layout } from "../layouts";
 import { HostPlayer, ListenerPlayer } from "../components";
 
-// TODO: rebuild this component. its useless in it's current state
+// NTODO: rebuild this component. its useless in it's current state
 /**
  * Room component conditionally renders host player or listener player based on whether or not there exists an active session in localStorage
  */
@@ -13,7 +13,7 @@ export class Room extends React.Component {
 
   componentDidMount() {
     if (window.localStorage.getItem("pogify:expiresAt") < Date.now()) {
-      // TODO: show an expired modal.
+      // NTODO: show an expired modal.
       this.setState({
         isHost: null,
       });

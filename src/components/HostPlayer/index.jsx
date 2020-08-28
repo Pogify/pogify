@@ -107,7 +107,7 @@ export default class HostPlayer extends React.Component {
     this.context.playerStore.player.removeListener("player_state_changed")
 
     // publish unload update when unmounting player
-    // TODO: cleanup when all logic is moved to stores
+    // NTODO: cleanup when all logic is moved to stores
     this.publishUpdate("", this.state.position, false);
     // remove listener
     window.onbeforeunload = null;

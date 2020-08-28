@@ -48,11 +48,11 @@ export default class ListenerPlayer extends React.Component {
       let { timestamp, uri, position, playing } = JSON.parse(event.data);
       // if there is a hostUri before but this 
       if (this.state.hostUri && !uri) {
-        // TODO: have a separate state for disconnect
+        // NTODO: have a separate state for disconnect
         this.setState({
           hostConnected: false,
         });
-        // TODO: replace with modal
+        // NTODO: replace with modal
         alert("Host disconnected. Playback Paused");
         return;
       } else if (!uri) {
@@ -88,14 +88,14 @@ export default class ListenerPlayer extends React.Component {
       });
     };
 
-    // TODO: error handling
+    // NTODO: error handling
     this.eventListener.onerror = console.error;
   };
 
 
   /**
    * Handles logic for when host sends update. 
-   * TODO: Probably should move this to eventListener.onmessage
+   * NTODO: Probably should move this to eventListener.onmessage
    */
   async componentDidUpdate(_prevProps, prevState) {
     const { playerStore } = this.context
@@ -157,7 +157,7 @@ export default class ListenerPlayer extends React.Component {
     this.setState({loading: true})
     
     console.log("once");
-    // TODO: listener title based on session code?
+    // NTODO: listener title based on session code?
     await this.context.playerStore.initializePlayer("Pogify Listener", false)
     // set listener event listeners
     this.setListenerListeners();
