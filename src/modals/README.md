@@ -24,4 +24,4 @@ The modal system is implemented using mobx.
 
 ## Code Example
 
-NTODO: write a code example.
+TODO: write a code example.

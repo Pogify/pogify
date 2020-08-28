@@ -23,7 +23,7 @@ export class AuthRedirect extends React.Component {
     }
   }
   render() {
-    // NTODO: currently an empty div but might change to a redirect notification or something
+    // TODO: currently an empty div but might change to a redirect notification or something
     return <div></div>;
   }
 }

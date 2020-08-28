@@ -13,7 +13,7 @@ export const FourOhFour = () => {
           <div>404</div>
         </h1>
         <div>What you are looking for ain't here</div>
-        {/* NTODO: go back button */}
+        {/* TODO: go back button */}
         <Link to="/">Go home</Link>
       </div>
     </Layout>

@@ -5,7 +5,7 @@ import React from "react";
  */
 
 /**
- * NTODO: We should replace that button, it's awfully ugly. A simple highlighted button will do
+ * TODO: We should replace that button, it's awfully ugly. A simple highlighted button will do
  */
 export const Donations = () => {
   return (

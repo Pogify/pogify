@@ -24,7 +24,7 @@ export class PlayerStore {
       // when access_token expires
       expires_at: 0,
       // error stuff
-      // NTODO: replace with proper handling
+      // TODO: replace with proper handling
       error_type: "",
       error_message: "",
       p0: 0,
@@ -131,7 +131,7 @@ export class PlayerStore {
       }
     );
     return res.data;
-    // NTODO: error handlers.
+    // TODO: error handlers.
   };
 
   /**
@@ -165,7 +165,7 @@ export class PlayerStore {
       }
       this.host = host;
       // if spotify is not ready then wait till ready then call this function
-      // NTODO: add timeout for waiting or something (care for slow connections)
+      // TODO: add timeout for waiting or something (care for slow connections)
       if (!window.spotifyReady) {
         window.onSpotifyWebPlaybackSDKReady = () => {
           // set global tracker to true
@@ -198,7 +198,7 @@ export class PlayerStore {
         this.error_message = message;
       });
 
-      // NTODO: proper error handling
+      // TODO: proper error handling
       player.on("account_error", ({ message }) => {
         this.error_type = "account_error";
         this.error_message = message;
@@ -215,7 +215,7 @@ export class PlayerStore {
       // update this player stuff on player state
       player.on("player_state_changed", (data) => {
         // if no data then do nothing
-        // NTODO: host connected to pogify property
+        // TODO: host connected to pogify property
         if (!data) {
           this.data = {};
           return;
@@ -228,7 +228,7 @@ export class PlayerStore {
         // if host seeking on some other client should move stuff here
         // if not host then seeking on another client shouldn't seek here
         // because seeking triggers update on listenerPlayer
-        // NTODO: figure out a elegant way to do this
+        // TODO: figure out a elegant way to do this
         if (!this.host) {
           // if not host...
           // when paused set position in player state
@@ -272,7 +272,7 @@ export class PlayerStore {
           this.connectToPlayer(device_id).then(() => {
             resolve();
           });
-          // NTODO: error handling
+          // TODO: error handling
         } else {
           resolve();
         }
@@ -285,7 +285,7 @@ export class PlayerStore {
 
   connectToPlayer = async (device_id) => {
     // get current access token
-    // NTODO: error handling
+    // TODO: error handling
     let access_token = await this.getOAuthToken();
     // call connect to device endpoint
     return Axios.put(
@@ -322,13 +322,13 @@ export class PlayerStore {
 
     // if localStorage doesn't have an access token then go get it
     if (!window.localStorage.getItem("spotify:refresh_token")) {
-      // NTODO: show a warning modal. that there will be a redirect to login
+      // TODO: show a warning modal. that there will be a redirect to login
       this.goAuth(window.location.pathname);
       return;
     }
 
     // if there is a refresh token and access token expired then get a new token
-    //  NTODO: error handling
+    //  TODO: error handling
     await this.refreshAccessToken();
     // return access token
     return this.access_token;
@@ -355,7 +355,7 @@ export class PlayerStore {
     }
 
     // go get token
-    // NTODO: error handling
+    // TODO: error handling
     const res = await Axios.post(
       "https://accounts.spotify.com/api/token",
       form
@@ -396,7 +396,7 @@ export class PlayerStore {
       this.access_token = res.data.access_token;
       this.expires_at = Date.now() + res.data.expires_in * 1000;
     } catch (e) {
-      // NTODO: error handling
+      // TODO: error handling
       console.log(e.response.data);
       if (e.response.data.error_description === "Refresh token revoked") {
         this.goAuth(window.location.pathname);
