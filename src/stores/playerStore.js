@@ -1,6 +1,5 @@
 import { extendObservable, action, computed } from "mobx";
 import Axios from "axios";
-import EventEmitter from "events";
 import crypto from "crypto";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
@@ -9,9 +8,8 @@ const REDIRECT_URI = window.location.origin + "/auth";
 /**
  * PlayerStore manages state and logic for spotify playback sdk.
  */
-export class PlayerStore extends EventEmitter {
+export class PlayerStore {
   constructor(messenger) {
-    super();
     this.messenger = messenger;
     this.tick = undefined;
     extendObservable(this, {
@@ -236,7 +234,6 @@ export class PlayerStore extends EventEmitter {
         console.log(data);
 
         this.data = data;
-        this.emit("PLAYER_UPDATE");
       });
 
       // ready callback
