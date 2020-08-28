@@ -1,4 +1,4 @@
-import { ModalStore } from "../../../stores";
+import { ModalStore } from "../../../stores/modalStore";
 import React from "react";
 import EventEmitter from "events";
 
