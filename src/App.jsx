@@ -10,9 +10,9 @@ import {
   Home,
   FourOhFour,
 } from "./routes";
-import {ModalSystem} from "./modals"
+import { ModalSystem, ErrorModal } from "./modals";
 import "./styles/App.css";
-import { StoreProvider } from "./contexts";
+import { StoreProvider, messenger } from "./contexts";
 
 function App() {
   return (
@@ -30,8 +30,21 @@ function App() {
         </Switch>
         <ModalSystem />
       </BrowserRouter>
-    </StoreProvider> 
+    </StoreProvider>
   );
 }
-
 export default App;
+
+window.onerror = (evt, source, lineno, colno, error) => {
+  messenger.emit(
+    "POST_MODAL",
+    <ErrorModal errorCode={error.name} errorMessage={error.message}>
+      <div>{JSON.stringify(evt, undefined, 2)}</div>
+      <div>
+        {source} {lineno}:{colno}
+      </div>
+      <div>{JSON.stringify(error, undefined, 2)}</div>
+    </ErrorModal>
+  );
+  console.error(error);
+};
