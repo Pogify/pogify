@@ -12,7 +12,8 @@ export class ThemeStore {
   constructor(messenger) {
     this.messenger = messenger;
     // get system default
-    let systemDefault = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const themeQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const systemDefault = themeQuery.matches
       ? "dark"
       : // if no match media then default to light
       "light";
@@ -21,6 +22,16 @@ export class ThemeStore {
 
     // validate saved theme
     savedTheme = AvailableThemes.includes(savedTheme) ? savedTheme : undefined;
+
+    themeQuery.addEventListener("change", (e) => {
+      if (typeof savedTheme === "undefined") {
+        if (e.matches) {
+          this.setTheme("dark")
+        } else {
+          this.setTheme("light")
+        }
+      }
+    })
 
     extendObservable(this, {
       theme: savedTheme || systemDefault,
