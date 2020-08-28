@@ -13,6 +13,7 @@
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "cookie": "^0.4.1",
+    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
     "firebase": "^7.18.0",
@@ -30,6 +31,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-dev": "cross-env NODE_ENV=development react-scripts start",
     "start-build": "node index.js",
     "build": "react-scripts build && cp build/index.html build/404.html",
     "test": "react-scripts test",

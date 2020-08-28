@@ -139,6 +139,15 @@ Currently, Pogify is open to contributors but please note that Pogify is stil in
 The above paragraph is verbatim from the [Contributing Guidelines](https://github.com/Pogify/pogify/blob/master/CONTRIBUTING.md) which all contributors must read before attempting to contribute!
 All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md).
 
+## Dev-ing
+
+1. Execute `yarn` into the folder of this repository
+2. Copy the file `.env.development` to `.env.development.local` and edit the following:
+    - the URL in the env variable `REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL` to match the URL of the functions endpoint in the Firebase emulator (typically of the form: `http://localhost:5001/theprojectyoucreated/us-central1`)
+    - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
+    Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
+    - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
+
 ## Todo List
 
 - [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
