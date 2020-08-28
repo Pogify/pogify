@@ -1,10 +1,12 @@
 import React from "react";
-import { Player } from ".";
-import { Layout } from "../layouts";
-import { Donations } from "./Donations";
-import { playerStore } from "../stores";
+import { playerStore, modalStore } from "../stores";
 import { autorun } from "mobx";
+import { Layout } from "../layouts";
+
+import { Player } from ".";
+import WarningModal from "../modals/WarningModal";
 import PoweredBySpotify from "./utils/PoweredBySpotify";
+import { Donations } from "./Donations";
 
 /**
  * ListenerPlayer handles logic for listeners
@@ -56,8 +58,7 @@ export default class ListenerPlayer extends React.Component {
         this.setState({
           hostConnected: false,
         });
-        // TODO: replace with modal
-        alert("Host disconnected. Playback Paused");
+        modalStore.queue(<WarningModal title="Host disconnected." content="Playback has been paused" />)
         return;
       } else if (!uri) {
         // if first event is empty then post waiting for host

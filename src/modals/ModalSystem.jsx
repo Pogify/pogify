@@ -15,8 +15,8 @@ const rotate = keyframes`
 `;
 const ModalDiv = styled.div`
   position: absolute;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   top: 0;
   left: 0;
   background-color: ${props => props.theme === "dark" ? "rgba(0,0,0,0.5)" : "rgba(255,255,255, 0.5)"};

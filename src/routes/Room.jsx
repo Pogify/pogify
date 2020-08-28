@@ -42,7 +42,7 @@ export class Room extends React.Component {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            height: "100vh",
+            height: "100%",
           }}
         >
           {this.state.isHost === this.props.match.params.id ? (
@@ -51,8 +51,8 @@ export class Room extends React.Component {
               sessionId={this.props.match.params.id}
             />
           ) : (
-            <ListenerPlayer sessionId={this.props.match.params.id} />
-          )}
+              <ListenerPlayer sessionId={this.props.match.params.id} />
+            )}
         </div>
       );
     } else {
