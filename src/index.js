@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import 'mobx-react-lite/batchingForReactDom'
 
 ReactDOM.render(
   <React.StrictMode>

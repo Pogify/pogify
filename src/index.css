@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.flexContainer {
+  display: flex;
+  align-items: center;
+}
+
+.textAlignLeft {
+  text-align: left;
+}
+.textAlignCenter {
+  text-align: center;
+}

@@ -4,6 +4,7 @@ import { Layout } from "../layouts";
 import { Donations } from "./Donations";
 import { storesContext } from "../contexts";
 import { autorun } from "mobx"
+import PoweredBySpotify from "./utils/PoweredBySpotify";
 
 /**
  * ListenerPlayer handles logic for listeners 
@@ -22,7 +23,7 @@ export default class ListenerPlayer extends React.Component {
     // governs whether or not the player should play when host presses play.
     hostPausedWhileListenerListening: false,
     // governs whether or not players should start playing on connect 
-    playImmediate: false, 
+    playImmediate: false,
   };
 
   /**
@@ -77,11 +78,11 @@ export default class ListenerPlayer extends React.Component {
         return {
           lastTimestamp: timestamp,
           // this value should only be set when host pauses. if playing then inherit from last state.
-          hostPausedWhileListenerListening: !playing? this.context.playerStore.playing : hostPausedWhileListenerListening ,
+          hostPausedWhileListenerListening: !playing ? this.context.playerStore.playing : hostPausedWhileListenerListening,
           hostUri: uri,
           hostPosition: calcPos,
           hostPlaying: playing,
-          firstPlay: playing || firstPlay, 
+          firstPlay: playing || firstPlay,
           hostConnected: true,
         };
       });
@@ -97,11 +98,11 @@ export default class ListenerPlayer extends React.Component {
    * TODO: Probably should move this to eventListener.onmessage
    */
   async componentDidUpdate(_prevProps, prevState) {
-    const {playerStore} = this.context
+    const { playerStore } = this.context
     // multiple calls to set state is still performant because react batches setState
     if (this.state.hostConnected) {
 
-      console.log("stutter",~~(this.state.hostPosition), ~~playerStore.position.value,~~ (this.state.hostPosition - playerStore.position.value), playerStore.playing)
+      console.log("stutter", ~~(this.state.hostPosition), ~~playerStore.position.value, ~~(this.state.hostPosition - playerStore.position.value), playerStore.playing)
       // // if hostPosition and listenerPosition are far apart then seek to host Position
       if (Math.abs(this.state.hostPosition - playerStore.position.value) > 200 && playerStore.playing) {
             // set new stamps
@@ -228,7 +229,7 @@ export default class ListenerPlayer extends React.Component {
     if (!this.state.hostConnected  || !this.state.firstPlay) {
       return (
         <Layout>
-          <h2 style={{marginTop: 0}}>Waiting for Host...</h2>{" "}
+          <h2 style={{ marginTop: 0 }}>Waiting for Host...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
           {/* button to start play immediately  */}
           <input type="checkbox" name="playImmediate" id="playImmediate" value={this.state.playImmediate} onChange={()=>{this.setState({playImmediate: !this.state.playImmediate})}} />
@@ -244,7 +245,7 @@ export default class ListenerPlayer extends React.Component {
           >
             <div>
               {!this.state.hostPlaying && "Paused by host"}
-              {this.state.hostPlaying && this.state.playImmediate&& <div style={{height:"1.3rem"}}/>}
+              {this.state.hostPlaying && this.state.playImmediate && <div style={{ height: "1.3rem" }} />}
               {!this.state.playImmediate && "Press Play to Synchronize With Host"}
             </div>
           </Player>
@@ -270,16 +271,7 @@ export default class ListenerPlayer extends React.Component {
               <br />
               {window.location.href}
             </p>
-            <p style={{ marginBottom: 5 }}>Playback powered by</p>
-            <a href="https://www.spotify.com">
-              <img
-                alt="Spotify Logo"
-                width="80px"
-                height="24px"
-                style={{ verticalAlign: "middle", padding: 12 }}
-                src="/spotify-logo-green.png"
-              />
-            </a>
+            <PoweredBySpotify />
             <Donations />
           </div>
         </div>

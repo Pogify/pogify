@@ -1,9 +1,15 @@
 import React from "react";
-import * as SessionManager from "../utils/sessionManager";
-import {debounce} from "../utils/debounce"
-import { Player, Donations } from ".";
-import { Layout } from "../layouts";
-import { storesContext } from "../contexts";
+import * as SessionManager from "../../utils/sessionManager";
+import { debounce } from "../../utils/debounce"
+import { storesContext } from "../../contexts";
+
+import { Layout } from "../../layouts";
+
+import { Player, Donations } from "../";
+import NewTabLink from "../utils/NewTabLink";
+import PoweredBySpotify from "../utils/PoweredBySpotify";
+
+import styles from "./index.module.css";
 
 
 /**
@@ -15,7 +21,7 @@ export default class HostPlayer extends React.Component {
   lastUpdate = {
     uri: "",
     playing: undefined,
-    position:0,
+    position: 0,
     time: Date.now()
   }
   state = {
@@ -45,7 +51,7 @@ export default class HostPlayer extends React.Component {
     await this.context.playerStore.initializePlayer("Pogify Host", true)
 
     this.context.playerStore.player.on("player_state_changed", debounce((data) => {
-    // debounce incoming data. 
+      // debounce incoming data. 
       let uri, position, playing
       if (data) {
         uri = data.track_window.current_track.uri
@@ -58,7 +64,7 @@ export default class HostPlayer extends React.Component {
           // if uri and playing didn't change then,
           // check that difference is beyond threshold to update 
           // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
-          console.log(Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))), position,this.lastUpdate.position, (Date.now() - this.lastUpdate.time))
+          console.log(Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))), position, this.lastUpdate.position, (Date.now() - this.lastUpdate.time))
           if (Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))) > 1000) {
             SessionManager.publishUpdate(uri, position, playing);
           }
@@ -77,9 +83,16 @@ export default class HostPlayer extends React.Component {
     }, 400));
     this.setState({ loading: false });
   };
-  
+
+  copyLink(evt) {
+    evt.preventDefault()
+    if (navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(evt.target.href)
+    }
+  }
+
   componentDidMount() {
-    
+
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
       this.publishUpdate("", this.state.position, false);
@@ -129,41 +142,27 @@ export default class HostPlayer extends React.Component {
     }
 
 
-    
 
+    // return <div>done</div>
     return (
       <Layout>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="flexContainer">
           <Player />
-          <div
-            style={{
-              width: 400,
-              textAlign: "center",
-              padding: 30,
-            }}
-          >
+          <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p style={{ textAlign: "justify" }}>
+            <p className="textAlignLeft">
               You can continue using Spotify as you normally would. The music is
               playing through this browser tab, you can open this tab in a new
               window to exclude it from OBS.
-              <b> Please do not close this tab.</b>
+              <br></br>
+              <b>Please do not close this tab.</b>
             </p>
-            <p style={{ marginTop: 40 }}>
+            <p className={styles.shareExplanations}>
               Share the url below to listen with others:
               <br />
-              {window.location.href}
+              <NewTabLink href={window.location.href} className={styles.shareLink} onClick={this.copyLink} title="Click to copy and share to your audience">{window.location.href}</NewTabLink>
             </p>
-            <p style={{ marginBottom: 0 }}>Playback powered by</p>
-            <a href="https://www.spotify.com">
-              <img
-                alt="Spotify Logo"
-                width="80px"
-                height="24px"
-                style={{ verticalAlign: "middle", padding: 12 }}
-                src="/spotify-logo-green.png"
-              />
-            </a>
+            <PoweredBySpotify />
             <Donations />
           </div>
         </div>
