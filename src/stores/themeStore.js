@@ -12,19 +12,31 @@ export class ThemeStore {
   constructor(messenger) {
     this.messenger = messenger;
     // get system default
-    let systemDefault = window.matchMedia("(prefers-color-scheme: dark)")
+    const themeQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const systemDefault = themeQuery.matches
       ? "dark"
       : // if no match media then default to light
-        "light";
+      "light";
     // get previous stored theme setting
     let savedTheme = window.localStorage.getItem("theme");
 
     // validate saved theme
     savedTheme = AvailableThemes.includes(savedTheme) ? savedTheme : undefined;
 
+    themeQuery.addEventListener("change", (e) => {
+      if (typeof savedTheme === "undefined") {
+        if (e.matches) {
+          this.setTheme("dark")
+        } else {
+          this.setTheme("light")
+        }
+      }
+    })
+
     extendObservable(this, {
       theme: savedTheme || systemDefault,
     });
+    document.documentElement.classList.add("theme-" + this.theme)
   }
 
   /**
@@ -38,6 +50,8 @@ export class ThemeStore {
     // validate theme then set it
     if (AvailableThemes.includes(theme)) {
       this.theme = theme;
+      AvailableThemes.forEach(theme => document.documentElement.classList.remove("theme-" + theme))
+      document.documentElement.classList.add("theme-" + theme)
     }
     // if theme not in available themes then do nothing
   });
@@ -47,10 +61,9 @@ export class ThemeStore {
    */
   toggleTheme = action(() => {
     if (this.theme === "light") {
-      this.theme = "dark";
+      this.setTheme("dark")
     } else {
-      this.theme = "light";
+      this.setTheme("light")
     }
-    window.localStorage.setItem("theme", this.theme);
   });
 }
