@@ -1,18 +1,17 @@
-import React from 'react'
+import React from 'react';
 
-import NewTabLink from "./NewTabLink"
+import NewTabLink from "./NewTabLink";
 
+import styles from "./PoweredBySpotify.module.css";
 
 export default function SpotifyLogo() {
     return (
-        <div style={{ marginTop: "30px" }}>
-            <NewTabLink href="https://www.spotify.com" title="Visit Spotify's website" style={{ textDecoration: "none" }}>
-                <p style={{ margin: 0, fontSize: "0.6em" }}>Playback powered by</p>
+        <div className={styles.poweredBySpotifyWrapper}>
+            <NewTabLink href="https://www.spotify.com" title="Visit Spotify's website" className={styles.noDecorationLink} style={{ textDecoration: "none" }}>
+                <p className={styles.text}>Playback powered by</p>
                 <img
                     alt=""
-                    width="80px"
-                    height="24px"
-                    style={{ verticalAlign: "middle", padding: 12 }}
+                    className={styles.spotifyLogo}
                     src="/Spotify_Logo_Green.svg"
                 />
             </NewTabLink>
