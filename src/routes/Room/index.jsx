@@ -1,6 +1,8 @@
 import React from "react";
-import { Layout } from "../layouts";
-import { HostPlayer, ListenerPlayer } from "../components";
+import { Layout } from "../../layouts";
+import { HostPlayer, ListenerPlayer } from "../../components";
+
+import styles from "./index.module.css";
 
 // TODO: rebuild this component. its useless in it's current state
 /**
@@ -37,13 +39,7 @@ export class Room extends React.Component {
     if (this.state.isHost !== undefined) {
       return (
         <div
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-            flexWrap: "wrap",
-            height: "100%",
-          }}
+          className={styles.roomWrapper}
         >
           {this.state.isHost === this.props.match.params.id ? (
             <HostPlayer

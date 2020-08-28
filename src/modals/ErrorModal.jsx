@@ -1,21 +1,6 @@
-import React from "react"
-import styled from "styled-components"
+import React from "react";
 
-const FlexDiv = styled.div`
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const ErrorMessageDiv = styled.div`
-  text-align: center;
-  background: white;
-  color: black;
-  padding: 10;
-  border-radius: 10; 
-`
+import styles from "./modals.module.css";
 
 /**
  * Default error modal
@@ -24,15 +9,15 @@ const ErrorMessageDiv = styled.div`
  */
 export default function ErrorModal(props) {
   return (
-    <FlexDiv>
-      <ErrorMessageDiv style={{textAlign: "center", background: "white", color: "black", padding:10, borderRadius: 10}}>
+    <div className={styles.flexDiv}>
+      <div className={styles.errorDiv}>
         <h3>Error: {props.errorCode}</h3>
         <p>{props.errorMessage}</p>
         <div>
           {props.children}
         </div>
         <button onClick={props.closeModal}>Close</button>
-      </ErrorMessageDiv>
-    </FlexDiv>
+      </div>
+    </div>
   )
 }

@@ -1,23 +1,9 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Layout } from "../layouts";
-import styled from "styled-components";
+import { Layout } from "../../layouts";
 
-const CodeInput = styled.input`
-  width: calc(100% - 10px);
-  padding: 5px;
-  border-radius: 12px;
-  border-style: solid;
-  border-width: 0.5px;
-  border-color: rgb(44, 58, 58);
-  text-align: center;
-  transition: box-shadow 0.3s;
+import styles from "./index.module.css";
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24);
-  }
-`;
 
 /**
  * Code input to connect to a session.
@@ -33,10 +19,11 @@ export const ConnectToSession = () => {
 
   return (
     <Layout>
-      <h2 style={{ marginTop: 0 }}>Enter Session Code</h2>
-      <form onSubmit={submit} style={{ display: "inline" }}>
+      <h2 className="noMarginTop" >Enter Session Code</h2>
+      <form onSubmit={submit} className="inline">
         <div>
-          <CodeInput
+          <input
+            className={styles.codeInput}
             type="text"
             placeholder="Code"
             onChange={(e) => setCode(e.target.value)}
@@ -46,16 +33,14 @@ export const ConnectToSession = () => {
         <div>
           <button
             type="submit"
-            style={{
-              width: "100%",
-              margin: "auto",
-              marginTop: "1rem",
-            }}
+            className={styles.submit}
           >
             Go
           </button>
         </div>
       </form>
-    </Layout>
+    </Layout >
   );
 };
+
+export default ConnectToSession

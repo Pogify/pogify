@@ -1,0 +1,21 @@
+.codeInput {
+    width: calc(100% - 10px);
+    padding: 5px;
+    border-radius: 12px;
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: rgb(44, 58, 58);
+    text-align: center;
+    transition: box-shadow 0.3s;
+}
+
+.codeInput:focus {
+    outline: none;
+    box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24);
+}
+
+.submit {
+    width: 100%;
+    margin: auto;
+    margin-top: 1rem;
+}

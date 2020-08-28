@@ -1,6 +1,5 @@
 import React from "react";
-import { Privacy } from "./routes/Privacy";
-import { Terms } from "./routes/Terms";
+
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   AuthRedirect,
@@ -10,9 +9,13 @@ import {
   Home,
   FourOhFour,
 } from "./routes";
+import { Terms } from "./routes/Terms";
+import { Privacy } from "./routes/Privacy";
+
 import { ModalSystem, ErrorModal } from "./modals";
-import "./styles/App.css";
 import { messenger } from "./stores";
+
+import "./styles/App.css";
 
 function App() {
   return (

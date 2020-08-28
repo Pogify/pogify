@@ -150,6 +150,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
    - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
      Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
    - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
+3. Run `yarn start-dev`
 
 ## Todo List
 
