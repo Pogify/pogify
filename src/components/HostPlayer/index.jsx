@@ -169,8 +169,8 @@ export default class HostPlayer extends React.Component {
               <br></br>
               <b>Please do not close this tab.</b>
             </p>
-            <p className={styles.shareExplanations}>
-              Share the url below to listen with others:
+            <div className={styles.shareExplanations}>
+              Share the URL below to listen with others:
               <br />
               <CopyLink
                 href={window.location.href}
@@ -179,7 +179,7 @@ export default class HostPlayer extends React.Component {
               >
                 {window.location.href}
               </CopyLink>
-            </p>
+            </div>
             <PoweredBySpotify />
             <Donations />
           </div>

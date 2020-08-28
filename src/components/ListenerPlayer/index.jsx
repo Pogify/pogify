@@ -297,15 +297,15 @@ export default class ListenerPlayer extends React.Component {
               connected to "Pogify Listener". The music is playing through the
               browser, so <b> please do not close this tab.</b>
             </p>
-            <p className={styles.shareExplanations}>
-              Share the url below to listen with others:
+            <div className={styles.shareExplanations}>
+              Share the URL below to listen with others:
               <br />
               <CopyLink
                 href={window.location.href}
               >
                 {window.location.href}
               </CopyLink>
-            </p>
+            </div>
             <PoweredBySpotify />
             <Donations />
           </div>
