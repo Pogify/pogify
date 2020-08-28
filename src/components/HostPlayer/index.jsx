@@ -5,9 +5,10 @@ import { playerStore } from "../../stores";
 
 import { Layout } from "../../layouts";
 
-import { Player, Donations } from "../";
+import { Player } from "../";
 import NewTabLink from "../utils/NewTabLink";
 import PoweredBySpotify from "../utils/PoweredBySpotify";
+import Donations from "../utils/Donations";
 
 import styles from "./index.module.css";
 

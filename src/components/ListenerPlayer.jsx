@@ -6,7 +6,7 @@ import { Layout } from "../layouts";
 import { Player } from ".";
 import WarningModal from "../modals/WarningModal";
 import PoweredBySpotify from "./utils/PoweredBySpotify";
-import { Donations } from "./Donations";
+import Donations from "./utils/Donations";
 
 /**
  * ListenerPlayer handles logic for listeners

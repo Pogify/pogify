@@ -7,7 +7,7 @@ import React from "react";
 /**
  * TODO: We should replace that button, it's awfully ugly. A simple highlighted button will do
  */
-export const Donations = () => {
+export default function Donations() {
   return (
     <form
       action="https://www.paypal.com/cgi-bin/webscr"
