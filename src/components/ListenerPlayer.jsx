@@ -2,7 +2,7 @@ import React from "react";
 import { Player } from ".";
 import { Layout } from "../layouts";
 import { Donations } from "./Donations";
-import { playerStore } from "../contexts";
+import { playerStore } from "../stores";
 import { autorun } from "mobx";
 import PoweredBySpotify from "./utils/PoweredBySpotify";
 
@@ -257,7 +257,7 @@ export default class ListenerPlayer extends React.Component {
     return (
       <Layout>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Player>
+          <Player isHost={false}>
             <div>
               {!this.state.hostPlaying && "Paused by host"}
               {this.state.hostPlaying && this.state.playImmediate && (

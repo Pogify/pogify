@@ -12,7 +12,7 @@ import {
 } from "./routes";
 import { ModalSystem, ErrorModal } from "./modals";
 import "./styles/App.css";
-import { messenger } from "./contexts";
+import { messenger } from "./stores";
 
 function App() {
   return (

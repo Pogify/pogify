@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import { playerStore } from "../contexts";
+import { playerStore } from "../stores";
 import { secondsToTimeFormat } from '../utils/formatters'
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {

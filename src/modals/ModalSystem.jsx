@@ -1,6 +1,6 @@
 import React from "react"
 import styled, { keyframes } from "styled-components"
-import { modalStore, themeStore } from "../contexts"
+import { modalStore, themeStore } from "../stores"
 import { observer } from "mobx-react"
 
 

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Layout.css";
 import { observer } from "mobx-react"
-import { themeStore } from "../contexts";
+import { themeStore } from "../stores";
 
 /** 
  * Default layout component. 

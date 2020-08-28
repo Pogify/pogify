@@ -1,5 +1,5 @@
 import React from "react";
-import { playerStore } from "../contexts";
+import { playerStore } from "../stores";
 
 /**
  * Component handles redirect after authentication from spotify.

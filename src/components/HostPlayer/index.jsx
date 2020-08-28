@@ -1,7 +1,7 @@
 import React from "react";
 import * as SessionManager from "../../utils/sessionManager";
 import { debounce } from "../../utils/debounce";
-import { playerStore } from "../../contexts";
+import { playerStore } from "../../stores";
 
 import { Layout } from "../../layouts";
 
@@ -165,7 +165,7 @@ export default class HostPlayer extends React.Component {
     return (
       <Layout>
         <div className="flexContainer">
-          <Player />
+          <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting to {this.state.connections} listeners.</h2>
             <p className="textAlignLeft">
