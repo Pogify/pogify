@@ -1,5 +1,6 @@
 import { extendObservable, action, computed } from "mobx";
 import Axios from "axios";
+import EventEmitter from "events";
 import crypto from "crypto";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
@@ -8,13 +9,16 @@ const REDIRECT_URI = window.location.origin + "/auth";
 /**
  * PlayerStore manages state and logic for spotify playback sdk.
  */
-export class PlayerStore {
+export class PlayerStore extends EventEmitter {
   constructor(messenger) {
+    super();
     this.messenger = messenger;
     this.tick = undefined;
     extendObservable(this, {
-      // property on whether or player is host
-      host: false,
+      // property on whether or player should be strict
+      // strict means that it only allows play pause seek track change by pogify
+      // if strict: don't allow playing when paused, don't allow seeking, don't allow track change
+      strict: false,
       // Spotify playback sdk object
       player: undefined,
       // Device id of Spotify playback sdk
@@ -152,18 +156,15 @@ export class PlayerStore {
    * Initialize spotify playback object
    *
    * @param {string} title
-   * @param {boolean} host optional. whether
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
-  initializePlayer = action((title, host = false, connect = true) => {
+  initializePlayer = action((title, connect = true) => {
     return new Promise(async (resolve, reject) => {
       // if player is already connected update name and whether its host, then return
       if (this.player && this.player.setName) {
         await this.player.setName(title);
-        this.host = host;
         return resolve();
       }
-      this.host = host;
       // if spotify is not ready then wait till ready then call this function
       // TODO: add timeout for waiting or something (care for slow connections)
       if (!window.spotifyReady) {
@@ -223,40 +224,19 @@ export class PlayerStore {
         // set player uri to update's uri
         this.uri = data.track_window.current_track.uri;
 
-        console.log(this.position.value, data);
-        // handling is different whether is host or listener
-        // if host seeking on some other client should move stuff here
-        // if not host then seeking on another client shouldn't seek here
-        // because seeking triggers update on listenerPlayer
-        // TODO: figure out a elegant way to do this
-        if (!this.host) {
-          // if not host...
-          // when paused set position in player state
-          if (data.paused) {
-            this.p0 = data.position;
-          }
-          // if spotify sdk playing state doesn't align with playerStore playing state then make them align
-          if (this.playing !== !data.paused) {
-            if (this.playing) {
-              this.player.resume();
-            } else {
-              this.player.pause();
-            }
-          }
+        this.p0 = data.position;
+        this.t0 = performance.now();
+
+        if (!data.paused) {
+          this.resume();
         } else {
-          // if host...
-          // set positions
-          this.p0 = data.position;
-          this.t0 = performance.now();
-          // if pause or play set
-          if (!data.paused) {
-            this.resume();
-          } else {
-            this.pause();
-          }
+          this.pause();
         }
-        // set data property
+
+        console.log(data);
+
         this.data = data;
+        this.emit("PLAYER_UPDATE");
       });
 
       // ready callback

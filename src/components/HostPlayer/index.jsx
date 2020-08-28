@@ -1,6 +1,6 @@
 import React from "react";
 import * as SessionManager from "../../utils/sessionManager";
-import { debounce } from "../../utils/debounce"
+import { debounce } from "../../utils/debounce";
 import { storesContext } from "../../contexts";
 
 import { Layout } from "../../layouts";
@@ -11,22 +11,21 @@ import PoweredBySpotify from "../utils/PoweredBySpotify";
 
 import styles from "./index.module.css";
 
-
 /**
  * HostPlayer handles logic for Pogify Host
  */
 export default class HostPlayer extends React.Component {
-  static contextType = storesContext
+  static contextType = storesContext;
   // lastUpdate property keeps track the data sent in the last publish update
   lastUpdate = {
     uri: "",
     playing: undefined,
     position: 0,
-    time: Date.now()
-  }
+    time: Date.now(),
+  };
   state = {
     loading: false,
-    pso: undefined
+    pso: undefined,
   };
 
   /**
@@ -46,77 +45,96 @@ export default class HostPlayer extends React.Component {
    */
   initializePlayer = async () => {
     this.setState({
-      loading: true
-    })
-    await this.context.playerStore.initializePlayer("Pogify Host", true)
+      loading: true,
+    });
+    await this.context.playerStore.initializePlayer("Pogify Host");
 
-    this.context.playerStore.player.on("player_state_changed", debounce((data) => {
-      // debounce incoming data. 
-      let uri, position, playing
-      if (data) {
-        uri = data.track_window.current_track.uri
-        position = data.position
-        playing = !data.paused
-        // check that uri or playing changed
-        if (this.lastUpdate.uri !== uri || this.lastUpdate.playing !== playing) {
-          SessionManager.publishUpdate(uri, position, playing);
-        } else {
-          // if uri and playing didn't change then,
-          // check that difference is beyond threshold to update 
-          // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
-          console.log(Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))), position, this.lastUpdate.position, (Date.now() - this.lastUpdate.time))
-          if (Math.abs(position - (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))) > 1000) {
-            SessionManager.publishUpdate(uri, position, playing);
-          }
-        }
-      } else {
-        uri = ""
-        position = this.context.playerStore.position
-        playing = false
-        SessionManager.publishUpdate(uri, position, playing)
-      }
-      this.lastUpdate = {
-        uri, playing, position, time: Date.now()
-      }
-      // it seems 400 is about a good sweet spot for debounce.
-      // Hesitant to raise it anymore because it would increase latency to listener
-    }, 400));
+    this.context.playerStore.player.on(
+      "player_state_changed",
+      this.handleData.bind(this)
+    );
     this.setState({ loading: false });
   };
 
+  handleData = debounce((data) => {
+    // debounce incoming data.
+    let uri, position, playing;
+    if (data) {
+      uri = data.track_window.current_track.uri;
+      position = data.position;
+      playing = !data.paused;
+      // check that uri or playing changed
+      if (this.lastUpdate.uri !== uri || this.lastUpdate.playing !== playing) {
+        SessionManager.publishUpdate(uri, position, playing);
+      } else {
+        // if uri and playing didn't change then,
+        // check that difference is beyond threshold to update
+        // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
+        console.log(
+          Math.abs(
+            position -
+              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+          ),
+          position,
+          this.lastUpdate.position,
+          Date.now() - this.lastUpdate.time
+        );
+        if (
+          Math.abs(
+            position -
+              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+          ) > 1000
+        ) {
+          SessionManager.publishUpdate(uri, position, playing);
+        }
+      }
+    } else {
+      uri = "";
+      position = this.context.playerStore.position;
+      playing = false;
+      SessionManager.publishUpdate(uri, position, playing);
+    }
+    this.lastUpdate = {
+      uri,
+      playing,
+      position,
+      time: Date.now(),
+    };
+    // it seems 400 is about a good sweet spot for debounce.
+    // Hesitant to raise it anymore because it would increase latency to listener
+  }, 400);
+
   copyLink(evt) {
-    evt.preventDefault()
+    evt.preventDefault();
     if (navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(evt.target.href)
+      navigator.clipboard.writeText(evt.target.href);
     }
   }
 
   componentDidMount() {
-
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
       this.publishUpdate("", this.state.position, false);
     };
     // set the token refresh interval
-    this.setTokenRefreshInterval()
+    this.setTokenRefreshInterval();
   }
 
   componentWillUnmount() {
     // remove listener on unmount. prevents host disconnected alert
     // DEFUNCT: should replace it with something else
-    this.context.playerStore.player.removeListener("player_state_changed")
-
+    this.context.playerStore.player.disconnect();
     // publish unload update when unmounting player
     // TODO: cleanup when all logic is moved to stores
     this.publishUpdate("", this.state.position, false);
     // remove listener
     window.onbeforeunload = null;
-    // clear refresh interval 
+    // clear refresh interval
     clearInterval(this.refreshInterval);
   }
 
   render() {
-    // loading 
+    // loading
     if (this.state.loading && this.state.pso) {
       return (
         <Layout>
@@ -136,12 +154,12 @@ export default class HostPlayer extends React.Component {
 
     // check that player is mounted in playerStore
     if (!this.context.playerStore.player) {
-      return <Layout>
-        <button onClick={this.initializePlayer}>Start Session</button>
-      </Layout>
+      return (
+        <Layout>
+          <button onClick={this.initializePlayer}>Start Session</button>
+        </Layout>
+      );
     }
-
-
 
     // return <div>done</div>
     return (
@@ -160,7 +178,14 @@ export default class HostPlayer extends React.Component {
             <p className={styles.shareExplanations}>
               Share the url below to listen with others:
               <br />
-              <NewTabLink href={window.location.href} className={styles.shareLink} onClick={this.copyLink} title="Click to copy and share to your audience">{window.location.href}</NewTabLink>
+              <NewTabLink
+                href={window.location.href}
+                className={styles.shareLink}
+                onClick={this.copyLink}
+                title="Click to copy and share to your audience"
+              >
+                {window.location.href}
+              </NewTabLink>
             </p>
             <PoweredBySpotify />
             <Donations />

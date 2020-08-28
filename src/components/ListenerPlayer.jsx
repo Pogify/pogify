@@ -3,17 +3,17 @@ import { Player } from ".";
 import { Layout } from "../layouts";
 import { Donations } from "./Donations";
 import { storesContext } from "../contexts";
-import { autorun } from "mobx"
+import { autorun } from "mobx";
 import PoweredBySpotify from "./utils/PoweredBySpotify";
 
 /**
- * ListenerPlayer handles logic for listeners 
+ * ListenerPlayer handles logic for listeners
  */
 export default class ListenerPlayer extends React.Component {
-  static contextType = storesContext
+  static contextType = storesContext;
   state = {
     device_id: "",
-    loading: true,
+    loading: false,
     lastTimestamp: 0,
     subConnected: false,
     hostUri: "",
@@ -22,7 +22,7 @@ export default class ListenerPlayer extends React.Component {
     hostPosition: 0,
     // governs whether or not the player should play when host presses play.
     hostPausedWhileListenerListening: false,
-    // governs whether or not players should start playing on connect 
+    // governs whether or not players should start playing on connect
     playImmediate: false,
   };
 
@@ -43,10 +43,14 @@ export default class ListenerPlayer extends React.Component {
     };
 
     // message Handler
-    this.eventListener.onmessage = (event) => {
+    this.eventListener.onmessage = async (event) => {
       console.log(event.data);
       let { timestamp, uri, position, playing } = JSON.parse(event.data);
-      // if there is a hostUri before but this 
+      // if message timestamp is less than previously received timestamp it is stale. don't act on it
+      if (this.state.lastTimestamp > timestamp) return;
+
+      const { playerStore } = this.context;
+      // if there is a hostUri before but this
       if (this.state.hostUri && !uri) {
         // TODO: have a separate state for disconnect
         this.setState({
@@ -62,29 +66,44 @@ export default class ListenerPlayer extends React.Component {
         });
         return;
       }
-      // set stamp for when event received
-      let t0 = performance.now()
-      // set state callback for more accuate "time stamping"
-      this.setState(({lastTimestamp,hostPausedWhileListenerListening,firstPlay}) => {
-        // if the incoming timestamp is older than the current timestamp, it is stale. ignore it
-        if (timestamp < lastTimestamp) {
-          return {};
-        }
 
-        // if host is playing calculate position based on the elapsed time relative to host's timestamp.
-        let calcPos = playing ? position + Date.now() - timestamp + performance.now() - t0: position;
+      // calculate hosts current position based on hosts timestamp and time now on client
+      let calcPos = playing ? position + Date.now() - timestamp : position;
 
+      let wasPlaying = playerStore.playing;
 
-        return {
-          lastTimestamp: timestamp,
-          // this value should only be set when host pauses. if playing then inherit from last state.
-          hostPausedWhileListenerListening: !playing ? this.context.playerStore.playing : hostPausedWhileListenerListening,
-          hostUri: uri,
-          hostPosition: calcPos,
-          hostPlaying: playing,
-          firstPlay: playing || firstPlay,
-          hostConnected: true,
-        };
+      if (uri !== playerStore.uri) {
+        await playerStore.newTrack(uri, calcPos);
+      }
+      if (
+        !this.state.hostPlaying &&
+        playing &&
+        this.state.hostPausedWhileListenerListening
+      ) {
+        // if host goes from pause to play and listener was listening when host paused, then resume and seek
+        playerStore.resume();
+        playerStore.seek(calcPos);
+      } else if (!playing) {
+        // if host pauses, pause
+        playerStore.pause();
+      } else {
+        // if host is still playing then only seek
+        playerStore.seek(calcPos);
+      }
+
+      this.setState({
+        lastTimestamp: timestamp,
+        // this value should only be set when host pauses. if playing then inherit from last state.
+        hostPausedWhileListenerListening:
+          wasPlaying && !playing
+            ? wasPlaying
+            : this.state.hostPausedWhileListenerListening,
+        hostUri: uri,
+        hostPosition: calcPos,
+        updateTimestamp: Date.now(),
+        hostPlaying: playing,
+        firstPlay: playing || this.state.firstPlay,
+        hostConnected: true,
       });
     };
 
@@ -92,79 +111,45 @@ export default class ListenerPlayer extends React.Component {
     this.eventListener.onerror = console.error;
   };
 
-
-  /**
-   * Handles logic for when host sends update. 
-   * TODO: Probably should move this to eventListener.onmessage
-   */
-  async componentDidUpdate(_prevProps, prevState) {
-    const { playerStore } = this.context
-    // multiple calls to set state is still performant because react batches setState
-    if (this.state.hostConnected) {
-
-      console.log("stutter", ~~(this.state.hostPosition), ~~playerStore.position.value, ~~(this.state.hostPosition - playerStore.position.value), playerStore.playing)
-      // // if hostPosition and listenerPosition are far apart then seek to host Position
-      if (Math.abs(this.state.hostPosition - playerStore.position.value) > 200 && playerStore.playing) {
-            // set new stamps
-            this.h_p0 = this.state.hostPosition
-            this.h_t0 = performance.now()
-            // seek
-            playerStore.seek(this.state.hostPosition, this.h_t0)
-      }
-
-
-      // if host is paused           but is player is playing then pause
-      if (!this.state.hostPlaying && playerStore.playing) {
-        this.context.playerStore.pause()
-      }
-      // if  host starts playing then set tick
-      if (this.state.hostPlaying && !this.hostTick) {
-        // if listener is also playing then play with host
-        if (this.state.hostPausedWhileListenerListening) {
-          this.context.playerStore.resume()
-        }
-        // set new stamps
-        this.h_t0 = performance.now()
-        this.h_p0 = this.state.hostPosition
-        // tick to track time
-        // increasing will increase latency but will decrease calls
-        this.hostTick = setInterval(()=>{
-          window.requestAnimationFrame((time)=>{
-            this.setState({
-              hostPosition: time - this.h_t0 + this.h_p0
-            })
-          })
-        }, 100)
-      } else if (!this.state.hostPlaying) {
-        // if host pauses stop tick and pause listener
-        clearInterval(this.hostTick)
-        this.context.playerStore.pause()
-        playerStore.playing = false
-        this.hostTick = undefined
-      }
-
-      // if the host's uri is different from player's then then new track
-      if (this.state.hostUri !== playerStore.data.track_window.current_track.uri) {
-        this.context.playerStore.newTrack(this.state.hostUri, this.state.hostPosition)
-      }
-    }
-  }
-
   /**
    * Initialize player as listener
    */
   connect = async () => {
-    this.setState({loading: true})
-    
+    this.setState({ loading: true });
+
     console.log("once");
     // TODO: listener title based on session code?
-    await this.context.playerStore.initializePlayer("Pogify Listener", false)
+    await this.context.playerStore.initializePlayer("Pogify Listener");
     // set listener event listeners
     this.setListenerListeners();
 
-    this.setState({loading:false})
+    this.setState({ loading: false, spotConnected: true });
   };
 
+  componentDidMount() {
+    // autorun to trigger when playerstore is first playing.
+    // made it like this to allow client to click play button on player
+    autorun((reaction) => {
+      if (this.context.playerStore.playing) {
+        this.setState({
+          playImmediate: true,
+        });
+        reaction.dispose();
+      }
+    });
+
+    // autorun then playerStore starts playing. resync to host
+    this.forceUpdateAutorunDisposer = autorun(() => {
+      const { hostPosition, updateTimestamp } = this.state;
+
+      if (this.context.playerStore.playing) {
+        console.log("autorun playing");
+        this.context.playerStore.seek(
+          hostPosition + Date.now() - updateTimestamp
+        );
+      }
+    });
+  }
   componentWillUnmount() {
     // close connection to sub server
     if (this.eventListener) {
@@ -174,27 +159,8 @@ export default class ListenerPlayer extends React.Component {
     if (this.context.playerStore.player) {
       this.context.playerStore.player.disconnect();
     }
-    // dispose auto run 
-    this.forceUpdateAutorunDisposer()
-  }
-
-  componentDidMount() {
-    // autorun to trigger when playerstore is first playing.
-    // made it like this to allow client to click play button on player 
-    autorun((reaction)=>{
-      if (this.context.playerStore.playing) {
-        this.setState({
-          playImmediate: true
-        })
-        reaction.dispose()
-      }
-    })
-
-    // force update when playing changes
-    this.forceUpdateAutorunDisposer = autorun(()=>{
-      if (this.context.playerStore.playing) {}
-      this.forceUpdate()
-    })
+    // dispose auto run
+    this.forceUpdateAutorunDisposer();
   }
 
   render() {
@@ -225,15 +191,28 @@ export default class ListenerPlayer extends React.Component {
       );
     }
 
-    // waiting for host view. 
-    if (!this.state.hostConnected  || !this.state.firstPlay) {
+    // waiting for host view.
+    if (!this.state.hostConnected || !this.state.firstPlay) {
       return (
         <Layout>
           <h2 style={{ marginTop: 0 }}>Waiting for Host...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
-          {/* button to start play immediately  */}
-          <input type="checkbox" name="playImmediate" id="playImmediate" value={this.state.playImmediate} onChange={()=>{this.setState({playImmediate: !this.state.playImmediate})}} />
-          <label htmlFor="playImmediate">Start Playing Music Once Connected to Host?</label>
+          {/* TODO: button to start play immediately
+              BODY have music play immediately on first connect. 
+            
+          */}
+          <input
+            type="checkbox"
+            name="playImmediate"
+            id="playImmediate"
+            value={this.state.playImmediate}
+            onChange={() => {
+              this.setState({ playImmediate: !this.state.playImmediate });
+            }}
+          />
+          <label htmlFor="playImmediate">
+            Start Playing Music Once Connected to Host?
+          </label>
         </Layout>
       );
     }
@@ -241,12 +220,14 @@ export default class ListenerPlayer extends React.Component {
     return (
       <Layout>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Player
-          >
+          <Player>
             <div>
               {!this.state.hostPlaying && "Paused by host"}
-              {this.state.hostPlaying && this.state.playImmediate && <div style={{ height: "1.3rem" }} />}
-              {!this.state.playImmediate && "Press Play to Synchronize With Host"}
+              {this.state.hostPlaying && this.state.playImmediate && (
+                <div style={{ height: "1.3rem" }} />
+              )}
+              {!this.state.playImmediate &&
+                "Press Play to Synchronize With Host"}
             </div>
           </Player>
 
