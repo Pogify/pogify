@@ -8,7 +8,7 @@ export default function SpotifyLogo() {
     return (
         <div className={styles.poweredBySpotifyWrapper}>
             <NewTabLink href="https://www.spotify.com" title="Visit Spotify's website" className={styles.noDecorationLink} style={{ textDecoration: "none" }}>
-                <p className={styles.text}>Playback powered by</p>
+                <p className={styles.text}>Playback powered by</p><br></br>
                 <img
                     alt=""
                     className={styles.spotifyLogo}
