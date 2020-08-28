@@ -3,7 +3,7 @@ import { playerStore, modalStore } from "../../stores";
 import { autorun } from "mobx";
 import { Layout } from "../../layouts";
 
-import { Player } from "..";
+import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
 import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";

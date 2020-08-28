@@ -5,7 +5,7 @@ import { playerStore } from "../../stores";
 
 import { Layout } from "../../layouts";
 
-import { Player } from "../";
+import Player from "../Player";
 import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";

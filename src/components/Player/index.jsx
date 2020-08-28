@@ -1,8 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import { observer } from "mobx-react";
-import { playerStore } from "../stores";
-import { secondsToTimeFormat } from '../utils/formatters'
+import { playerStore } from "../../stores";
+import { secondsToTimeFormat } from '../../utils/formatters'
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -11,46 +10,32 @@ import {
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
 
-import NewTabLink from "./utils/NewTabLink"
+import NewTabLink from "../utils/NewTabLink";
 
-// inherit style from parents
-const InheritA = styled(NewTabLink)`
-  color: inherit;
-  text-decoration: inherit;
-  margin: 0 3px;
-
-  &:hover {
-    /* color: grey; */
-    text-decoration: underline;
-  }
-`;
+import styles from "./index.module.css";
 
 
 // Allow MobX to optimize data that does not change regularly
 const TrackMetadata = observer(() => {
   const trackData = playerStore.data.track_window.current_track
   return (
-    <div>
+    <div className={styles.metadataWrapper}>
       <div
-        style={{
-          height: 300,
-          width: 300,
-          overflow: "hidden",
-        }}
+        className={styles.albumArt}
       >
         <img src={trackData.album.images[0].url} alt={`Cover art for ${trackData.album.name}`} />
       </div>
-      <div style={{ paddingBottom: 10 }}>
+      <div>
         <h3>
-          <InheritA href={trackData.uri}>{trackData.name}</InheritA>
+          <NewTabLink href={trackData.uri} className={styles.spotifyLink}>{trackData.name}</NewTabLink>
         </h3>
-        {trackData.artists.map(({ name, uri }, i) => (
-          <InheritA href={uri} key={i}>
+        {trackData.artists.map(({ name, uri }) => (
+          <NewTabLink href={uri} className={styles.spotifyLink} key={uri}>
             {name}
-          </InheritA>
+          </NewTabLink>
         ))}{" "}
         <br />
-        <InheritA href={trackData.album.uri}>{trackData.album.name}</InheritA>
+        <NewTabLink href={trackData.album.uri} className={styles.spotifyLink}>{trackData.album.name}</NewTabLink>
       </div>
     </div>
   )
@@ -121,19 +106,14 @@ export const Player = observer((props) => {
 
   return (
     <div
-      style={{
-        width: 300,
-        textAlign: "center",
-        borderRadius: 10,
-        padding: 30,
-      }}
+      className={styles.player}
     >
 
       <TrackMetadata />
       <div>
         {secondsToTimeFormat((playerStore.position) / 1000)}
         <input
-          style={{ width: "70%" }}
+          className={styles.seekBar}
           type="range"
           name="position"
           id="position"
@@ -160,7 +140,7 @@ export const Player = observer((props) => {
         <FAI icon={faVolumeUp} />
       </div>
       {!props.dontShow && (
-        <div style={{ cursor: "pointer" }} onClick={() => playerStore.togglePlay()}>
+        <div className={styles.playButtonWrapper} onClick={() => playerStore.togglePlay()}>
           {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
@@ -169,3 +149,4 @@ export const Player = observer((props) => {
   );
 })
 
+export default Player
