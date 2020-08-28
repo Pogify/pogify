@@ -24,6 +24,8 @@ export default class ListenerPlayer extends React.Component {
     hostPausedWhileListenerListening: false,
     // governs whether or not players should start playing on connect
     playImmediate: false,
+    firstPlay: false,
+    synced: true,
   };
 
   /**
@@ -72,23 +74,26 @@ export default class ListenerPlayer extends React.Component {
 
       let wasPlaying = playerStore.playing;
 
-      if (uri !== playerStore.uri) {
-        await playerStore.newTrack(uri, calcPos);
-      }
-      if (
-        !this.state.hostPlaying &&
-        playing &&
-        this.state.hostPausedWhileListenerListening
-      ) {
-        // if host goes from pause to play and listener was listening when host paused, then resume and seek
-        playerStore.resume();
-        playerStore.seek(calcPos);
-      } else if (!playing) {
-        // if host pauses, pause
-        playerStore.pause();
-      } else {
-        // if host is still playing then only seek
-        playerStore.seek(calcPos);
+      // if listener player is not in synced state with host then pass player updates and only update state
+      if (this.state.synced) {
+        if (uri !== playerStore.uri) {
+          await playerStore.newTrack(uri, calcPos);
+        }
+        if (
+          !this.state.hostPlaying &&
+          playing &&
+          this.state.hostPausedWhileListenerListening
+        ) {
+          // if host goes from pause to play and listener was listening when host paused, then resume and seek
+          playerStore.resume();
+          playerStore.seek(calcPos);
+        } else if (!playing) {
+          // if host pauses, pause
+          playerStore.pause();
+        } else {
+          // if host is still playing then only seek
+          playerStore.seek(calcPos);
+        }
       }
 
       this.setState({
@@ -106,6 +111,39 @@ export default class ListenerPlayer extends React.Component {
         hostConnected: true,
       });
     };
+
+    // synchronization checker
+    this.context.playerStore.player.on("player_state_changed", (data) => {
+      const {
+        hostPosition,
+        hostUri,
+        hostPlaying,
+        hostConnected,
+        updateTimestamp,
+
+        playImmediate,
+      } = this.state;
+
+      let calcPos = hostPlaying
+        ? hostPosition + Date.now() - updateTimestamp
+        : hostPosition;
+
+      if (
+        hostConnected &&
+        playImmediate &&
+        (hostUri !== data.track_window.current_track.uri ||
+          hostPlaying !== !data.paused ||
+          Math.abs(calcPos - data.position) > 2000)
+      ) {
+        this.setState({
+          synced: false,
+        });
+      } else {
+        this.setState({
+          synced: true,
+        });
+      }
+    });
 
     // TODO: error handling
     this.eventListener.onerror = console.error;
@@ -139,7 +177,7 @@ export default class ListenerPlayer extends React.Component {
     });
 
     // autorun then playerStore starts playing. resync to host
-    this.forceUpdateAutorunDisposer = autorun(() => {
+    this.forceUpdateAutorunDisposer = autorun((reaction) => {
       const { hostPosition, updateTimestamp } = this.state;
 
       if (this.context.playerStore.playing) {
@@ -147,6 +185,7 @@ export default class ListenerPlayer extends React.Component {
         this.context.playerStore.seek(
           hostPosition + Date.now() - updateTimestamp
         );
+        reaction.dispose();
       }
     });
   }
@@ -228,6 +267,10 @@ export default class ListenerPlayer extends React.Component {
               )}
               {!this.state.playImmediate &&
                 "Press Play to Synchronize With Host"}
+              {/* TODO: implement a resync button that will sync listener back to host. 
+                    BODY calling onmessage handler with last received update seems like the way to do it.
+                */}
+              {!this.state.synced && <div>Not synced with host</div>}
             </div>
           </Player>
 
