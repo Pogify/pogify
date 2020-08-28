@@ -30,6 +30,7 @@ export default class ListenerPlayer extends React.Component {
     playImmediate: false,
     firstPlay: false,
     synced: true,
+    parked: false,
   };
 
   /**
@@ -107,8 +108,31 @@ export default class ListenerPlayer extends React.Component {
         updateTimestamp,
 
         playImmediate,
+        parked,
       } = this.state;
 
+      // don't update sync state if player parks.
+      // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
+      // if the player reaches end of track and stops playing but host is still playing then skip sync update.
+      // set parked flag
+      if (data.position > data.duration - 500 && hostPlaying && data.paused) {
+        console.log("true");
+        return this.setState({
+          parked: true,
+        });
+      } else if (parked && data.position === 0 && data.paused) {
+        console.log("still parked");
+        return;
+      }
+      // FIXME: player cannot maintain sync if host continues play at the end of a track.
+      /* BODY reason: unknown. suspicion: player un parks then tries to play at end of track then forced to repark then nothing.
+       */
+      console.log("not parked");
+      this.setState({
+        parked: false,
+      });
+
+      // calculated position based on host timestamp, playing state and elapsed time.
       let calcPos = hostPlaying
         ? hostPosition + Date.now() - updateTimestamp
         : hostPosition;
@@ -155,27 +179,32 @@ export default class ListenerPlayer extends React.Component {
    * @param {string} uri spotify track uri
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
+   * @param {boolean} force whether to force playing
    */
-  async syncListener(uri, position, playing) {
+  async syncListener(uri, position, playing, force) {
     if (uri !== playerStore.uri) {
       await playerStore.newTrack(uri, position);
     }
-    if (
-      !this.state.hostPlaying &&
-      playing &&
-      this.state.hostPausedWhileListenerListening
-    ) {
-      // if host goes from pause to play and listener was listening when host paused, then resume and seek
+    if (playing && (this.state.hostPausedWhileListenerListening || force)) {
+      // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
       playerStore.resume();
-      playerStore.seek(position);
     } else if (!playing) {
       // if host pauses, pause
       playerStore.pause();
-    } else {
-      // if host is still playing then only seek
-      playerStore.seek(position);
     }
+    playerStore.seek(position);
+    this.setState({
+      synced: true,
+    });
   }
+
+  syncOnClick = () => {
+    const { hostUri, hostPosition, hostPlaying, updateTimestamp } = this.state;
+    const calcPos = hostPlaying
+      ? hostPosition + Date.now() - updateTimestamp
+      : hostPosition;
+    this.syncListener(hostUri, calcPos, hostPlaying, true);
+  };
 
   componentDidMount() {
     // autorun to trigger when playerstore is first playing.
@@ -272,16 +301,22 @@ export default class ListenerPlayer extends React.Component {
         <div className="flexContainer">
           <Player isHost={false}>
             <div>
-              {!this.state.hostPlaying && "Paused by host"}
+              {!this.state.hostPlaying && this.state.synced && "Paused by host"}
+              {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
               {this.state.hostPlaying && this.state.playImmediate && (
                 <div style={{ height: "1.3rem" }} />
               )}
               {!this.state.playImmediate &&
                 "Press Play to Synchronize With Host"}
-              {/* TODO: implement a resync button that will sync listener back to host. 
-                    BODY calling onmessage handler with last received update seems like the way to do it.
+              {/* TODO: clean up this button
+                    BODY
                 */}
-              {!this.state.synced && <div>Not synced with host</div>}
+              {!this.state.synced && (
+                <div>
+                  Not synced with host
+                  <button onClick={this.syncOnClick}>Sync</button>
+                </div>
+              )}
             </div>
           </Player>
 
