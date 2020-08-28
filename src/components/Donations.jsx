@@ -3,13 +3,17 @@ import React from "react";
 /**
  * Donations button from PayPal
  */
+
+/**
+ * TODO: We should replace that button, it's awfully ugly. A simple highlighted button will do
+ */
 export const Donations = () => {
   return (
     <form
       action="https://www.paypal.com/cgi-bin/webscr"
       method="post"
-      target="_top"
-      style={{height: 26, width: 92}}
+      target="_blank"
+      style={{ height: 26, width: 92 }}
     >
       <input type="hidden" name="cmd" value="_donations" />
       <input type="hidden" name="business" value="PMHPX79UJJVTA" />
@@ -22,13 +26,6 @@ export const Donations = () => {
         name="submit"
         title="PayPal - The safer, easier way to pay online!"
         alt="Donate with PayPal button"
-      />
-      <img
-        alt=""
-        border="0"
-        src="https://www.paypal.com/en_US/i/scr/pixel.gif"
-        width="1"
-        height="1"
       />
     </form>
   );
