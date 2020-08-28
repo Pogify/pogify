@@ -16,6 +16,10 @@
     background-color: #3f3d39;
 }
 
+:global(.theme-light) .link {
+    background-color: #f0f0f0;
+}
+
 .tooltip {
     font-size: 0.9em;
     background: rgb(0 0 0 / 85%);
@@ -29,6 +33,11 @@
     pointer-events: none;
     transition: opacity 0.3s, transform 0.3s;
     opacity: 0;
+}
+
+:global(.theme-light) .tooltip {
+    background: #f0f0f0ab;
+    backdrop-filter: blur(5px);
 }
 
 .tooltip::after {

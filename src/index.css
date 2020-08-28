@@ -1,3 +1,5 @@
+@import-normalize;
+
 html,
 #root,
 body {
@@ -50,4 +52,8 @@ code {
 
 a:visited {
   color: white;
+}
+
+.theme-light a:visited {
+  color: black;
 }
