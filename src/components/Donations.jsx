@@ -19,6 +19,9 @@ export const Donations = () => {
       <input type="hidden" name="business" value="PMHPX79UJJVTA" />
       <input type="hidden" name="item_name" value="Pogify" />
       <input type="hidden" name="currency_code" value="USD" />
+      {/* TODO: replace this button (testing github bot)
+        BODY ignore this issue
+      */}
       <input
         type="image"
         src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
