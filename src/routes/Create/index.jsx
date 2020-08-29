@@ -2,11 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../layouts";
 import { createSession } from "../../utils/sessionManager";
-
+import { ErrorModal } from "../../modals";
 import styles from "./index.module.css";
+import { modalStore } from "../../stores";
 
 /**
- * Create session component. 
+ * Create session component.
  * One button to create.
  * Shows any active session in localStorage
  */
@@ -21,10 +22,22 @@ export class Create extends React.Component {
 
   // waits to create session
   async create() {
-    // TODO: handle errors
-    let res = await createSession();
-    // redirect on successful session creation
-    this.props.history.push("/session/" + res.session);
+    try {
+      let res = await createSession();
+      // redirect on successful session creation
+      this.props.history.push("/session/" + res.session);
+    } catch (e) {
+      modalStore.queue(
+        <ErrorModal
+          errorCode="Failed to create Session"
+          errorMessage="There was some problem and we were unable to create a session. You can close this modal and try again."
+        >
+          <div>{e.name}</div>
+          <div>{e.message}</div>
+          <div>{e.stack}</div>
+        </ErrorModal>
+      );
+    }
   }
 
   componentDidMount() {
@@ -45,7 +58,7 @@ export class Create extends React.Component {
             <div>
               <Link
                 to={`/session/${this.state.activeSession}`}
-              // TODO: better link styling, more button-like?
+                // TODO: better link styling, more button-like?
               >
                 Resume {this.state.activeSession}
               </Link>
