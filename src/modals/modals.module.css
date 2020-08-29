@@ -7,11 +7,21 @@
 }
 
 .errorDiv {
+  max-width: 70%;
+  max-height: 70%;
   text-align: center;
   background: white;
   color: black;
   padding: 10px;
   border-radius: 10px;
+}
+
+.errorDivChildren {
+  text-align: left;
+  white-space: pre;
+  overflow: auto;
+  max-height: 40vh;
+  padding: 10px;
 }
 
 .warningDiv {
