@@ -123,7 +123,7 @@ class HostPlayer extends React.Component {
     if (playerStore.player) {
       // publish unload update when unmounting player
       await SessionManager.publishUpdate("", playerStore.position, false);
-      playerStore.player.disconnectPlayer();
+      playerStore.disconnectPlayer();
     }
     // remove onbeforeunload handler
     window.onbeforeunload = null;
