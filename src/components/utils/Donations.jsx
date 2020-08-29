@@ -13,7 +13,7 @@ export default function Donations() {
       action="https://www.paypal.com/cgi-bin/webscr"
       method="post"
       target="_blank"
-      style={{ height: 26, width: 92 }}
+      style={{ height: 26, width: 150, margin: "auto"}}
     >
       <input type="hidden" name="cmd" value="_donations" />
       <input type="hidden" name="business" value="PMHPX79UJJVTA" />
@@ -23,7 +23,8 @@ export default function Donations() {
         border="0"
         name="submit"
         title="PayPal - The safer, easier way to pay online!"
-        style={{"backgroundColor": "#FFC43B", "color": "#000000"}}
+        alt="Donate with PayPal button"
+        style={{"backgroundColor": "#FFC43B", "color": "#000000", "margin": "auto"}}
       ><strong>Donate</strong></button>
     </form>
   );

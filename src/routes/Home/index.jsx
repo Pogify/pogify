@@ -32,8 +32,8 @@ export class Home extends React.Component {
           </Link>
         </div>
         <div className={styles.donationsWrapper}>
-          <p>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
-          <Donations />
+          <p style={{"maxWidth": "55%"}}>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
+          <div style={{"width": "40%"}}><Donations /></div>
         </div>
 
       </Layout>
