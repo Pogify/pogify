@@ -12,8 +12,7 @@ import {
 import { Terms } from "./routes/Terms";
 import { Privacy } from "./routes/Privacy";
 
-import { ModalSystem, ErrorModal } from "./modals";
-import { messenger } from "./stores";
+import { ModalSystem } from "./modals";
 
 import "./styles/App.css";
 
@@ -35,25 +34,3 @@ function App() {
   );
 }
 export default App;
-
-window.onerror = (evt, source, lineno, colno, error) => {
-  messenger.emit(
-    "POST_MODAL",
-    <ErrorModal errorCode={error.name} errorMessage={evt}>
-      <div>{error.message}</div>
-      <div>
-        {source} {lineno}:{colno}
-      </div>
-      <div>{error.stack}</div>
-    </ErrorModal>
-  );
-  console.error(error);
-};
-
-window.onunhandledrejection = (error) => {
-  messenger.emit(
-    "POST_MODAL",
-    <ErrorModal errorCode={error.name} errorMessage={error.reason}></ErrorModal>
-  );
-  console.error(error);
-};
