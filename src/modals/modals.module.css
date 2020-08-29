@@ -1,48 +1,48 @@
 .flexDiv {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .errorDiv {
-    text-align: center;
-    background: white;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
+  text-align: center;
+  background: white;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .warningDiv {
-    text-align: center;
-    background: white;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
+  text-align: center;
+  background: white;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1
-    }
+  to {
+    opacity: 1;
+  }
 }
 
-.modalsDiv {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
+.modalDiv {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
 
-    animation: fadeIn 0.2s ease-in-out;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 :global(.theme-light) .modalsDiv {
-    background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.5);
 }
