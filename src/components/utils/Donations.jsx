@@ -19,14 +19,12 @@ export default function Donations() {
       <input type="hidden" name="business" value="PMHPX79UJJVTA" />
       <input type="hidden" name="item_name" value="Pogify" />
       <input type="hidden" name="currency_code" value="USD" />
-      <input
-        type="image"
-        src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+      <button
         border="0"
         name="submit"
         title="PayPal - The safer, easier way to pay online!"
-        alt="Donate with PayPal button"
-      />
+        style={{"backgroundColor": "#FFC43B", "color": "#000000"}}
+      ><strong>Donate</strong></button>
     </form>
   );
 };
