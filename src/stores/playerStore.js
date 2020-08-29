@@ -71,8 +71,6 @@ export class PlayerStore {
     // set state playing
     this.playing = true;
 
-    this.disposeAutoruns();
-
     // replaced ticking with autorun and now() from mobxUtils
     if (!this.disposeTimeAutorun) {
       this.disposeTimeAutorun = autorun(async () => {
