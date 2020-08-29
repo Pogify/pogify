@@ -104,14 +104,22 @@ export const createSession = async (i = 1) => {
       window.localStorage.setItem("pogify:session", data.session);
       resolve(data);
     } catch (e) {
-      // TODO: flesh out error handling
+      if (e.response) {
+        if (e.response.status === 429) {
+          let retryAfter = e.response.headers["retry-after"] || 1;
+          setTimeout(() => {
+            resolve(createSession(i + 1));
+          }, retryAfter * 1000);
+          return;
+        }
+      }
       // backoff retry implementation
       if (i === 10) {
-        return reject(new Error("max retries reached"));
+        return reject(e);
       }
       setTimeout(() => {
         resolve(createSession(i + 1));
-      }, (i / 10) ** 2);
+      }, (i / 5) ** 2);
     }
   });
 };
