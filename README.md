@@ -111,8 +111,8 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
 6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
-7. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
-   - should add some button to resync.
+7. ~~Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host.~~ ~~Fixed by d09acac~~
+   - ~~should add some button to resync.~~ Fixed by bff8f1a823a9ea8f355435098db00d769538d984
 8. ~~Volume Control is not good.~~ Fixed by f11b003
 9. 'Join Session' / 'Start session' buttons sometimes do not work
 10. Incomplete error handling
