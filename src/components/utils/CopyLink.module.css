@@ -33,11 +33,11 @@
     pointer-events: none;
     transition: opacity 0.3s, transform 0.3s;
     opacity: 0;
+    backdrop-filter: blur(5px);
 }
 
 :global(.theme-light) .tooltip {
     background: #f0f0f0ab;
-    backdrop-filter: blur(5px);
 }
 
 .tooltip::after {

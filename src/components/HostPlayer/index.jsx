@@ -1,7 +1,10 @@
 import React from "react";
+import { observer } from "mobx-react";
+
 import * as SessionManager from "../../utils/sessionManager";
-import { debounce } from "../../utils/debounce";
 import { playerStore } from "../../stores";
+
+import { debounce } from "../../utils/debounce";
 
 import { Layout } from "../../layouts";
 
@@ -15,7 +18,7 @@ import styles from "./index.module.css";
 /**
  * HostPlayer handles logic for Pogify Host
  */
-export default class HostPlayer extends React.Component {
+class HostPlayer extends React.Component {
   // static contextType = storesContext;
   // lastUpdate property keeps track the data sent in the last publish update
   lastUpdate = {
@@ -48,8 +51,13 @@ export default class HostPlayer extends React.Component {
     this.setState({
       loading: true,
     });
-    await playerStore.initializePlayer("Pogify Host");
 
+    const playerDeviceId = await playerStore.initializePlayer("Pogify Host");
+    playerStore.connectToPlayer(playerDeviceId).catch(err => {
+      if (err.message !== "Bad refresh token") {
+        console.error(err)
+      }
+    })
     playerStore.player.on(
       "player_state_changed",
       this.handleData.bind(this)
@@ -141,7 +149,21 @@ export default class HostPlayer extends React.Component {
     if (!window.localStorage.getItem("spotify:refresh_token")) {
       return (
         <Layout>
-          <button onClick={this.initializePlayer}>Login with Spotify</button>
+          <div className="textAlignCenter">
+            <button onClick={this.initializePlayer}>Login with Spotify</button>
+            <p>You'll be redirected to Spotify to login. After that, you'll automatically be connected to your room.</p>
+          </div>
+        </Layout>
+      );
+    }
+    // if the token is not valid, show the login screen
+    if (playerStore.needsRefreshToken) {
+      return (
+        <Layout>
+          <div className="textAlignCenter">
+            <button onClick={this.initializePlayer}>Login with Spotify</button>
+            <p>You've been disconnected from Spotify. Click on the button to login again.</p>
+          </div>
         </Layout>
       );
     }
@@ -188,3 +210,5 @@ export default class HostPlayer extends React.Component {
     );
   }
 }
+
+export default observer(HostPlayer)

@@ -1,4 +1,4 @@
-import { extendObservable, action, computed, autorun } from "mobx";
+import { extendObservable, action, computed, autorun, runInAction } from "mobx";
 import { now } from "mobx-utils";
 import debounce from "lodash/debounce";
 import Axios from "axios";
@@ -48,6 +48,8 @@ export class PlayerStore {
       uri: "",
       // WebPlaybackStateObject
       data: {},
+      // Flag to display the "Login to Spotify" if needed
+      needsRefreshToken: false
     });
   }
 
@@ -99,8 +101,8 @@ export class PlayerStore {
     this.player.pause();
     // set pause state
     this.playing = false;
-    // dispose autorun
-    if (typeof this.disposeAutoruns === "function") this.disposeAutoruns();
+    // dispose autoruns
+    this.disposeAutoruns();
   });
 
   disposeAutoruns = () => {
@@ -281,9 +283,10 @@ export class PlayerStore {
 
         // if connect is true call connect to player
         if (connect) {
-          this.connectToPlayer(device_id).then(() => {
-            resolve();
-          });
+          resolve(device_id);
+          // this.connectToPlayer(device_id).then(() => {
+          //   resolve();
+          // });
           // TODO: error handling
         } else {
           resolve();
@@ -298,7 +301,12 @@ export class PlayerStore {
   connectToPlayer = async (device_id) => {
     // get current access token
     // TODO: error handling
-    let access_token = await this.getOAuthToken();
+    let access_token
+    try {
+      access_token = await this.getOAuthToken()
+    } catch (e) {
+      return e
+    }
     // call connect to device endpoint
     return Axios.put(
       `https://api.spotify.com/v1/me/player`,
@@ -341,7 +349,11 @@ export class PlayerStore {
 
     // if there is a refresh token and access token expired then get a new token
     //  TODO: error handling
-    await this.refreshAccessToken();
+    try {
+      await this.refreshAccessToken();
+    } catch (e) {
+      return e;
+    }
     // return access token
     return this.access_token;
   });
@@ -411,7 +423,11 @@ export class PlayerStore {
       // TODO: error handling
       console.log(e.response.data);
       if (e.response.data.error_description === "Refresh token revoked") {
-        this.goAuth(window.location.pathname);
+        window.localStorage.removeItem("spotify:refresh_token")
+        runInAction(() =>
+          this.needsRefreshToken = true
+        )
+        throw new Error("Bad refresh token")
       }
     }
   });

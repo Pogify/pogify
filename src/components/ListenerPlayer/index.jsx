@@ -1,6 +1,8 @@
 import React from "react";
-import { playerStore, modalStore } from "../../stores";
 import { autorun } from "mobx";
+import { observer } from "mobx-react";
+import { playerStore, modalStore } from "../../stores";
+
 import { Layout } from "../../layouts";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,7 +18,7 @@ import styles from "./index.module.css";
 /**
  * ListenerPlayer handles logic for listeners
  */
-export default class ListenerPlayer extends React.Component {
+class ListenerPlayer extends React.Component {
   state = {
     device_id: "",
     loading: false,
@@ -172,7 +174,12 @@ export default class ListenerPlayer extends React.Component {
 
     console.log("once");
     // TODO: listener title based on session code?
-    await playerStore.initializePlayer("Pogify Listener");
+    const playerDeviceId = await playerStore.initializePlayer("Pogify Listener");
+    playerStore.connectToPlayer(playerDeviceId).catch(err => {
+      if (err.message !== "Bad refresh token") {
+        console.error(err)
+      }
+    })
     // set listener event listeners
     this.setListenerListeners();
 
@@ -263,6 +270,19 @@ export default class ListenerPlayer extends React.Component {
       return (
         <Layout>
           <button onClick={this.connect}>Login with Spotify</button>
+          <p>You'll be redirected to Spotify to login. After that, you'll automatically be connected to the room.</p>
+        </Layout>
+      );
+    }
+
+    // if the token is not valid, show the login screen
+    if (playerStore.needsRefreshToken) {
+      return (
+        <Layout>
+          <div className="textAlignCenter">
+            <button onClick={this.initializePlayer}>Login with Spotify</button>
+            <p>You've been disconnected from Spotify. Click on the button to login again.</p>
+          </div>
         </Layout>
       );
     }
@@ -348,3 +368,5 @@ export default class ListenerPlayer extends React.Component {
     );
   }
 }
+
+export default observer(ListenerPlayer)
