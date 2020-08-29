@@ -49,3 +49,17 @@ window.onerror = (evt, source, lineno, colno, error) => {
   );
   console.error(error);
 };
+
+window.onunhandledrejection = (evt, source, lineno, colno, error) => {
+  messenger.emit(
+    "POST_MODAL",
+    <ErrorModal errorCode={error.name} errorMessage={error.message}>
+      <div>{JSON.stringify(evt, undefined, 2)}</div>
+      <div>
+        {source} {lineno}:{colno}
+      </div>
+      <div>{JSON.stringify(error, undefined, 2)}</div>
+    </ErrorModal>
+  );
+  console.error(error);
+};
