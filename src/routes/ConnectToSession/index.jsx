@@ -27,6 +27,8 @@ export const ConnectToSession = () => {
             type="text"
             placeholder="Code"
             onChange={(e) => setCode(e.target.value)}
+            minLength="5"
+            maxLength="5"
             required
           />
         </div>
