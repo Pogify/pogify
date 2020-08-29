@@ -153,7 +153,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 
 ## Todo List
 
-- [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
+- [x] Make a looping script or something that people can use to develop the listener player without 2 accounts. (available in pogify/pogify-nginx-container)
 - [x] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
@@ -167,5 +167,6 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 ## Related Repos
 
 ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
+### [Pogify/pogify-nginx-container](https://github.com/Pogify/pogify-nginx-container)
 
     Repo housing pogify's Google Cloud functions
