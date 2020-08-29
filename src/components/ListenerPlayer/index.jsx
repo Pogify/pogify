@@ -310,9 +310,6 @@ export default class ListenerPlayer extends React.Component {
               )}
               {!this.state.playImmediate &&
                 ". Press Play to Synchronize With Host"}
-              {/* TODO: clean up this button
-                    BODY
-                */}
               {!this.state.synced && (
                 <div>
                   Sync with host &nbsp;
