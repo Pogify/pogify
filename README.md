@@ -167,6 +167,8 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 ## Related Repos
 
 ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
+Repo housing Pogify's Google Cloud functions
+<br>
+<br>
 ### [Pogify/pogify-nginx-container](https://github.com/Pogify/pogify-nginx-container)
-
-    Repo housing pogify's Google Cloud functions
+Repo housing Pogify's message broadcaster system
