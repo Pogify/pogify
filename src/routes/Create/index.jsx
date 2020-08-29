@@ -1,8 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "../layouts";
-import { createSession } from "../utils/sessionManager";
+import { Layout } from "../../layouts";
+import { createSession } from "../../utils/sessionManager";
 
+import styles from "./index.module.css";
+
+/**
+ * Create session component. 
+ * One button to create.
+ * Shows any active session in localStorage
+ */
 export class Create extends React.Component {
   constructor(props) {
     super(props);
@@ -12,12 +19,16 @@ export class Create extends React.Component {
     this.create = this.create.bind(this);
   }
 
+  // waits to create session
   async create() {
+    // TODO: handle errors
     let res = await createSession();
+    // redirect on successful session creation
     this.props.history.push("/session/" + res.session);
   }
 
   componentDidMount() {
+    // if active session show it
     if (window.localStorage.getItem("pogify:expiresAt") > Date.now()) {
       this.setState({
         activeSession: window.localStorage.getItem("pogify:session"),
@@ -29,14 +40,14 @@ export class Create extends React.Component {
     return (
       <Layout>
         {Boolean(this.state.activeSession) && (
-          <div style={{ textAlign: "center", margin: 5 }}>
+          <div className={`textAlignCenter ${styles.previousSessions}`}>
             Your Active Session:
             <div>
               <Link
                 to={`/session/${this.state.activeSession}`}
-                style={{ color: "unset" }}
+              // TODO: better link styling, more button-like?
               >
-                {this.state.activeSession}
+                Resume {this.state.activeSession}
               </Link>
             </div>
           </div>

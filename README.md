@@ -104,32 +104,34 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 3. ~~Problem in firefox where there is excessive stuttering as a listener~~ Fixed by d09acac
    - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
    - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
-4. Session member count is always 0.
-5. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ Fixed by 02cb5dd
+4. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ ~~Fixed by 02cb5dd~~ Fixed by 3061378
    - ~~diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.~~
-   - should add some button to resync.
-6. Listener player may cut out a couple seconds to the end of a track.
+5. Listener player may cut out a couple seconds to the end of a track.
    - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
-7. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
-8. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
-9. ~~Volume Control is not good.~~ Fixed by f11b003
-10. 'Join Session' / 'Start session' buttons sometimes do not work
-11. Incomplete error handling
-12. Leftover console.logs
-13. No nav bar or alternative
-14. Sessions may timeout even if its active.
-15. ~~Navigating away from player screen shows an alert.~~
-16. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
-17. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
-18. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-19. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
-20. Excessive skipping forward or backwards will break listener.
+6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
+7. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
+   - should add some button to resync.
+8. ~~Volume Control is not good.~~ Fixed by f11b003
+9. 'Join Session' / 'Start session' buttons sometimes do not work
+10. Incomplete error handling
+11. Leftover console.logs
+12. No nav bar or alternative
+13. Sessions may timeout even if its active.
+14. ~~Navigating away from player screen shows an alert.~~
+15. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
+16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
+17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
+18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
+19. Excessive skipping forward or backwards will break listener.
     - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
     - solution:
-21. ~~there are no tests.~~ there are two tests.
-22. sparse code commenting
+20. ~~there are no tests.~~ there are two tests.
+21. ~~sparse code commenting~~ Fixed by c2e4f26
+22. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
+    - diagnosis: Spotify doesn't fire a state change event when seeking to 0 if already seeked to 0 once, so Pogify misses it.
+    - solution: poll for spotify data periodically (ie once a second) using player.getCurrentState()
 23. And probably many more I forgot about
 
 ## Contributing and Communication
@@ -139,10 +141,20 @@ Currently, Pogify is open to contributors but please note that Pogify is stil in
 The above paragraph is verbatim from the [Contributing Guidelines](https://github.com/Pogify/pogify/blob/master/CONTRIBUTING.md) which all contributors must read before attempting to contribute!
 All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](https://github.com/Pogify/pogify/blob/develop/CONTRIBUTING.md).
 
+## Dev-ing
+
+1. Execute `yarn` into the folder of this repository
+2. Copy the file `.env.development` to `.env.development.local` and edit the following:
+   - the URL in the env variable `REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL` to match the URL of the functions endpoint in the Firebase emulator (typically of the form: `http://localhost:5001/theprojectyoucreated/us-central1`)
+   - The client ID of the Spotify App in `REACT_APP_SPOTIFY_CLIENT_ID`, obtainable from their developer website here: https://developer.spotify.com/dashboard/applications <br>
+     Do not forget to also whitelist the redirect URI (`/auth`, so you can put `http://localhost:3000/auth` with the default settings)
+   - If needed, also set the Nginx SSE endpoint via the `REACT_APP_SUB` variable
+3. Run `yarn start-dev`
+
 ## Todo List
 
 - [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
-- [ ] code comments
+- [x] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
 - [ ] verified sessions
@@ -150,6 +162,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 - [ ] move all player (host and listener) logic into stores so that player can be used outside of `/session/{id}`.
   - [x] player logic moved to mobx store.
 - [ ] readme `Fixed by {SHA}` should have proper links to commits.
+- [ ] `'playImmediately'` button
 
 ## Related Repos
 

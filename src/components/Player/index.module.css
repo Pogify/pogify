@@ -1,0 +1,35 @@
+.player {
+    width: 300px;
+    text-align: center;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.metadataWrapper {
+    margin-bottom: 10px;
+}
+
+.playButtonWrapper {
+    cursor: pointer;
+}
+
+.spotifyLink {
+    color: inherit;
+    text-decoration: inherit;
+    margin: 0 3px;
+
+}
+
+.spotifyLink:hover {
+    text-decoration: underline;
+}
+
+.albumArt {
+    height: 300px;
+    width: 300px;
+    overflow: hidden;
+}
+
+.seekBar {
+    width: 70%;
+}

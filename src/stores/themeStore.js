@@ -1,38 +1,69 @@
 import { action, extendObservable } from "mobx";
 
+/**
+ * Available themes
+ */
 const AvailableThemes = ["light", "dark"];
 
+/**
+ * Theme Store manages Themes
+ */
 export class ThemeStore {
-  theme = "light";
-
   constructor(messenger) {
     this.messenger = messenger;
     // get system default
-    let systemDefault = window.matchMedia("(prefers-color-scheme: dark)")
+    const themeQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const systemDefault = themeQuery.matches
       ? "dark"
-      : "light";
+      : // if no match media then default to light
+      "light";
     // get previous stored theme setting
     let savedTheme = window.localStorage.getItem("theme");
 
     // validate saved theme
     savedTheme = AvailableThemes.includes(savedTheme) ? savedTheme : undefined;
-    console.log();
+
+    themeQuery.addEventListener("change", (e) => {
+      if (typeof savedTheme === "undefined") {
+        if (e.matches) {
+          this.setTheme("dark")
+        } else {
+          this.setTheme("light")
+        }
+      }
+    })
+
     extendObservable(this, {
       theme: savedTheme || systemDefault,
     });
+    document.documentElement.classList.add("theme-" + this.theme)
   }
 
+  /**
+   * set theme to string
+   *
+   * @param {string} theme theme to set
+   */
   setTheme = action((theme) => {
+    // set theme in localStorage
     window.localStorage.setItem("theme", theme);
-    this.theme = theme;
+    // validate theme then set it
+    if (AvailableThemes.includes(theme)) {
+      this.theme = theme;
+      AvailableThemes.forEach(theme => document.documentElement.classList.remove("theme-" + theme))
+      document.documentElement.classList.add("theme-" + theme)
+    }
+    // if theme not in available themes then do nothing
   });
 
+  /**
+   * Toggles theme between light and dark only
+   */
   toggleTheme = action(() => {
     if (this.theme === "light") {
-      this.theme = "dark";
+      this.setTheme("dark")
     } else {
-      this.theme = "light";
+      this.setTheme("light")
     }
-    window.localStorage.setItem("theme", this.theme);
   });
 }

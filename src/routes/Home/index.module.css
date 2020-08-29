@@ -1,0 +1,37 @@
+.pogifyLogoWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4.5rem;
+}
+
+.pogifyLogoText {
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: normal;
+}
+
+.pogifyLogoImage {
+    height: 100%;
+    margin-right: 20px;
+}
+
+.pogifyCatchline {
+    text-align: center;
+    font-size: 1rem;
+    margin: 2rem 0;
+}
+
+.actionWrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.donationsWrapper {
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

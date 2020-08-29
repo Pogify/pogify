@@ -1,11 +1,14 @@
 import React from "react";
 import { Layout } from "../layouts";
 
+/**
+ * Terms of service view
+ */
 export const Terms = () => {
   return (
     <Layout>
       <div>
-        <h1 id="terms-of-use">Pogify Terms of Use</h1>
+        <h1 id="terms-of-use">Pogify Terms of Service</h1>
         <p>
           The pogify.net website located at http://www.pogify.net is governed by
           the GNU Affero General Public License v3. As such, Pogify software, to

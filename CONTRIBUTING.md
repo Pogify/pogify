@@ -102,21 +102,25 @@ Congratulations, you should now be running a local environment for the backend o
 - folders are hyphen-cased
 - test files are cased according to the file that the test runs
 - CSS files are PascalCased
-  - Note: we are transitioning away from separate CSS files as well as inline styles for styled components. Please refrain from using either separate CSS files or inline
+  - Note: please avoid using global namespaced stylesheets and use [css modules](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet/) instead.
+  - [Styled-components](https://styled-components.com/) are also acceptable.
+  - Just avoid using inline styles
+  - We are transitioning away from inline styles.
 
 ## Directory structure
 
 - `/src` all source files
   - `/src/routes` components that react-router
   - `/src/components` other components
+    - Components can be just jsx files or PascalCased folders with an index.jsx and index.module.css
+  - `/src/components/utils` components
   - `/src/layouts` layout related HOCs
   - `/src/modals` modal components
   - `/src/stores` mobx stores
   - `/src/context` contexts
   - `/src/hooks` react hooks
-  - `/src/styles` CSS files for component styling or reused style wrappers (ie styled-component)
-    - Note: avoid writing CSS files and use styled-components instead
-    - styled-components should be named with the extension .style.jsx
+  - `/src/styles` CSS files for global or reused styles
+    - _Note:_ Please try avoid writing global CSS styles (ie. \[something\].css) and use css modules instead (ie. \[something\]._module_.css)
   - `/src/utils` utility functions
 - `src/__tests__` all tests
   - `src/__tests__/unit` unit tests

@@ -1,4 +1,4 @@
-import { extendObservable, action, reaction } from "mobx";
+import { extendObservable, action } from "mobx";
 import React from "react";
 
 /**

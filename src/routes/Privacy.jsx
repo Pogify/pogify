@@ -1,6 +1,9 @@
 import React from "react";
 import { Layout } from "../layouts";
 
+/**
+ * Privacy statement
+ */
 export const Privacy = () => {
   return (
     <Layout>
