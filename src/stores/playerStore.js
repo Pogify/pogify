@@ -97,7 +97,7 @@ export class PlayerStore {
     // set pause state
     this.playing = false;
     // dispose autorun
-    if (typeof this.disposeAutorun === "function") this.disposeAutoruns();
+    if (typeof this.disposeAutoruns === "function") this.disposeAutoruns();
   });
 
   disposeAutoruns = () => {
