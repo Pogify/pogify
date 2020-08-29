@@ -60,11 +60,15 @@ export default class ListenerPlayer extends React.Component {
 
       // if there is a hostUri before but this
       if (this.state.hostUri && !uri) {
-        // TODO: have a separate state for disconnect
         this.setState({
           hostConnected: false,
         });
-        modalStore.queue(<WarningModal title="Host disconnected." content="Playback has been paused" />)
+        modalStore.queue(
+          <WarningModal
+            title="Host disconnected."
+            content="Playback has been paused"
+          />
+        );
         return;
       } else if (!uri) {
         // if first event is empty then post waiting for host
@@ -319,24 +323,20 @@ export default class ListenerPlayer extends React.Component {
             </div>
           </Player>
 
-          <div
-            className={`textAlignCenter ${styles.textWrapper}`}
-          >
+          <div className={`textAlignCenter ${styles.textWrapper}`}>
             <h2>Hosting to {this.state.connections} listeners.</h2>
             <p className=".textAlignLeft">
               You are listening to session: {this.props.sessionId}. Your
               playback is controlled by the host. Pressing pause will pause
-              playback locally only. On resume, playback will be resynchronised with
-              the host. Controlling Spotify will not work as long as you are
-              connected to "Pogify Listener". The music is playing through the
-              browser, so <b> please do not close this tab.</b>
+              playback locally only. On resume, playback will be resynchronised
+              with the host. Controlling Spotify will not work as long as you
+              are connected to "Pogify Listener". The music is playing through
+              the browser, so <b> please do not close this tab.</b>
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
               <br />
-              <CopyLink
-                href={window.location.href}
-              >
+              <CopyLink href={window.location.href}>
                 {window.location.href}
               </CopyLink>
             </div>
