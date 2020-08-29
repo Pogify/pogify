@@ -70,14 +70,23 @@ export class PlayerStore {
     this.player.resume();
     // set state playing
     this.playing = true;
+
+    this.disposeAutoruns();
+
     // replaced ticking with autorun and now() from mobxUtils
-    this.disposeTimeAutorun = autorun(async () => {
-      this.t1 = now(500)
-    })
-    this.disposeVolumeAutorun = autorun(async () => {
-      now(100)
-      if (!this.debouncedVolumeChange.pending())
-        this.volume = (await this.player.getVolume()) ?? 0;
+    if (!this.disposeTimeAutorun) {
+      this.disposeTimeAutorun = autorun(async () => {
+        this.t1 = now(500);
+      });
+    }
+    if (!this.disposeVolumeAutorun) {
+      this.disposeVolumeAutorun = autorun(async () => {
+        now(100);
+        if (!this.debouncedVolumeChange.pending())
+          this.volume = (await this.player.getVolume()) ?? 0;
+        console.log("volume autorun", this.volume);
+      });
+    }
   });
 
   /**
@@ -90,8 +99,19 @@ export class PlayerStore {
     // set pause state
     this.playing = false;
     // dispose autorun
-    if (typeof this.disposeAutorun === "function") this.disposeAutorun()
+    if (typeof this.disposeAutorun === "function") this.disposeAutoruns();
   });
+
+  disposeAutoruns = () => {
+    if (typeof this.disposeVolumeAutorun === "function") {
+      this.disposeVolumeAutorun();
+      this.disposeVolumeAutorun = undefined;
+    }
+    if (typeof this.disposeTimeAutorun === "function") {
+      this.disposeTimeAutorun();
+      this.disposeTimeAutorun = undefined;
+    }
+  };
 
   /**
    * Toggle playback.
