@@ -6,6 +6,7 @@ import Axios from "axios";
 import crypto from "crypto";
 import { modalStore } from ".";
 import WarningModal from "../modals/WarningModal";
+import * as Sentry from "@sentry/react";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -242,6 +243,16 @@ export class PlayerStore {
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
   initializePlayer = action((title, connect = true) => {
+    this.initializeWaiting = setTimeout(() => {
+      Sentry.captureMessage("Spotify Initialize timeout");
+      modalStore.queue(
+        <WarningModal
+          key="LongSpotifyWait"
+          title="It seems like its taking a while to connect to Spotify."
+          content="You can keep waiting or refresh and try again"
+        />
+      );
+    }, 15000);
     return new Promise(async (resolve, reject) => {
       // if player is already connected update name and whether its host, then return
       if (this.player && this.player.setName) {
@@ -257,8 +268,8 @@ export class PlayerStore {
 
           // now call this function
           this.initializePlayer(title)
-            .then(() => {
-              resolve();
+            .then((device_id) => {
+              resolve(device_id);
             })
             .catch((e) => {
               reject(e);
@@ -330,7 +341,16 @@ export class PlayerStore {
         // clear player object if it already exists
         this.player = undefined;
         this.player = player;
+        // if there is a long wait modal then close it
+        if (
+          modalStore.current &&
+          modalStore.current.key === "LongSpotifyWait"
+        ) {
+          modalStore.closeModal();
+        }
 
+        // clear the long wait timeout
+        clearInterval(this.initializeWaiting);
         // if connect is true call connect to player
         if (connect) {
           resolve(device_id);
