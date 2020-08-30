@@ -172,26 +172,26 @@ class ListenerPlayer extends React.Component {
 
     this.eventListener.onerror = (e) => {
       // if there is an error close connection and unset it
-      this.eventListener.close();
       this.eventListener = undefined;
       // if there are not many retries, increment counter then retry
       if (this.eventListenerRetry < 5) {
         this.eventListenerRetry++;
-        setInterval(() => {
+        setTimeout(() => {
           this.setEventListener();
         }, (this.eventListenerRetry / 5) ** 2 * 1000);
       } else {
         // if lots of retries show error modal.
+        this.eventListenerRetry = 0;
         console.error(e);
         modalStore.queue(
-          <ErrorModal
-            errorCode="Failed to connect to Pogify Servers"
-            errorMessage="Pogify failed to connect to the Pogify servers. Try refreshing and trying again. If this problem persists, help us out by sending an error report!"
+          <WarningModal
+            title="Failed to connect to Session"
+            content={`Session ${this.props.sessionId} does not exist. Check that you have the proper session code and try again.`}
           >
             <div>
               <button onClick={showReportDialog}>Send an Error Report</button>
             </div>
-          </ErrorModal>
+          </WarningModal>
         );
       }
     };
