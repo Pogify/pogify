@@ -31,9 +31,9 @@
     min-width: 100%;
     transform: translate(-50%, -70%);
     pointer-events: none;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s, backdrop-filter 0.3s;
     opacity: 0;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(0px);
 }
 
 :global(.theme-light) .tooltip {
@@ -55,4 +55,5 @@
 .tooltip.shown {
     opacity: 1;
     transform: translate(-50%, -100%);
+    backdrop-filter: blur(5px);
 }

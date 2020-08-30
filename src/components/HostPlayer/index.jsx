@@ -53,15 +53,16 @@ class HostPlayer extends React.Component {
     });
 
     const playerDeviceId = await playerStore.initializePlayer("Pogify Host");
-    playerStore.connectToPlayer(playerDeviceId).catch(err => {
+    playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
-        console.error(err)
+        console.error(err);
       }
-    })
-    playerStore.player.on(
-      "player_state_changed",
-      this.handleData.bind(this)
-    );
+    });
+    playerStore.player.on("player_state_changed", this.handleData.bind(this));
+    window.onbeforeunload = () => {
+      // publish empty string uri on disconnect. Empty string uri means host disconnected
+      SessionManager.publishUpdate("", playerStore.position.value, false);
+    };
     this.setState({ loading: false });
   };
 
@@ -82,7 +83,7 @@ class HostPlayer extends React.Component {
         console.log(
           Math.abs(
             position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ),
           position,
           this.lastUpdate.position,
@@ -91,7 +92,7 @@ class HostPlayer extends React.Component {
         if (
           Math.abs(
             position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ) > 1000
         ) {
           SessionManager.publishUpdate(uri, position, playing);
@@ -114,22 +115,17 @@ class HostPlayer extends React.Component {
   }, 400);
 
   componentDidMount() {
-    window.onbeforeunload = () => {
-      // publish empty string uri on disconnect. Empty string uri means host disconnected
-      this.publishUpdate("", this.state.position, false);
-    };
     // set the token refresh interval
     this.setTokenRefreshInterval();
   }
 
-  componentWillUnmount() {
-    // remove listener on unmount. prevents host disconnected alert
-    // DEFUNCT: should replace it with something else
-    playerStore.player.disconnect();
-    // publish unload update when unmounting player
-    // TODO: cleanup when all logic is moved to stores
-    // this.publishUpdate("", this.state.position, false);
-    // remove listener
+  async componentWillUnmount() {
+    if (playerStore.player) {
+      // publish unload update when unmounting player
+      await SessionManager.publishUpdate("", playerStore.position, false);
+      playerStore.disconnectPlayer();
+    }
+    // remove onbeforeunload handler
     window.onbeforeunload = null;
     // clear refresh interval
     clearInterval(this.refreshInterval);
@@ -151,7 +147,10 @@ class HostPlayer extends React.Component {
         <Layout>
           <div className="textAlignCenter">
             <button onClick={this.initializePlayer}>Login with Spotify</button>
-            <p>You'll be redirected to Spotify to login. After that, you'll automatically be connected to your room.</p>
+            <p>
+              You'll be redirected to Spotify to login. After that, you'll
+              automatically be connected to your room.
+            </p>
           </div>
         </Layout>
       );
@@ -162,7 +161,10 @@ class HostPlayer extends React.Component {
         <Layout>
           <div className="textAlignCenter">
             <button onClick={this.initializePlayer}>Login with Spotify</button>
-            <p>You've been disconnected from Spotify. Click on the button to login again.</p>
+            <p>
+              You've been disconnected from Spotify. Click on the button to
+              login again.
+            </p>
           </div>
         </Layout>
       );
@@ -211,4 +213,4 @@ class HostPlayer extends React.Component {
   }
 }
 
-export default observer(HostPlayer)
+export default observer(HostPlayer);

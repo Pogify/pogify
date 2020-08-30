@@ -26,9 +26,9 @@ export class ThemeStore {
     themeQuery.addEventListener("change", (e) => {
       if (typeof savedTheme === "undefined") {
         if (e.matches) {
-          this.setTheme("dark")
+          this.setTheme("dark", false)
         } else {
-          this.setTheme("light")
+          this.setTheme("light", false)
         }
       }
     })
@@ -43,10 +43,12 @@ export class ThemeStore {
    * set theme to string
    *
    * @param {string} theme theme to set
+   * @param {boolean} save save the theme
    */
-  setTheme = action((theme) => {
-    // set theme in localStorage
-    window.localStorage.setItem("theme", theme);
+  setTheme = action((theme, save = true) => {
+    // set theme in localStorage (only if not default)
+    if (save === true)
+      window.localStorage.setItem("theme", theme);
     // validate theme then set it
     if (AvailableThemes.includes(theme)) {
       this.theme = theme;
