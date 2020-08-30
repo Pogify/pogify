@@ -14,11 +14,14 @@ import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
+import { ErrorModal } from "../../modals";
+import { showReportDialog } from "@sentry/react";
 
 /**
  * ListenerPlayer handles logic for listeners
  */
 class ListenerPlayer extends React.Component {
+  eventListenerRetry = 0;
   state = {
     device_id: "",
     loading: false,
@@ -42,12 +45,73 @@ class ListenerPlayer extends React.Component {
    */
   setListenerListeners = () => {
     // subscribe to events on backend
+    this.setEventListener();
+
+    // synchronization checker
+    playerStore.player.on("player_state_changed", (data) => {
+      const {
+        hostPosition,
+        hostUri,
+        hostPlaying,
+        hostConnected,
+        updateTimestamp,
+
+        playImmediate,
+        parked,
+      } = this.state;
+
+      // don't update sync state if player parks.
+      // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
+      // if the player reaches end of track and stops playing but host is still playing then skip sync update.
+      // set parked flag
+      if (data.position > data.duration - 500 && hostPlaying && data.paused) {
+        console.log("true");
+        return this.setState({
+          parked: true,
+        });
+      } else if (parked && data.position === 0 && data.paused) {
+        console.log("still parked");
+        return;
+      }
+      // FIXME: player cannot maintain sync if host continues play at the end of a track.
+      /* BODY reason: unknown. suspicion: player un parks then tries to play at end of track then forced to repark then nothing.
+       */
+      console.log("not parked");
+      this.setState({
+        parked: false,
+      });
+
+      // calculated position based on host timestamp, playing state and elapsed time.
+      let calcPos = hostPlaying
+        ? hostPosition + Date.now() - updateTimestamp
+        : hostPosition;
+
+      if (
+        hostConnected &&
+        playImmediate &&
+        (hostUri !== data.track_window.current_track.uri ||
+          hostPlaying !== !data.paused ||
+          Math.abs(calcPos - data.position) > 2000)
+      ) {
+        this.setState({
+          synced: false,
+        });
+      } else {
+        this.setState({
+          synced: true,
+        });
+      }
+    });
+  };
+
+  setEventListener = () => {
     this.eventListener = new EventSource(
       process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
     );
 
     // update state on open
     this.eventListener.onopen = () => {
+      this.eventListenerRetry = 11;
       this.setState({
         subConnected: true,
       });
@@ -106,64 +170,31 @@ class ListenerPlayer extends React.Component {
       });
     };
 
-    // synchronization checker
-    playerStore.player.on("player_state_changed", (data) => {
-      const {
-        hostPosition,
-        hostUri,
-        hostPlaying,
-        hostConnected,
-        updateTimestamp,
-
-        playImmediate,
-        parked,
-      } = this.state;
-
-      // don't update sync state if player parks.
-      // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
-      // if the player reaches end of track and stops playing but host is still playing then skip sync update.
-      // set parked flag
-      if (data.position > data.duration - 500 && hostPlaying && data.paused) {
-        console.log("true");
-        return this.setState({
-          parked: true,
-        });
-      } else if (parked && data.position === 0 && data.paused) {
-        console.log("still parked");
-        return;
-      }
-      // FIXME: player cannot maintain sync if host continues play at the end of a track.
-      /* BODY reason: unknown. suspicion: player un parks then tries to play at end of track then forced to repark then nothing.
-       */
-      console.log("not parked");
-      this.setState({
-        parked: false,
-      });
-
-      // calculated position based on host timestamp, playing state and elapsed time.
-      let calcPos = hostPlaying
-        ? hostPosition + Date.now() - updateTimestamp
-        : hostPosition;
-
-      if (
-        hostConnected &&
-        playImmediate &&
-        (hostUri !== data.track_window.current_track.uri ||
-          hostPlaying !== !data.paused ||
-          Math.abs(calcPos - data.position) > 2000)
-      ) {
-        this.setState({
-          synced: false,
-        });
+    this.eventListener.onerror = (e) => {
+      // if there is an error close connection and unset it
+      this.eventListener.close();
+      this.eventListener = undefined;
+      // if there are not many retries, increment counter then retry
+      if (this.eventListenerRetry < 5) {
+        this.eventListenerRetry++;
+        setInterval(() => {
+          this.setEventListener();
+        }, (this.eventListenerRetry / 5) ** 2 * 1000);
       } else {
-        this.setState({
-          synced: true,
-        });
+        // if lots of retries show error modal.
+        console.error(e);
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Failed to connect to Pogify Servers"
+            errorMessage="Pogify failed to connect to the Pogify servers. Try refreshing and trying again. If this problem persists, help us out by sending an error report!"
+          >
+            <div>
+              <button onClick={showReportDialog}>Send an Error Report</button>
+            </div>
+          </ErrorModal>
+        );
       }
-    });
-
-    // TODO: error handling
-    this.eventListener.onerror = console.error;
+    };
   };
 
   /**
@@ -174,12 +205,14 @@ class ListenerPlayer extends React.Component {
 
     console.log("once");
     // TODO: listener title based on session code?
-    const playerDeviceId = await playerStore.initializePlayer("Pogify Listener");
-    playerStore.connectToPlayer(playerDeviceId).catch(err => {
+    const playerDeviceId = await playerStore.initializePlayer(
+      "Pogify Listener"
+    );
+    playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
-        console.error(err)
+        console.error(err);
       }
-    })
+    });
     // set listener event listeners
     this.setListenerListeners();
 
@@ -270,7 +303,10 @@ class ListenerPlayer extends React.Component {
       return (
         <Layout>
           <button onClick={this.connect}>Login with Spotify</button>
-          <p>You'll be redirected to Spotify to login. After that, you'll automatically be connected to the room.</p>
+          <p>
+            You'll be redirected to Spotify to login. After that, you'll
+            automatically be connected to the room.
+          </p>
         </Layout>
       );
     }
@@ -281,7 +317,10 @@ class ListenerPlayer extends React.Component {
         <Layout>
           <div className="textAlignCenter">
             <button onClick={this.initializePlayer}>Login with Spotify</button>
-            <p>You've been disconnected from Spotify. Click on the button to login again.</p>
+            <p>
+              You've been disconnected from Spotify. Click on the button to
+              login again.
+            </p>
           </div>
         </Layout>
       );
@@ -369,4 +408,4 @@ class ListenerPlayer extends React.Component {
   }
 }
 
-export default observer(ListenerPlayer)
+export default observer(ListenerPlayer);
