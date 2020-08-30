@@ -209,6 +209,11 @@ export class PlayerStore {
               default:
             }
             break;
+          default:
+            modalStore.queue(
+              <WarningModal title="An unknown error occured on Spotify's end." />,
+              2000
+            );
         }
       }
       setTimeout(() => {
@@ -518,7 +523,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-    }`;
+      }`;
   };
 }
 
