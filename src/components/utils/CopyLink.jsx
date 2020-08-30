@@ -4,7 +4,7 @@ import NewTabLink from './NewTabLink';
 import styles from "./CopyLink.module.css";
 
 export default function CopyLink({ children, className, title, ...props }) {
-    const linkTitle = title ? title : "Click to copy and share"
+    const linkTitle = typeof title !== "undefined" ? title : "Click to copy and share"
     const [tooltipState, setTooltipState] = useState(false);
     const [tooltipText, setTooltipText] = useState(linkTitle);
     const copyLink = (evt) => {
@@ -18,8 +18,8 @@ export default function CopyLink({ children, className, title, ...props }) {
     const handleMouseLeave = () => {
         setTooltipState(false)
         // if we replaced the helper text with "Copied!" as seen above, then replace the original text after 300ms (~the transition time)
-        if (tooltipText !== title) {
-            setTimeout(() => setTooltipText(title), 300)
+        if (tooltipText !== linkTitle) {
+            setTimeout(() => setTooltipText(linkTitle), 300)
         }
     }
 
