@@ -49,6 +49,12 @@ class ListenerPlayer extends React.Component {
 
     // synchronization checker
     playerStore.player.on("player_state_changed", (data) => {
+      // set synced to false
+      if (!data) {
+        return this.setState({
+          synced: false,
+        });
+      }
       const {
         hostPosition,
         hostUri,
