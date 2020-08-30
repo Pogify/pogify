@@ -1,8 +1,11 @@
+import React from "react";
 import { extendObservable, action, computed, autorun, runInAction } from "mobx";
 import { now } from "mobx-utils";
 import debounce from "lodash/debounce";
 import Axios from "axios";
 import crypto from "crypto";
+import { modalStore } from ".";
+import WarningModal from "../modals/WarningModal";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -12,6 +15,7 @@ const REDIRECT_URI = window.location.origin + "/auth";
  */
 export class PlayerStore {
   constructor(messenger) {
+    this.newTrackRetry = 0;
     this.messenger = messenger;
     this.disposeTimeAutorun = undefined;
     this.disposeVolumeAutorun = undefined;
@@ -49,7 +53,7 @@ export class PlayerStore {
       // WebPlaybackStateObject
       data: {},
       // Flag to display the "Login to Spotify" if needed
-      needsRefreshToken: false
+      needsRefreshToken: false,
     });
   }
 
@@ -131,15 +135,19 @@ export class PlayerStore {
   /**
    * Sets volume
    */
-  debouncedVolumeChange = debounce((volume) => {
-    this.player.setVolume(volume);
-  }, 50, {
-    maxWait: 100,
-    leading: true
-  })
+  debouncedVolumeChange = debounce(
+    (volume) => {
+      this.player.setVolume(volume);
+    },
+    50,
+    {
+      maxWait: 100,
+      leading: true,
+    }
+  );
   setVolume = action((volume) => {
     this.volume = volume;
-    this.debouncedVolumeChange(volume)
+    this.debouncedVolumeChange(volume);
   });
 
   /**
@@ -149,22 +157,64 @@ export class PlayerStore {
    * @param {number} pos_ms millisecond position
    */
   newTrack = async (uri, pos_ms) => {
-    this.prevPlaying = this.playing;
-    let res = await Axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-      {
-        uris: [uri],
-        position_ms: pos_ms,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.access_token}`,
+    this.newTrackRetry++;
+    let t0 = Date.now();
+    try {
+      let res = await Axios.put(
+        `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+        {
+          uris: [uri],
+          position_ms: pos_ms,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        }
+      );
+      this.newTrackRetry = 0;
+      return res.data;
+    } catch (e) {
+      // TODO: More Robust Error Handling
+      // BODY Spotify throws more errors than whats handled here.
+      if (e.response) {
+        switch (e.response.status) {
+          case 429:
+            let retryAfter = (e.response.headers["retry-after"] || 1) * 1000;
+
+            setInterval(() => {
+              this.newTrack(uri, pos_ms + Date.now() - t0);
+            }, retryAfter);
+            return;
+          case 403:
+            let reason = e.response.data.reason;
+
+            switch (reason) {
+              case "RATE_LIMITED":
+                modalStore.queue(
+                  <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
+                  2000
+                );
+                return;
+              case "NO_SPECIFIC_TRACK":
+                modalStore.queue(
+                  <WarningModal
+                    title="Pogify was not able to play this track"
+                    content={`Host started a track: ${uri}, but Pogify was not able to play it on your account.`}
+                  />
+                );
+                return;
+              default:
+            }
+            break;
+        }
       }
-    );
-    return res.data;
-    // TODO: error handlers.
+      setTimeout(() => {
+        this.newTrack(uri, pos_ms + Date.now() - t0);
+      }, this.newTrackRetry ** 2 * 500);
+      console.error(e);
+    }
   };
 
   /**
@@ -177,12 +227,12 @@ export class PlayerStore {
   debouncedSeek = debounce((pos_ms) => {
     // seek spotify playback sdk
     this.player.seek(pos_ms);
-  }, 50)
+  }, 50);
   seek = action((pos_ms) => {
     // reset stamps
     this.p0 = pos_ms;
     this.t0 = Date.now();
-    this.debouncedSeek(pos_ms)
+    this.debouncedSeek(pos_ms);
   });
 
   /**
@@ -301,11 +351,11 @@ export class PlayerStore {
   connectToPlayer = async (device_id) => {
     // get current access token
     // TODO: error handling
-    let access_token
+    let access_token;
     try {
-      access_token = await this.getOAuthToken()
+      access_token = await this.getOAuthToken();
     } catch (e) {
-      return e
+      return e;
     }
     // call connect to device endpoint
     return Axios.put(
@@ -423,11 +473,9 @@ export class PlayerStore {
       // TODO: error handling
       console.log(e.response.data);
       if (e.response.data.error_description === "Refresh token revoked") {
-        window.localStorage.removeItem("spotify:refresh_token")
-        runInAction(() =>
-          this.needsRefreshToken = true
-        )
-        throw new Error("Bad refresh token")
+        window.localStorage.removeItem("spotify:refresh_token");
+        runInAction(() => (this.needsRefreshToken = true));
+        throw new Error("Bad refresh token");
       }
     }
   });
@@ -450,7 +498,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-      }`;
+    }`;
   };
 }
 
