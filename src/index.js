@@ -6,17 +6,24 @@ import * as serviceWorker from "./serviceWorker";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { CaptureConsole } from "@sentry/integrations";
+import { FeedbackButton } from "./modals";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
-  integrations: [new Integrations.BrowserTracing(), new CaptureConsole()],
+  integrations: [
+    new Integrations.BrowserTracing(),
+    new CaptureConsole({
+      levels: ["error"],
+    }),
+  ],
   tracesSampleRate: 1.0,
 });
-console.log(process.env.npm_package_version);
+
 ReactDOM.render(
   <React.StrictMode>
     <Sentry.ErrorBoundary fallback="An error has occurred" showDialog>
       <App />
+      <FeedbackButton />
     </Sentry.ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")
