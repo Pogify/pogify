@@ -1,35 +1,92 @@
 .player {
-    width: 300px;
-    text-align: center;
-    border-radius: 10px;
-    padding: 30px;
+  width: 300px;
+  text-align: center;
+  border-radius: 10px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .metadataWrapper {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .playButtonWrapper {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .spotifyLink {
-    color: inherit;
-    text-decoration: inherit;
-    margin: 0 3px;
-
+  color: inherit;
+  text-decoration: inherit;
+  margin: 0 3px;
 }
 
 .spotifyLink:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .albumArt {
-    height: 300px;
-    width: 300px;
-    overflow: hidden;
+  height: 300px;
+  width: 300px;
+  overflow: hidden;
 }
 
 .seekBar {
-    width: 70%;
+  width: 100%;
+  position: relative;
+  height: 16px;
+  margin: 0px 4px;
+}
+
+.seekBar input[type="range"] {
+  background-color: transparent;
+  -webkit-appearance: none;
+
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.seekBar input[type="range"]:focus {
+  outline: none;
+}
+
+.seekBar input[type="range"]::-webkit-slider-runnable-track {
+  cursor: pointer;
+  background-color: transparent;
+  color: transparent;
+}
+.seekBar input[type="range"]::-webkit-slider-thumb {
+  height: 16px;
+  width: 16px;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  border-width: 0;
+  -webkit-appearance: none;
+}
+.seekBar input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  border-width: 0;
+  -webkit-appearance: none;
+}
+
+.progressBar div {
+  min-width: unset !important;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #72a1e5 !important;
+}
+.warn div {
+  min-width: unset !important;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #fbbd08 !important;
 }

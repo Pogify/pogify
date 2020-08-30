@@ -370,7 +370,7 @@ class ListenerPlayer extends React.Component {
     return (
       <Layout>
         <div className="flexContainer">
-          <Player isHost={false}>
+          <Player isHost={false} warn={!this.state.synced}>
             <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
               {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
