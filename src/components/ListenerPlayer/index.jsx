@@ -260,7 +260,6 @@ class ListenerPlayer extends React.Component {
   };
 
   componentDidMount() {
-    this.connect();
     // autorun to enforce initial state.
     // will continuously try to pause if its not supposed to play
     this.forceUpdateAutorunDisposer = autorun((reaction) => {
