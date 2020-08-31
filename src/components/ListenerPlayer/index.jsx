@@ -246,8 +246,7 @@ class ListenerPlayer extends React.Component {
               playerStore.pause(this.parked);
             }
           },
-        },
-        async () => await playerStore.seek(position)
+        }
       );
     } else {
       await playerStore.seek(position);
