@@ -49,6 +49,9 @@ If you are looking to help with UI/UX, please note that we do not have a style g
    {
      "jwt": {
        "secret": "anysecretyoudlike"
+     },
+     "pubsub": {
+       "url": "https://anystringyoudlike.itdoesntmatteritsnotusedinemulation.com"
      }
    }
    ```
