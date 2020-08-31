@@ -111,16 +111,13 @@ export const Player = observer((props) => {
     <div className={styles.player}>
       <TrackMetadata />
       <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          margin: 10,
-          width: "100%",
-        }}
+        className={styles.seekContainer}
+
       >
         {secondsToTimeFormat(playerStore.position / 1000)}
         <CustomSlider
           onChange={seek}
+          canChange={props.isHost}
           min={0}
           max={duration / 1000}
           warn={props.warn}
@@ -129,20 +126,16 @@ export const Player = observer((props) => {
         {secondsToTimeFormat(duration / 1000)}
       </div>
       <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          margin: 10,
-          width: "70%",
-        }}
+        className={styles.volumeContainer}
       >
-        <FAI icon={faVolumeMute} />
+        <FAI icon={faVolumeMute} className={styles.muteButton} onClick={playerStore.setMute} />
         <CustomSlider
           value={input(parseFloat(volume))}
           onChange={setVolume}
           min={-1}
           max={1}
           step={0.01}
+          canChange
         />
         <FAI icon={faVolumeUp} />
       </div>
@@ -159,31 +152,24 @@ export const Player = observer((props) => {
   );
 });
 
-const CustomSlider = (props) => {
-  let progressBarClasses = [styles.progressBar];
-  if (props.warn) {
-    progressBarClasses.push(styles.warn);
-  }
-
-  return (
-    <div className={styles.seekBar}>
-      <input
-        type="range"
-        name="position"
-        id="position"
-        value={props.value}
-        onChange={props.onChange}
-        min={props.min}
-        step={props.step}
-        max={props.max}
-      />
-      <Progress
-        className={progressBarClasses.join(" ")}
-        size="small"
-        percent={((props.value - props.min) / (props.max - props.min)) * 100}
-      />
-    </div>
-  );
-};
+const CustomSlider = (props) => (
+  <div className={`${styles.progressBarContainer} ${props.canChange ? styles.canChange : ""}`}>
+    <input
+      type="range"
+      name="position"
+      id="position"
+      value={props.value}
+      onChange={props.onChange}
+      min={props.min}
+      step={props.step}
+      max={props.max}
+    />
+    <Progress
+      className={`${styles.progressBar} ${props.warn ? styles.warn : ""} ${props.canChange ? styles.canChange : ""}`}
+      size="small"
+      percent={((props.value - props.min) / (props.max - props.min)) * 100}
+    />
+  </div>
+);
 
 export default Player;

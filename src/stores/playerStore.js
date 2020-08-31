@@ -49,6 +49,7 @@ export class PlayerStore {
       playing: false,
       // volume
       volume: 0.2,
+      muted: false,
       // uri for current track
       uri: "",
       // WebPlaybackStateObject
@@ -92,7 +93,7 @@ export class PlayerStore {
         now(100);
         if (!this.debouncedVolumeChange.pending())
           this.volume = (await this.player.getVolume()) ?? 0;
-        console.log("volume autorun", this.volume);
+        // console.log("volume autorun", this.volume);
       });
     }
   });
@@ -132,6 +133,16 @@ export class PlayerStore {
       this.resume();
     }
   });
+
+  setMute = action(() => {
+    if (this.muted === false) {
+      this.muted = this.volume;
+      this.setVolume(0);
+    } else {
+      this.setVolume(this.muted);
+      this.muted = false;
+    }
+  })
 
   /**
    * Sets volume
@@ -520,7 +531,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-    }`;
+      }`;
   };
 }
 
