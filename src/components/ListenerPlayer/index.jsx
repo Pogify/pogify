@@ -36,7 +36,7 @@ class ListenerPlayer extends React.Component {
     // governs whether or not players should start playing on connect
     playImmediate: false,
     firstPlay: false,
-    synced: true,
+    synced: false,
     parked: false,
   };
 
@@ -259,24 +259,15 @@ class ListenerPlayer extends React.Component {
   };
 
   componentDidMount() {
-    // autorun to trigger when playerstore is first playing.
-    // made it like this to allow client to click play button on player
-    autorun((reaction) => {
-      if (playerStore.playing) {
-        this.setState({
-          playImmediate: true,
-        });
-        reaction.dispose();
-      }
-    });
-
-    // autorun then playerStore starts playing. resync to host
+    // autorun for when first playing.
+    // if this.state.playImmediate is true this will trigger automatically
+    // if not then it'll wait till user presses play
     this.forceUpdateAutorunDisposer = autorun((reaction) => {
-      const { hostPosition, updateTimestamp } = this.state;
+      const { playImmediate, firstPlay } = this.state;
 
-      if (playerStore.playing) {
+      if ((playerStore.playing || playImmediate) && firstPlay) {
         console.log("autorun playing");
-        playerStore.seek(hostPosition + Date.now() - updateTimestamp);
+        this.syncOnClick();
         reaction.dispose();
       }
     });
@@ -347,10 +338,6 @@ class ListenerPlayer extends React.Component {
         <Layout>
           <h2 className={styles.h2}>Waiting for Host...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
-          {/* TODO: button to start play immediately
-              BODY have music play immediately on first connect. 
-            
-          */}
           <input
             type="checkbox"
             name="playImmediate"
