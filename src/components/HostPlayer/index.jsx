@@ -185,7 +185,7 @@ class HostPlayer extends React.Component {
         <div className="flexContainer">
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting to {this.state.connections} listeners.</h2>
+            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
             <p className="textAlignLeft">
               You can continue using Spotify as you normally would. The music is
               playing through this browser tab, you can open this tab in a new

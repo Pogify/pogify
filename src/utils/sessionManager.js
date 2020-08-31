@@ -1,5 +1,6 @@
 import axios from "axios";
 import urlJoin from "url-join";
+import { observable } from "mobx";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -47,6 +48,11 @@ function initializeApp() {
     };
   }
 }
+
+/**
+ * Listener count observable
+ */
+export const SessionCount = observable.box(0);
 
 /**
  * Refresh session token and stick it in localStorage
@@ -129,7 +135,7 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
   try {
     let user = await FBAuth.signInAnonymously();
     console.log("publishUpdate", uri, position, playing);
-    await axios.post(
+    let res = await axios.post(
       cloudFunctions.postUpdate,
       {
         uri,
@@ -145,6 +151,7 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
         },
       }
     );
+    SessionCount.set(res.data.subscribers);
   } catch (e) {
     if (e.response) {
       if (e.response.status === 401) {
