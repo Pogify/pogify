@@ -33,7 +33,7 @@ class ListenerPlayer extends React.Component {
     firstPlay: false,
     synced: true,
     parked: false,
-    changeSongCallback: null
+    changeSongCallback: null,
   };
 
   /**
@@ -52,7 +52,7 @@ class ListenerPlayer extends React.Component {
         });
       }
 
-      console.log("Spotify sent an update! (hoorray)", data)
+      console.log("Spotify sent an update! (hoorray)", data);
 
       const {
         hostPosition,
@@ -61,7 +61,6 @@ class ListenerPlayer extends React.Component {
         hostConnected,
         updateTimestamp,
       } = this.state;
-
 
       // don't update sync state if player parks.
       // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
@@ -93,6 +92,7 @@ class ListenerPlayer extends React.Component {
           Math.abs(calcPos - data.position) > 2000)
       ) {
         // console.log("not synced");
+        this.syncListener(hostUri, calcPos, hostPlaying, true);
         this.setState({
           synced: false,
         });
@@ -104,10 +104,10 @@ class ListenerPlayer extends React.Component {
       }
       // playerStore.resyncPosition(data.position)
       if (typeof this.state.changeSongCallback === "function") {
-        console.log("Executing changed song callback")
-        this.state.changeSongCallback()
+        console.log("Executing changed song callback");
+        this.state.changeSongCallback();
       }
-      this.setState({ changeSongCallback: null })
+      this.setState({ changeSongCallback: null });
     });
   };
 
@@ -230,20 +230,29 @@ class ListenerPlayer extends React.Component {
   async syncListener(uri, position, playing, force) {
     if (uri !== playerStore.uri) {
       await playerStore.newTrack(uri, position);
-      console.log(playing, position, playerStore.position.value)
-      this.setState({
-        changeSongCallback: () => {
-          if (playing && (position > playerStore.position && playerStore.position > 0)) {
-            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-            playerStore.resume(this.state.parked);
-          } else if (!playing) {
-            // if host pauses, pause
-            playerStore.pause(this.parked);
-          }
-        }
-      }, async () => await playerStore.seek(position))
+      console.log(playing, position, playerStore.position.value);
+      // defer setting play/pause till after update
+      this.setState(
+        {
+          changeSongCallback: () => {
+            if (
+              playing &&
+              position > playerStore.position &&
+              playerStore.position > 0
+            ) {
+              // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
+              playerStore.resume(this.state.parked);
+            } else if (!playing) {
+              // if host pauses, pause
+              playerStore.pause(this.parked);
+            }
+          },
+        },
+        async () => await playerStore.seek(position)
+      );
     } else {
       await playerStore.seek(position);
+      // defer setting play/pause till after update
       this.setState({
         changeSongCallback: () => {
           if (playing || force) {
@@ -253,8 +262,8 @@ class ListenerPlayer extends React.Component {
             // if host pauses, pause
             playerStore.pause(this.state.parked);
           }
-        }
-      })
+        },
+      });
     }
     this.setState({
       synced: true,
@@ -274,7 +283,6 @@ class ListenerPlayer extends React.Component {
     // will continuously try to pause if its not supposed to play
     // this.forceUpdateAutorunDisposer = autorun((reaction) => {
     //   const { firstPlay } = this.state;
-
     //   if (playerStore.playing && firstPlay) {
     //     console.log("dispose");
     //     reaction.dispose();
