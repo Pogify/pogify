@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
 
-import { debounce } from "../../utils/debounce";
+import debounce from "lodash/debounce";
 
 import { Layout } from "../../layouts";
 
@@ -83,7 +83,7 @@ class HostPlayer extends React.Component {
         console.log(
           Math.abs(
             position -
-              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ),
           position,
           this.lastUpdate.position,
@@ -92,7 +92,7 @@ class HostPlayer extends React.Component {
         if (
           Math.abs(
             position -
-              (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
+            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
           ) > 1000
         ) {
           SessionManager.publishUpdate(uri, position, playing);
@@ -112,7 +112,7 @@ class HostPlayer extends React.Component {
     };
     // it seems 400 is about a good sweet spot for debounce.
     // Hesitant to raise it anymore because it would increase latency to listener
-  }, 400);
+  }, 400, { leading: true });
 
   componentDidMount() {
     // set the token refresh interval
