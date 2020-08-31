@@ -92,10 +92,9 @@ class ListenerPlayer extends React.Component {
           Math.abs(calcPos - data.position) > 2000)
       ) {
         // console.log("not synced");
-        this.syncListener(hostUri, calcPos, hostPlaying, true);
         this.setState({
           synced: false,
-        });
+        }, () => this.syncListener(hostUri, calcPos, hostPlaying, true));
       } else {
         // console.log("synced");
         this.setState({
