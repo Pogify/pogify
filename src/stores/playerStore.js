@@ -265,7 +265,6 @@ export class PlayerStore {
         return resolve();
       }
       // if spotify is not ready then wait till ready then call this function
-      // TODO: add timeout for waiting or something (care for slow connections)
       if (!window.spotifyReady) {
         window.onSpotifyWebPlaybackSDKReady = () => {
           // set global tracker to true
@@ -315,7 +314,6 @@ export class PlayerStore {
       // update this player stuff on player state
       player.on("player_state_changed", async (data) => {
         // if no data then do nothing
-        // TODO: host connected to pogify property
         if (!data) {
           this.device_connected = false;
           this.data = {};
@@ -417,7 +415,6 @@ export class PlayerStore {
 
     // if localStorage doesn't have an access token then go get it
     if (!window.localStorage.getItem("spotify:refresh_token")) {
-      // TODO: show a warning modal. that there will be a redirect to login
       this.goAuth(window.location.pathname);
       return;
     }
@@ -523,7 +520,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-      }`;
+    }`;
   };
 }
 

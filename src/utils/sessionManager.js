@@ -154,7 +154,6 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
         try {
           await refreshToken();
         } catch (e) {
-          // TODO: if error refreshing token then show session expired modal with redirect to create.
           throw e;
         }
       } else if (e.response.status === 429) {
