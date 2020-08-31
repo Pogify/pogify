@@ -14,7 +14,6 @@ import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
-import { ErrorModal } from "../../modals";
 import { showReportDialog } from "@sentry/react";
 
 /**
@@ -377,7 +376,7 @@ class ListenerPlayer extends React.Component {
 
           <div className={`textAlignCenter ${styles.textWrapper}`}>
             <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p className=".textAlignLeft">
+            <p className="textAlignLeft">
               You are listening to session: {this.props.sessionId}. Your
               playback is controlled by the host. Pressing pause will pause
               playback locally only. On resume, playback will be resynchronised
