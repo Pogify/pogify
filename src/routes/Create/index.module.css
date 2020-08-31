@@ -1,3 +1,9 @@
-.previousSessions {
-    margin: 5px;
+.fullWidth {
+  width: 100%;
+}
+
+.buttonStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

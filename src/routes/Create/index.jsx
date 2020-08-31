@@ -52,20 +52,29 @@ export class Create extends React.Component {
   render() {
     return (
       <Layout>
-        {Boolean(this.state.activeSession) && (
-          <div className={`textAlignCenter ${styles.previousSessions}`}>
-            Your Active Session:
-            <div>
+        <div className={styles.buttonStack}>
+          {Boolean(this.state.activeSession) && (
+            <>
               <Link
+                className={styles.fullWidth}
                 to={`/session/${this.state.activeSession}`}
-                // TODO: better link styling, more button-like?
               >
-                Resume {this.state.activeSession}
+                <button className={`textAlignCenter ${styles.fullWidth}`}>
+                  Continue Active Session:
+                  <div>
+                    <u>
+                      <b>{this.state.activeSession}</b>
+                    </u>
+                  </div>
+                </button>
               </Link>
-            </div>
-          </div>
-        )}
-        <button onClick={this.create}>Create New Listening Session</button>
+              <div>
+                <h3>or</h3>
+              </div>
+            </>
+          )}
+          <button onClick={this.create}>Create New Listening Session</button>
+        </div>
       </Layout>
     );
   }
