@@ -304,20 +304,44 @@ export class PlayerStore {
       // authentication_error handler
       player.on("initialization_error", reject);
       player.on("authentication_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Authentication Error"
+            errorMessage={`${message} Refresh and try again.` }
+          />
+        );
         this.error_type = "authentication_error";
         this.error_message = message;
       });
 
       // TODO: proper error handling
       player.on("account_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Account Error"
+            errorMessage={`${message} Refresh and try again.` }
+          />
+        );
         this.error_type = "account_error";
         this.error_message = message;
       });
       player.on("playback_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Playback Error"
+            errorMessage={`${message} Refresh and try again.` }
+          />
+        );
         this.error_type = "authentication_error";
         this.error_message = message;
       });
       player.on("not_ready", () => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Not Ready Error"
+            errorMessage="Spotify is not ready. Refresh and try again."
+          />
+        );
         this.error_type = "not_ready";
         this.error_message = "Player not Ready";
       });
