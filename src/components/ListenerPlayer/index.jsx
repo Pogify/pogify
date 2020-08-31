@@ -31,11 +31,10 @@ class ListenerPlayer extends React.Component {
     hostPlaying: false,
     hostPosition: 0,
     // governs whether or not the player should play when host presses play.
-    hostPausedWhileListenerListening: false,
+    hostPausedWhileListenerListening: true,
     // governs whether or not players should start playing on connect
-    playImmediate: false,
     firstPlay: false,
-    synced: false,
+    synced: true,
     parked: false,
   };
 
@@ -61,7 +60,6 @@ class ListenerPlayer extends React.Component {
         hostConnected,
         updateTimestamp,
 
-        playImmediate,
         parked,
       } = this.state;
 
@@ -70,7 +68,7 @@ class ListenerPlayer extends React.Component {
       // if the player reaches end of track and stops playing but host is still playing then skip sync update.
       // set parked flag
       if (data.position > data.duration - 500 && hostPlaying && data.paused) {
-        console.log("true");
+        console.log("parked");
         return this.setState({
           parked: true,
         });
@@ -93,15 +91,16 @@ class ListenerPlayer extends React.Component {
 
       if (
         hostConnected &&
-        playImmediate &&
         (hostUri !== data.track_window.current_track.uri ||
           hostPlaying !== !data.paused ||
           Math.abs(calcPos - data.position) > 2000)
       ) {
+        console.log("not synced");
         this.setState({
           synced: false,
         });
       } else {
+        console.log("not synced");
         this.setState({
           synced: true,
         });
@@ -154,25 +153,29 @@ class ListenerPlayer extends React.Component {
 
       let wasPlaying = playerStore.playing;
 
-      // if listener player is not in synced state with host then pass player updates and only update state
-      if (this.state.synced) {
-        await this.syncListener(uri, calcPos, playing);
-      }
-
-      this.setState({
-        lastTimestamp: timestamp,
-        // this value should only be set when host pauses. if playing then inherit from last state.
-        hostPausedWhileListenerListening:
-          wasPlaying && !playing
-            ? wasPlaying
-            : this.state.hostPausedWhileListenerListening,
-        hostUri: uri,
-        hostPosition: calcPos,
-        updateTimestamp: Date.now(),
-        hostPlaying: playing,
-        firstPlay: playing || this.state.firstPlay,
-        hostConnected: true,
-      });
+      this.setState(
+        {
+          lastTimestamp: timestamp,
+          // this value should only be set when host pauses. if playing then inherit from last state.
+          hostPausedWhileListenerListening:
+            wasPlaying && !playing
+              ? wasPlaying
+              : this.state.hostPausedWhileListenerListening,
+          hostUri: uri,
+          hostPosition: calcPos,
+          updateTimestamp: Date.now(),
+          hostPlaying: playing,
+          firstPlay: playing || this.state.firstPlay,
+          hostConnected: true,
+        },
+        async () => {
+          // must call in callback else causes race conditions
+          // if listener player is not in synced state with host don't update listener
+          if (this.state.synced) {
+            await this.syncListener(uri, calcPos, playing);
+          }
+        }
+      );
     };
 
     this.eventListener.onerror = (e) => {
@@ -208,7 +211,6 @@ class ListenerPlayer extends React.Component {
   connect = async () => {
     this.setState({ loading: true });
 
-    console.log("once");
     // TODO: listener title based on session code?
     const playerDeviceId = await playerStore.initializePlayer(
       "Pogify Listener"
@@ -258,16 +260,16 @@ class ListenerPlayer extends React.Component {
   };
 
   componentDidMount() {
-    // autorun for when first playing.
-    // if this.state.playImmediate is true this will trigger automatically
-    // if not then it'll wait till user presses play
+    // autorun to enforce initial state.
+    // will continuously try to pause if its not supposed to play
     this.forceUpdateAutorunDisposer = autorun((reaction) => {
-      const { playImmediate, firstPlay } = this.state;
+      const { firstPlay } = this.state;
 
-      if ((playerStore.playing || playImmediate) && firstPlay) {
-        console.log("autorun playing");
-        this.syncOnClick();
+      if (playerStore.playing && firstPlay) {
+        console.log("dispose");
         reaction.dispose();
+      } else if (playerStore.playing && !firstPlay) {
+        playerStore.pause();
       }
     });
   }
@@ -335,20 +337,21 @@ class ListenerPlayer extends React.Component {
     if (!this.state.hostConnected || !this.state.firstPlay) {
       return (
         <Layout>
-          <h2 className={styles.h2}>Waiting for Host...</h2>{" "}
+          <h2 className={styles.h2}>Waiting for host to play music...</h2>{" "}
           <p>Session Code: {this.props.sessionId}</p>
           <input
             type="checkbox"
-            name="playImmediate"
-            id="playImmediate"
-            value={this.state.playImmediate}
-            onChange={() => {
-              this.setState({ playImmediate: !this.state.playImmediate });
-            }}
+            name="dontPlay"
+            id="dontPlay"
+            value={!this.state.hostPausedWhileListenerListening}
+            onChange={() =>
+              this.setState({
+                hostPausedWhileListenerListening: !this.state
+                  .hostPausedWhileListenerListening,
+              })
+            }
           />
-          <label htmlFor="playImmediate">
-            Start Playing Music Once Connected to Host?
-          </label>
+          <label htmlFor="dontPlay">Don't Auto-play.</label>
         </Layout>
       );
     }
@@ -360,11 +363,7 @@ class ListenerPlayer extends React.Component {
             <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
               {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
-              {this.state.hostPlaying && this.state.playImmediate && (
-                <div style={{ height: "1.3rem" }} />
-              )}
-              {!this.state.playImmediate &&
-                ". Press Play to Synchronize With Host"}
+              {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
               {!this.state.synced && (
                 <div>
                   Sync with host &nbsp;
