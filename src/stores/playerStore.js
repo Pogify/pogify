@@ -291,6 +291,7 @@ export class PlayerStore {
               reject(e);
             });
         };
+        return
       }
 
       // make spotify playback sdk object
