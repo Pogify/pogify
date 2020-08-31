@@ -6,6 +6,7 @@ import Axios from "axios";
 import crypto from "crypto";
 import { modalStore } from ".";
 import WarningModal from "../modals/WarningModal";
+import ErrorModal from "../modals/ErrorModal";
 import * as Sentry from "@sentry/react";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
@@ -307,7 +308,7 @@ export class PlayerStore {
         modalStore.queue(
           <ErrorModal
             errorCode="Spotify Authentication Error"
-            errorMessage={`${message} Refresh and try again.` }
+            errorMessage={`${message} Refresh and try again.`}
           />
         );
         this.error_type = "authentication_error";
@@ -319,7 +320,7 @@ export class PlayerStore {
         modalStore.queue(
           <ErrorModal
             errorCode="Spotify Account Error"
-            errorMessage={`${message} Refresh and try again.` }
+            errorMessage={`${message} Refresh and try again.`}
           />
         );
         this.error_type = "account_error";
@@ -329,7 +330,7 @@ export class PlayerStore {
         modalStore.queue(
           <ErrorModal
             errorCode="Spotify Playback Error"
-            errorMessage={`${message} Refresh and try again.` }
+            errorMessage={`${message} Refresh and try again.`}
           />
         );
         this.error_type = "authentication_error";
