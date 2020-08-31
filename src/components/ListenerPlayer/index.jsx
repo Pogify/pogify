@@ -363,7 +363,7 @@ class ListenerPlayer extends React.Component {
           <Player isHost={false} warn={!this.state.synced}>
             <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
-              {!this.state.hostPlaying && !this.state.synced && "Host Pausedf"}
+              {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
               {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
               {!this.state.synced && (
                 <div className={styles.syncButton} onClick={this.syncOnClick}>
