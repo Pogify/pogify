@@ -17,15 +17,14 @@ export class AuthRedirect extends React.Component {
         // Then redirect with a replace.
         // Replace replaces the latest history item so the redirect will not stay in history
         this.props.history.replace(window.sessionStorage.getItem("redirectTo"));
-      })
+      });
     } else if (urlParams.has("error")) {
       if (urlParams.get("error") === "access_denied") {
-        window.history.go(-2)
-      } 
+        window.history.go(-2);
+      }
     }
   }
   render() {
-    // TODO: currently an empty div but might change to a redirect notification or something
-    return null
+    return null;
   }
 }
