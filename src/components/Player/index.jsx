@@ -139,7 +139,7 @@ export const Player = observer((props) => {
         />
         <FAI icon={faVolumeUp} />
       </div>
-      {!props.dontShow && (
+      {props.isHost && (
         <div
           className={styles.playButtonWrapper}
           onClick={() => playerStore.togglePlay()}

@@ -1,13 +1,15 @@
 import React from "react";
 import { extendObservable, action, computed, autorun, runInAction } from "mobx";
 import { now } from "mobx-utils";
+import promiseRetry from "promise-retry";
 import debounce from "lodash/debounce";
 import Axios from "axios";
 import crypto from "crypto";
+import * as Sentry from "@sentry/react";
+
 import { modalStore } from ".";
 import WarningModal from "../modals/WarningModal";
 import ErrorModal from "../modals/ErrorModal";
-import * as Sentry from "@sentry/react";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -49,7 +51,7 @@ export class PlayerStore {
       // Whether player is playing
       playing: false,
       // volume
-      volume: 0.2,
+      volume: window.localStorage.getItem("pogify:volume") || 0.2,
       muted: false,
       // uri for current track
       uri: "",
@@ -57,6 +59,8 @@ export class PlayerStore {
       data: {},
       // Flag to display the "Login to Spotify" if needed
       needsRefreshToken: false,
+      // When pausing or playing, don't spam the API
+      tryingToChangeState: false
     });
   }
 
@@ -76,40 +80,74 @@ export class PlayerStore {
   /**
    * Resume player.
    * Should be called here instead of calling directly to spotify player object
+   * @param {boolean} parked whether the player stopped from ending a song 
    */
-  resume = action(() => {
-    // player resume method
-    this.player.resume();
-    // set state playing
-    this.playing = true;
+  resume = action(async (parked = false) => {
+    if (this.tryingToChangeState === true) {
+      return
+    }
+    this.tryingToChangeState = true;
+    promiseRetry(async (retry) => {
+      // Spotify player resume method
+      this.player.resume();
+      console.log("Trying to resume")
+      // Be really sure it's paused
+      const newState = await this.player.getCurrentState()
+      if (newState.paused === true && parked === false) {
+        try { retry() } catch (e) {
+          console.log("Couldn't resume. Retrying")
+        }
+      } else {
+        console.log("Successfully resumed!")
+      }
+      // set pause state
+      this.playing = true;
 
-    // replaced ticking with autorun and now() from mobxUtils
-    if (!this.disposeTimeAutorun) {
-      this.disposeTimeAutorun = autorun(async () => {
-        this.t1 = now(500);
-      });
-    }
-    if (!this.disposeVolumeAutorun) {
-      this.disposeVolumeAutorun = autorun(async () => {
-        now(100);
-        if (!this.debouncedVolumeChange.pending())
-          this.volume = (await this.player.getVolume()) ?? 0;
-        // console.log("volume autorun", this.volume);
-      });
-    }
+      // replaced ticking with autorun and now() from mobxUtils
+      if (!this.disposeTimeAutorun) {
+        this.disposeTimeAutorun = autorun(async () => {
+          this.t1 = now(500);
+        });
+      }
+      if (!this.disposeVolumeAutorun) {
+        this.disposeVolumeAutorun = autorun(async () => {
+          now(100);
+          if (!this.debouncedVolumeChange.pending())
+            this.volume = (await this.player.getVolume()) ?? 0;
+          // console.log("volume autorun", this.volume);
+        });
+      }
+    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
   });
 
   /**
    * Pause player.
    * Should be called here instead of calling directly to spotify player object
+   * @param {boolean} parked whether the player stopped from ending a song
    */
-  pause = action(() => {
-    // spotify player pause method
-    this.player.pause();
-    // set pause state
-    this.playing = false;
-    // dispose autoruns
-    this.disposeAutoruns();
+  pause = action(async (parked) => {
+    if (this.tryingToChangeState === true) {
+      return
+    }
+    this.tryingToChangeState = true;
+    promiseRetry(async (retry) => {
+      // spotify player pause method
+      this.player.pause();
+      console.log("Trying to pause")
+      // Be really sure it's paused
+      const newState = await this.player.getCurrentState()
+      if (newState.paused === false && parked === false) {
+        try { retry() } catch (e) {
+          console.log("Couldn't pause. Retrying")
+        }
+      } else {
+        console.log("Successfully paused!")
+      }
+      // set pause state
+      this.playing = false;
+      // dispose autoruns
+      this.disposeAutoruns();
+    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
   });
 
   disposeAutoruns = () => {
@@ -138,10 +176,9 @@ export class PlayerStore {
   setMute = action(() => {
     if (this.muted === false) {
       this.muted = this.volume;
-      this.setVolume(0);
+      this.setVolume(0, true);
     } else {
       this.setVolume(this.muted);
-      this.muted = false;
     }
   })
 
@@ -158,9 +195,11 @@ export class PlayerStore {
       leading: true,
     }
   );
-  setVolume = action((volume) => {
+  setVolume = action((volume, muting = false) => {
     this.volume = volume;
     this.debouncedVolumeChange(volume);
+    if (muting === false) this.muted = false;
+    window.localStorage.setItem("pogify:volume", volume);
   });
 
   /**
@@ -214,7 +253,7 @@ export class PlayerStore {
                 modalStore.queue(
                   <WarningModal
                     title="Pogify was not able to play this track"
-                    content={`Host started a track: ${uri}, but Pogify was not able to play it on your account.`}
+                    content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
                   />
                 );
                 return;
@@ -250,7 +289,7 @@ export class PlayerStore {
     // reset stamps
     this.p0 = pos_ms;
     this.t0 = Date.now();
-    this.debouncedSeek(pos_ms);
+    return this.debouncedSeek(pos_ms);
   });
 
   /**
@@ -260,6 +299,7 @@ export class PlayerStore {
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
   initializePlayer = action((title, connect = true) => {
+    if (this.initializeWaiting) clearTimeout(this.initializeWaiting)
     this.initializeWaiting = setTimeout(() => {
       Sentry.captureMessage("Spotify Initialize timeout");
       modalStore.queue(
@@ -309,7 +349,7 @@ export class PlayerStore {
         modalStore.queue(
           <ErrorModal
             errorCode="Spotify Authentication Error"
-            errorMessage={`${message} Refresh and try again.`}
+            errorMessage={`${message}. Refresh and try again.`}
           />
         );
         this.error_type = "authentication_error";
@@ -363,13 +403,15 @@ export class PlayerStore {
         this.p0 = data.position;
         this.t0 = Date.now();
 
-        if (!data.paused) {
-          this.resume();
-        } else {
-          this.pause();
-        }
+        this.playing = !data.paused
 
-        console.log(data);
+        // if (!data.paused) {
+        //   this.resume();
+        // } else {
+        //   this.pause();
+        // }
+
+        // console.log(data);
 
         this.data = data;
       });
@@ -379,7 +421,6 @@ export class PlayerStore {
         // set device id
         this.device_id = device_id;
         // clear player object if it already exists
-        this.player = undefined;
         this.player = player;
         // if there is a long wait modal then close it
         if (
@@ -390,7 +431,7 @@ export class PlayerStore {
         }
 
         // clear the long wait timeout
-        clearInterval(this.initializeWaiting);
+        clearTimeout(this.initializeWaiting);
         // if connect is true call connect to player
         if (connect) {
           resolve(device_id);

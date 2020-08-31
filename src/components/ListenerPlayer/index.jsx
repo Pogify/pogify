@@ -1,11 +1,8 @@
 import React from "react";
-import { autorun } from "mobx";
 import { observer } from "mobx-react";
 import { playerStore, modalStore } from "../../stores";
 
 import { Layout } from "../../layouts";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
@@ -36,6 +33,7 @@ class ListenerPlayer extends React.Component {
     firstPlay: false,
     synced: true,
     parked: false,
+    changeSongCallback: null
   };
 
   /**
@@ -53,33 +51,32 @@ class ListenerPlayer extends React.Component {
           synced: false,
         });
       }
+
+      console.log("Spotify sent an update! (hoorray)", data)
+
       const {
         hostPosition,
         hostUri,
         hostPlaying,
         hostConnected,
         updateTimestamp,
-
-        parked,
       } = this.state;
+
 
       // don't update sync state if player parks.
       // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
       // if the player reaches end of track and stops playing but host is still playing then skip sync update.
       // set parked flag
-      if (data.position > data.duration - 500 && hostPlaying && data.paused) {
-        console.log("parked");
+      if (data.position > data.duration - 500) {
+        // console.log("parked");
         return this.setState({
           parked: true,
         });
-      } else if (parked && data.position === 0 && data.paused) {
-        console.log("still parked");
+      } else if (this.state.parked && data.position === 0 && data.paused) {
+        // console.log("still parked");
         return;
       }
-      // FIXME: player cannot maintain sync if host continues play at the end of a track.
-      /* BODY reason: unknown. suspicion: player un parks then tries to play at end of track then forced to repark then nothing.
-       */
-      console.log("not parked");
+
       this.setState({
         parked: false,
       });
@@ -95,16 +92,22 @@ class ListenerPlayer extends React.Component {
           hostPlaying !== !data.paused ||
           Math.abs(calcPos - data.position) > 2000)
       ) {
-        console.log("not synced");
+        // console.log("not synced");
         this.setState({
           synced: false,
         });
       } else {
-        console.log("not synced");
+        // console.log("synced");
         this.setState({
           synced: true,
         });
       }
+      // playerStore.resyncPosition(data.position)
+      if (typeof this.state.changeSongCallback === "function") {
+        console.log("Executing changed song callback")
+        this.state.changeSongCallback()
+      }
+      this.setState({ changeSongCallback: null })
     });
   };
 
@@ -151,16 +154,9 @@ class ListenerPlayer extends React.Component {
       // calculate hosts current position based on hosts timestamp and time now on client
       let calcPos = playing ? position + Date.now() - timestamp : position;
 
-      let wasPlaying = playerStore.playing;
-
       this.setState(
         {
           lastTimestamp: timestamp,
-          // this value should only be set when host pauses. if playing then inherit from last state.
-          hostPausedWhileListenerListening:
-            wasPlaying && !playing
-              ? wasPlaying
-              : this.state.hostPausedWhileListenerListening,
           hostUri: uri,
           hostPosition: calcPos,
           updateTimestamp: Date.now(),
@@ -170,10 +166,7 @@ class ListenerPlayer extends React.Component {
         },
         async () => {
           // must call in callback else causes race conditions
-          // if listener player is not in synced state with host don't update listener
-          if (this.state.synced) {
-            await this.syncListener(uri, calcPos, playing);
-          }
+          await this.syncListener(uri, calcPos, playing);
         }
       );
     };
@@ -215,15 +208,15 @@ class ListenerPlayer extends React.Component {
     const playerDeviceId = await playerStore.initializePlayer(
       "Pogify Listener"
     );
-    playerStore.connectToPlayer(playerDeviceId).catch((err) => {
+    await playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
         console.error(err);
       }
     });
-    // set listener event listeners
-    this.setListenerListeners();
 
     this.setState({ loading: false, spotConnected: true });
+    // set listener event listeners
+    this.setListenerListeners();
   };
 
   /**
@@ -237,41 +230,58 @@ class ListenerPlayer extends React.Component {
   async syncListener(uri, position, playing, force) {
     if (uri !== playerStore.uri) {
       await playerStore.newTrack(uri, position);
+      console.log(playing, position, playerStore.position.value)
+      this.setState({
+        changeSongCallback: () => {
+          if (playing && (position > playerStore.position && playerStore.position > 0)) {
+            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
+            playerStore.resume(this.state.parked);
+          } else if (!playing) {
+            // if host pauses, pause
+            playerStore.pause(this.parked);
+          }
+        }
+      }, async () => await playerStore.seek(position))
+    } else {
+      await playerStore.seek(position);
+      this.setState({
+        changeSongCallback: () => {
+          if (playing || force) {
+            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
+            playerStore.resume(this.state.parked);
+          } else if (!playing) {
+            // if host pauses, pause
+            playerStore.pause(this.state.parked);
+          }
+        }
+      })
     }
-    if (playing && (this.state.hostPausedWhileListenerListening || force)) {
-      // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-      playerStore.resume();
-    } else if (!playing) {
-      // if host pauses, pause
-      playerStore.pause();
-    }
-    playerStore.seek(position);
     this.setState({
       synced: true,
     });
   }
 
-  syncOnClick = () => {
-    const { hostUri, hostPosition, hostPlaying, updateTimestamp } = this.state;
-    const calcPos = hostPlaying
-      ? hostPosition + Date.now() - updateTimestamp
-      : hostPosition;
-    this.syncListener(hostUri, calcPos, hostPlaying, true);
-  };
+  // syncOnClick = () => {
+  //   const { hostUri, hostPosition, hostPlaying, updateTimestamp } = this.state;
+  //   const calcPos = hostPlaying
+  //     ? hostPosition + Date.now() - updateTimestamp
+  //     : hostPosition;
+  //   this.syncListener(hostUri, calcPos, hostPlaying, true);
+  // };
 
   componentDidMount() {
     // autorun to enforce initial state.
     // will continuously try to pause if its not supposed to play
-    this.forceUpdateAutorunDisposer = autorun((reaction) => {
-      const { firstPlay } = this.state;
+    // this.forceUpdateAutorunDisposer = autorun((reaction) => {
+    //   const { firstPlay } = this.state;
 
-      if (playerStore.playing && firstPlay) {
-        console.log("dispose");
-        reaction.dispose();
-      } else if (playerStore.playing && !firstPlay) {
-        playerStore.pause();
-      }
-    });
+    //   if (playerStore.playing && firstPlay) {
+    //     console.log("dispose");
+    //     reaction.dispose();
+    //   } else if (playerStore.playing && !firstPlay) {
+    //     playerStore.pause();
+    //   }
+    // });
   }
   componentWillUnmount() {
     // close connection to sub server
@@ -283,7 +293,7 @@ class ListenerPlayer extends React.Component {
       playerStore.player.disconnect();
     }
     // dispose auto run
-    this.forceUpdateAutorunDisposer();
+    // this.forceUpdateAutorunDisposer();
   }
 
   render() {
@@ -360,7 +370,7 @@ class ListenerPlayer extends React.Component {
       <Layout>
         <div className="flexContainer">
           <Player isHost={false} warn={!this.state.synced}>
-            <div>
+            {/* <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
               {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
               {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
@@ -370,7 +380,7 @@ class ListenerPlayer extends React.Component {
                   <FontAwesomeIcon icon={faSync} />
                 </div>
               )}
-            </div>
+            </div> */}
           </Player>
 
           <div className={`textAlignCenter ${styles.textWrapper}`}>
