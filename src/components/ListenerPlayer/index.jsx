@@ -92,9 +92,12 @@ class ListenerPlayer extends React.Component {
           Math.abs(calcPos - data.position) > 2000)
       ) {
         // console.log("not synced");
-        this.setState({
-          synced: false,
-        }, () => this.syncListener(hostUri, calcPos, hostPlaying, true));
+        this.setState(
+          {
+            synced: false,
+          },
+          () => this.syncListener(hostUri, calcPos, hostPlaying)
+        );
       } else {
         // console.log("synced");
         this.setState({
@@ -224,36 +227,33 @@ class ListenerPlayer extends React.Component {
    * @param {string} uri spotify track uri
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
-   * @param {boolean} force whether to force playing
    */
-  async syncListener(uri, position, playing, force) {
+  async syncListener(uri, position, playing) {
     if (uri !== playerStore.uri) {
       await playerStore.newTrack(uri, position);
       console.log(playing, position, playerStore.position.value);
       // defer setting play/pause till after update
-      this.setState(
-        {
-          changeSongCallback: () => {
-            if (
-              playing &&
-              position > playerStore.position &&
-              playerStore.position > 0
-            ) {
-              // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-              playerStore.resume(this.state.parked);
-            } else if (!playing) {
-              // if host pauses, pause
-              playerStore.pause(this.parked);
-            }
-          },
-        }
-      );
+      this.setState({
+        changeSongCallback: () => {
+          if (
+            playing &&
+            position > playerStore.position &&
+            playerStore.position > 0
+          ) {
+            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
+            playerStore.resume(this.state.parked);
+          } else if (!playing) {
+            // if host pauses, pause
+            playerStore.pause(this.parked);
+          }
+        },
+      });
     } else {
       await playerStore.seek(position);
       // defer setting play/pause till after update
       this.setState({
         changeSongCallback: () => {
-          if (playing || force) {
+          if (playing) {
             // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
             playerStore.resume(this.state.parked);
           } else if (!playing) {
