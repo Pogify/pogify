@@ -96,7 +96,7 @@ class ListenerPlayer extends React.Component {
           {
             synced: false,
           },
-          () => this.syncListener(hostUri, calcPos, hostPlaying)
+          // () => this.syncListener(hostUri, calcPos, hostPlaying)
         );
       } else {
         // console.log("synced");
