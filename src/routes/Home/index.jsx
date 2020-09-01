@@ -33,7 +33,7 @@ export class Home extends React.Component {
             <button>Start a session</button>
           </Link>
         </div>
-        <Donations />
+        <Donations className={styles.donationButton} />
       </Layout>
     );
   }

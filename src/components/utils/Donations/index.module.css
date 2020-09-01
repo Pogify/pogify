@@ -5,3 +5,11 @@
   flex-direction: column;
   align-items: center;
 }
+
+.donateParagraph {
+  max-width: 55%;
+}
+
+.donateParagraph.large {
+  max-width: 85%;
+}
