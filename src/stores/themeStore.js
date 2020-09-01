@@ -23,15 +23,17 @@ export class ThemeStore {
     // validate saved theme
     savedTheme = AvailableThemes.includes(savedTheme) ? savedTheme : undefined;
 
-    themeQuery.addEventListener("change", (e) => {
-      if (typeof savedTheme === "undefined") {
-        if (e.matches) {
-          this.setTheme("dark", false)
-        } else {
-          this.setTheme("light", false)
+    if (typeof themeQuery.addEventListener === "function") {
+      themeQuery.addEventListener("change", (e) => {
+        if (typeof savedTheme === "undefined") {
+          if (e.matches) {
+            this.setTheme("dark", false)
+          } else {
+            this.setTheme("light", false)
+          }
         }
-      }
-    })
+      })
+    }
 
     extendObservable(this, {
       theme: savedTheme || systemDefault,

@@ -114,9 +114,13 @@ class ListenerPlayer extends React.Component {
   };
 
   setEventListener = () => {
-    this.eventListener = new EventSource(
-      process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
-    );
+    if ("EventSource" in window) {
+      this.eventListener = new EventSource(
+        process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
+      );
+    } else {
+      this.eventListener = new WebSocket("ws://localhost/sub/" + this.props.sessionId)
+    }
 
     // update state on open
     this.eventListener.onopen = () => {
