@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
+
 .layout {
   height: 100%;
   width: 100%;
@@ -16,11 +17,15 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
+  font-family: "Open Sans",
+    "Roboto",
+    sans-serif;
 }
 
 p {
-  font-family: "Roboto", sans-serif;
+  font-family: "Open Sans",
+    "Roboto",
+    sans-serif;
 }
 
 .content {
