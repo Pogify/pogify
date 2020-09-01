@@ -1,10 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Layout } from "../../layouts";
+import { Link } from "react-router-dom";
+
 import { createSession } from "../../utils/sessionManager";
+
 import { ErrorModal } from "../../modals";
-import styles from "./index.module.css";
 import { modalStore } from "../../stores";
+
+import styles from "./index.module.css";
 
 /**
  * Create session component.
@@ -52,6 +56,9 @@ export class Create extends React.Component {
   render() {
     return (
       <Layout>
+        <Helmet>
+          <title>Create a session - Pogify</title>
+        </Helmet>
         <div className={styles.buttonStack}>
           {Boolean(this.state.activeSession) && (
             <>
