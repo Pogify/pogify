@@ -95,8 +95,8 @@ class ListenerPlayer extends React.Component {
         this.setState(
           {
             synced: false,
-          },
-          () => this.syncListener(hostUri, calcPos, hostPlaying)
+          }
+          // () => this.syncListener(hostUri, calcPos, hostPlaying)
         );
       } else {
         // console.log("synced");
@@ -394,14 +394,23 @@ class ListenerPlayer extends React.Component {
           </Player>
 
           <div className={`textAlignCenter ${styles.textWrapper}`}>
-            <h2>Hosting to {this.state.connections} listeners.</h2>
+            {/* <h2>Hosting to {this.state.connections} listeners.</h2> */}
+            <h2>
+              This is a <b>BETA</b> build of pogify.
+            </h2>
             <p className="textAlignLeft">
               You are listening to session: {this.props.sessionId}. Your
-              playback is controlled by the host. Pressing pause will pause
+              playback is controlled by the host. The music is playing through
+              the browser, so <b>please do not close this tab. </b>
+              If you play or pause on a different Spotify client you will be
+              de-synchronized from the host. You will have to refresh to sync
+              again. This is a known problem and we are working on getting it
+              fixed. If you want to pause while staying in sync please press{" "}
+              <i>mute</i>.
+              {/*Pressing pause will pause
               playback locally only. On resume, playback will be resynchronised
               with the host. Controlling Spotify will not work as long as you
-              are connected to "Pogify Listener". The music is playing through
-              the browser, so <b> please do not close this tab.</b>
+              are connected to "Pogify Listener". */}
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
