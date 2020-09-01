@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import { Layout } from "../../layouts";
 
@@ -14,6 +15,9 @@ export class Home extends React.Component {
   render() {
     return (
       <Layout>
+        <Helmet>
+          <title>Pogify</title>
+        </Helmet>
         <div className={styles.pogifyLogoWrapper}>
           <img alt="" className={styles.pogifyLogoImage} src="/logo192.png"></img>
           <h1 className={styles.pogifyLogoText}>POGIFY</h1>
