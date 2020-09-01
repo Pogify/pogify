@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { Layout } from "../../layouts";
 import { HostPlayer, ListenerPlayer } from "../../components";
 
@@ -42,12 +43,22 @@ export class Room extends React.Component {
           className={styles.roomWrapper}
         >
           {this.state.isHost === this.props.match.params.id ? (
+            <>
+              <Helmet>
+                <title>Hosting session {this.props.match.params.id} - Pogify</title>
+              </Helmet>
             <HostPlayer
               {...this.props}
               sessionId={this.props.match.params.id}
-            />
+              />
+              </>
           ) : (
+              <>
+                <Helmet>
+                  <title>Listening to session {this.props.match.params.id} - Pogify</title>
+                </Helmet>
               <ListenerPlayer sessionId={this.props.match.params.id} />
+              </>
             )}
         </div>
       );
