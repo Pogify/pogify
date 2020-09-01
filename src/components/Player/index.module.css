@@ -9,7 +9,7 @@
 }
 
 .metadataWrapper {
-  margin-bottom: 10px;
+  margin-bottom: 2.5em;
 }
 
 .playButtonWrapper {
@@ -20,6 +20,7 @@
   color: inherit;
   text-decoration: inherit;
   margin: 0 3px;
+  white-space: nowrap;
 }
 
 .spotifyLink:hover {
@@ -30,7 +31,34 @@
   height: 300px;
   width: 300px;
   overflow: hidden;
+  margin: 0 auto;
 }
+
+.titleContainer {
+  margin-bottom: 0.3em;
+}
+
+.title {
+  white-space: normal;
+}
+
+.album {
+  font-style: italic;
+  font-weight: 600;
+  margin-bottom: 0.6em;
+  display: block;
+}
+
+/* .artist:not(:last-child)::after {
+  content: " /";
+  display: inline;
+  text-decoration: none;
+  position: relative;
+  top: 0;
+  right: 0;
+}
+
+.artist:not(:last-child):hover::after {} */
 
 .seekContainer {
   display: flex;
