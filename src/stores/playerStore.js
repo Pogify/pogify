@@ -1,6 +1,5 @@
 import React from "react";
-import { extendObservable, action, computed, autorun, runInAction } from "mobx";
-import { now } from "mobx-utils";
+import { extendObservable, action, runInAction } from "mobx";
 import promiseRetry from "promise-retry";
 import debounce from "lodash/debounce";
 import Axios from "axios";
@@ -43,11 +42,8 @@ export class PlayerStore {
       // TODO: replace with proper handling
       error_type: "",
       error_message: "",
-      p0: 0,
-      // when position was stamped
-      t0: Date.now(),
-      // rolling stamp to force computed position to update
-      t1: Date.now(),
+
+      position: -1000,
       // Whether player is playing
       playing: false,
       // volume
@@ -55,69 +51,65 @@ export class PlayerStore {
       muted: false,
       // uri for current track
       uri: "",
-      // WebPlaybackStateObject
+      // WebPlaybackState Object
       data: {},
       // Flag to display the "Login to Spotify" if needed
       needsRefreshToken: false,
       // When pausing or playing, don't spam the API
-      tryingToChangeState: false
+      tryingToChangeState: false,
+      diff: 0,
     });
-  }
 
-  /**
-   * Computed position based on previous timestamps and current time
-   */
-  position = computed(() => {
-    // if playing calculate based on timestamps
-    if (this.playing) {
-      return Math.floor(this.p0 + this.t1 - this.t0);
-    } else {
-      // if paused return return based on set position
-      return Math.floor(this.p0);
-    }
-  });
+    this.last = Date.now();
+    this.lastPos = 0;
+
+    // continuously poll for player state.
+    // only update necessary properties.
+    this.poll = setInterval(
+      action(async () => {
+        if (this.player) {
+          let data = await this.player.getCurrentState();
+          this.volume = (await this.player.getVolume()) || 0;
+          this.data = data ?? {};
+          if (data) {
+            runInAction(() => {
+              if (this.position !== data.position) {
+                this.position = data.position;
+              }
+              let uri = data.track_window.current_track.uri;
+              if (this.uri !== uri) {
+                this.uri = data.track_window.current_track.uri;
+              }
+              if (this.playing === data.paused) {
+                this.playing = !data.paused;
+              }
+
+              let diff = Math.abs(
+                Date.now() - this.last - (data.position - this.lastPos)
+              );
+              if (this.diff !== diff) {
+                this.diff = diff;
+              }
+            });
+
+            this.lastPos = data.position;
+            this.last = Date.now();
+          } else {
+            this.device_connected = false;
+          }
+        }
+      }),
+      200
+    );
+  }
 
   /**
    * Resume player.
    * Should be called here instead of calling directly to spotify player object
-   * @param {boolean} parked whether the player stopped from ending a song 
+   * @param {boolean} parked whether the player stopped from ending a song
    */
   resume = action(async (parked = false) => {
-    if (this.tryingToChangeState === true) {
-      return
-    }
-    this.tryingToChangeState = true;
-    promiseRetry(async (retry) => {
-      // Spotify player resume method
-      this.player.resume();
-      console.log("Trying to resume")
-      // Be really sure it's paused
-      const newState = await this.player.getCurrentState()
-      if (newState.paused === true && parked === false) {
-        try { retry() } catch (e) {
-          console.log("Couldn't resume. Retrying")
-        }
-      } else {
-        console.log("Successfully resumed!")
-      }
-      // set pause state
-      this.playing = true;
-
-      // replaced ticking with autorun and now() from mobxUtils
-      if (!this.disposeTimeAutorun) {
-        this.disposeTimeAutorun = autorun(async () => {
-          this.t1 = now(500);
-        });
-      }
-      if (!this.disposeVolumeAutorun) {
-        this.disposeVolumeAutorun = autorun(async () => {
-          now(100);
-          if (!this.debouncedVolumeChange.pending())
-            this.volume = (await this.player.getVolume()) ?? 0;
-          // console.log("volume autorun", this.volume);
-        });
-      }
-    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
+    this.player.resume();
   });
 
   /**
@@ -126,40 +118,8 @@ export class PlayerStore {
    * @param {boolean} parked whether the player stopped from ending a song
    */
   pause = action(async (parked) => {
-    if (this.tryingToChangeState === true) {
-      return
-    }
-    this.tryingToChangeState = true;
-    promiseRetry(async (retry) => {
-      // spotify player pause method
-      this.player.pause();
-      console.log("Trying to pause")
-      // Be really sure it's paused
-      const newState = await this.player.getCurrentState()
-      if (newState.paused === false && parked === false) {
-        try { retry() } catch (e) {
-          console.log("Couldn't pause. Retrying")
-        }
-      } else {
-        console.log("Successfully paused!")
-      }
-      // set pause state
-      this.playing = false;
-      // dispose autoruns
-      this.disposeAutoruns();
-    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
+    this.player.pause();
   });
-
-  disposeAutoruns = () => {
-    if (typeof this.disposeVolumeAutorun === "function") {
-      this.disposeVolumeAutorun();
-      this.disposeVolumeAutorun = undefined;
-    }
-    if (typeof this.disposeTimeAutorun === "function") {
-      this.disposeTimeAutorun();
-      this.disposeTimeAutorun = undefined;
-    }
-  };
 
   /**
    * Toggle playback.
@@ -180,26 +140,26 @@ export class PlayerStore {
     } else {
       this.setVolume(this.muted);
     }
-  })
+  });
 
   /**
    * Sets volume
    */
   debouncedVolumeChange = debounce(
     (volume) => {
-      this.player.setVolume(volume);
+      window.localStorage.setItem("pogify:volume", volume);
     },
-    50,
+    100,
     {
-      maxWait: 100,
-      leading: true,
+      // maxWait: 100,
+      // leading: true,
     }
   );
   setVolume = action((volume, muting = false) => {
     this.volume = volume;
+    this.player.setVolume(volume);
     this.debouncedVolumeChange(volume);
     if (muting === false) this.muted = false;
-    window.localStorage.setItem("pogify:volume", volume);
   });
 
   /**
@@ -299,7 +259,7 @@ export class PlayerStore {
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
   initializePlayer = action((title, connect = true) => {
-    if (this.initializeWaiting) clearTimeout(this.initializeWaiting)
+    if (this.initializeWaiting) clearTimeout(this.initializeWaiting);
     this.initializeWaiting = setTimeout(() => {
       Sentry.captureMessage("Spotify Initialize timeout");
       modalStore.queue(
@@ -331,7 +291,7 @@ export class PlayerStore {
               reject(e);
             });
         };
-        return
+        return;
       }
 
       // make spotify playback sdk object
@@ -386,34 +346,6 @@ export class PlayerStore {
         );
         this.error_type = "not_ready";
         this.error_message = "Player not Ready";
-      });
-
-      // update this player stuff on player state
-      player.on("player_state_changed", async (data) => {
-        // if no data then do nothing
-        if (!data) {
-          this.device_connected = false;
-          this.data = {};
-          return;
-        }
-        this.device_connected = true;
-        // set player uri to update's uri
-        this.uri = data.track_window.current_track.uri;
-
-        this.p0 = data.position;
-        this.t0 = Date.now();
-
-        this.playing = !data.paused
-
-        // if (!data.paused) {
-        //   this.resume();
-        // } else {
-        //   this.pause();
-        // }
-
-        // console.log(data);
-
-        this.data = data;
       });
 
       // ready callback
@@ -598,7 +530,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-      }`;
+    }`;
   };
 }
 
@@ -641,62 +573,83 @@ async function pkce_challenge_from_verifier(v) {
 // Text-encoder polyfill
 
 if (typeof window.TextEncoder === "undefined") {
-  window.TextEncoder = function TextEncoder() { };
+  window.TextEncoder = function TextEncoder() {};
   window.TextEncoder.prototype.encode = function encode(str) {
-    var Len = str.length, resPos = -1;
+    var Len = str.length,
+      resPos = -1;
     // The Uint8Array's length must be at least 3x the length of the string because an invalid UTF-16
     //  takes up the equivelent space of 3 UTF-8 characters to encode it properly. However, Array's
     //  have an auto expanding length and 1.5x should be just the right balance for most uses.
-    var resArr = typeof Uint8Array === "undefined" ? new Array(Len * 1.5) : new Uint8Array(Len * 3);
-    for (var point = 0, nextcode = 0, i = 0; i !== Len;) {
+    var resArr =
+      typeof Uint8Array === "undefined"
+        ? new Array(Len * 1.5)
+        : new Uint8Array(Len * 3);
+    for (var point = 0, nextcode = 0, i = 0; i !== Len; ) {
       point = str.charCodeAt(i);
       i += 1;
-      if (point >= 0xD800 && point <= 0xDBFF) {
+      if (point >= 0xd800 && point <= 0xdbff) {
         if (i === Len) {
-          resArr[resPos += 1] = 0xef/*0b11101111*/; resArr[resPos += 1] = 0xbf/*0b10111111*/;
-          resArr[resPos += 1] = 0xbd/*0b10111101*/; break;
+          resArr[(resPos += 1)] = 0xef /*0b11101111*/;
+          resArr[(resPos += 1)] = 0xbf /*0b10111111*/;
+          resArr[(resPos += 1)] = 0xbd /*0b10111101*/;
+          break;
         }
         // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
         nextcode = str.charCodeAt(i);
-        if (nextcode >= 0xDC00 && nextcode <= 0xDFFF) {
-          point = (point - 0xD800) * 0x400 + nextcode - 0xDC00 + 0x10000;
+        if (nextcode >= 0xdc00 && nextcode <= 0xdfff) {
+          point = (point - 0xd800) * 0x400 + nextcode - 0xdc00 + 0x10000;
           i += 1;
           if (point > 0xffff) {
-            resArr[resPos += 1] = (0x1e/*0b11110*/ << 3) | (point >>> 18);
-            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 12) & 0x3f/*0b00111111*/);
-            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 6) & 0x3f/*0b00111111*/);
-            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+            resArr[(resPos += 1)] = (0x1e /*0b11110*/ << 3) | (point >>> 18);
+            resArr[(resPos += 1)] =
+              (0x2 /*0b10*/ << 6) | ((point >>> 12) & 0x3f) /*0b00111111*/;
+            resArr[(resPos += 1)] =
+              (0x2 /*0b10*/ << 6) | ((point >>> 6) & 0x3f) /*0b00111111*/;
+            resArr[(resPos += 1)] =
+              (0x2 /*0b10*/ << 6) | (point & 0x3f) /*0b00111111*/;
             continue;
           }
         } else {
-          resArr[resPos += 1] = 0xef/*0b11101111*/; resArr[resPos += 1] = 0xbf/*0b10111111*/;
-          resArr[resPos += 1] = 0xbd/*0b10111101*/; continue;
+          resArr[(resPos += 1)] = 0xef /*0b11101111*/;
+          resArr[(resPos += 1)] = 0xbf /*0b10111111*/;
+          resArr[(resPos += 1)] = 0xbd /*0b10111101*/;
+          continue;
         }
       }
       if (point <= 0x007f) {
-        resArr[resPos += 1] = (0x0/*0b0*/ << 7) | point;
+        resArr[(resPos += 1)] = (0x0 /*0b0*/ << 7) | point;
       } else if (point <= 0x07ff) {
-        resArr[resPos += 1] = (0x6/*0b110*/ << 5) | (point >>> 6);
-        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+        resArr[(resPos += 1)] = (0x6 /*0b110*/ << 5) | (point >>> 6);
+        resArr[(resPos += 1)] =
+          (0x2 /*0b10*/ << 6) | (point & 0x3f) /*0b00111111*/;
       } else {
-        resArr[resPos += 1] = (0xe/*0b1110*/ << 4) | (point >>> 12);
-        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 6) & 0x3f/*0b00111111*/);
-        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+        resArr[(resPos += 1)] = (0xe /*0b1110*/ << 4) | (point >>> 12);
+        resArr[(resPos += 1)] =
+          (0x2 /*0b10*/ << 6) | ((point >>> 6) & 0x3f) /*0b00111111*/;
+        resArr[(resPos += 1)] =
+          (0x2 /*0b10*/ << 6) | (point & 0x3f) /*0b00111111*/;
       }
     }
-    if (typeof Uint8Array !== "undefined") return resArr.subarray(0, resPos + 1);
+    if (typeof Uint8Array !== "undefined")
+      return resArr.subarray(0, resPos + 1);
     // else // IE 6-9
     resArr.length = resPos + 1; // trim off extra weight
     return resArr;
   };
-  window.TextEncoder.prototype.toString = function () { return "[object TextEncoder]" };
-  try { // Object.defineProperty only works on DOM prototypes in IE8
+  window.TextEncoder.prototype.toString = function () {
+    return "[object TextEncoder]";
+  };
+  try {
+    // Object.defineProperty only works on DOM prototypes in IE8
     Object.defineProperty(window.TextEncoder.prototype, "encoding", {
       get: function () {
         if (window.TextEncoder.prototype.isPrototypeOf(this)) return "utf-8";
         else throw TypeError("Illegal invocation");
-      }
+      },
     });
-  } catch (e) { /*IE6-8 fallback*/ window.TextEncoder.prototype.encoding = "utf-8"; }
-  if (typeof Symbol !== "undefined") window.TextEncoder.prototype[Symbol.toStringTag] = "TextEncoder";
+  } catch (e) {
+    /*IE6-8 fallback*/ window.TextEncoder.prototype.encoding = "utf-8";
+  }
+  if (typeof Symbol !== "undefined")
+    window.TextEncoder.prototype[Symbol.toStringTag] = "TextEncoder";
 }
