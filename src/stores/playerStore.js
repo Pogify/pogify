@@ -1,8 +1,15 @@
-import { extendObservable, action, computed, autorun } from "mobx";
+import React from "react";
+import { extendObservable, action, computed, autorun, runInAction } from "mobx";
 import { now } from "mobx-utils";
+import promiseRetry from "promise-retry";
 import debounce from "lodash/debounce";
 import Axios from "axios";
 import crypto from "crypto";
+import * as Sentry from "@sentry/react";
+
+import { modalStore } from ".";
+import WarningModal from "../modals/WarningModal";
+import ErrorModal from "../modals/ErrorModal";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -12,6 +19,7 @@ const REDIRECT_URI = window.location.origin + "/auth";
  */
 export class PlayerStore {
   constructor(messenger) {
+    this.newTrackRetry = 0;
     this.messenger = messenger;
     this.disposeTimeAutorun = undefined;
     this.disposeVolumeAutorun = undefined;
@@ -43,11 +51,16 @@ export class PlayerStore {
       // Whether player is playing
       playing: false,
       // volume
-      volume: 0.2,
+      volume: window.localStorage.getItem("pogify:volume") || 0.2,
+      muted: false,
       // uri for current track
       uri: "",
       // WebPlaybackStateObject
       data: {},
+      // Flag to display the "Login to Spotify" if needed
+      needsRefreshToken: false,
+      // When pausing or playing, don't spam the API
+      tryingToChangeState: false
     });
   }
 
@@ -67,40 +80,74 @@ export class PlayerStore {
   /**
    * Resume player.
    * Should be called here instead of calling directly to spotify player object
+   * @param {boolean} parked whether the player stopped from ending a song 
    */
-  resume = action(() => {
-    // player resume method
-    this.player.resume();
-    // set state playing
-    this.playing = true;
+  resume = action(async (parked = false) => {
+    if (this.tryingToChangeState === true) {
+      return
+    }
+    this.tryingToChangeState = true;
+    promiseRetry(async (retry) => {
+      // Spotify player resume method
+      this.player.resume();
+      console.log("Trying to resume")
+      // Be really sure it's paused
+      const newState = await this.player.getCurrentState()
+      if (newState.paused === true && parked === false) {
+        try { retry() } catch (e) {
+          console.log("Couldn't resume. Retrying")
+        }
+      } else {
+        console.log("Successfully resumed!")
+      }
+      // set pause state
+      this.playing = true;
 
-    // replaced ticking with autorun and now() from mobxUtils
-    if (!this.disposeTimeAutorun) {
-      this.disposeTimeAutorun = autorun(async () => {
-        this.t1 = now(500);
-      });
-    }
-    if (!this.disposeVolumeAutorun) {
-      this.disposeVolumeAutorun = autorun(async () => {
-        now(100);
-        if (!this.debouncedVolumeChange.pending())
-          this.volume = (await this.player.getVolume()) ?? 0;
-        console.log("volume autorun", this.volume);
-      });
-    }
+      // replaced ticking with autorun and now() from mobxUtils
+      if (!this.disposeTimeAutorun) {
+        this.disposeTimeAutorun = autorun(async () => {
+          this.t1 = now(500);
+        });
+      }
+      if (!this.disposeVolumeAutorun) {
+        this.disposeVolumeAutorun = autorun(async () => {
+          now(100);
+          if (!this.debouncedVolumeChange.pending())
+            this.volume = (await this.player.getVolume()) ?? 0;
+          // console.log("volume autorun", this.volume);
+        });
+      }
+    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
   });
 
   /**
    * Pause player.
    * Should be called here instead of calling directly to spotify player object
+   * @param {boolean} parked whether the player stopped from ending a song
    */
-  pause = action(() => {
-    // spotify player pause method
-    this.player.pause();
-    // set pause state
-    this.playing = false;
-    // dispose autorun
-    if (typeof this.disposeAutoruns === "function") this.disposeAutoruns();
+  pause = action(async (parked) => {
+    if (this.tryingToChangeState === true) {
+      return
+    }
+    this.tryingToChangeState = true;
+    promiseRetry(async (retry) => {
+      // spotify player pause method
+      this.player.pause();
+      console.log("Trying to pause")
+      // Be really sure it's paused
+      const newState = await this.player.getCurrentState()
+      if (newState.paused === false && parked === false) {
+        try { retry() } catch (e) {
+          console.log("Couldn't pause. Retrying")
+        }
+      } else {
+        console.log("Successfully paused!")
+      }
+      // set pause state
+      this.playing = false;
+      // dispose autoruns
+      this.disposeAutoruns();
+    }, { minTimeout: 10, factor: 1 }).then(() => runInAction(() => this.tryingToChangeState = false))
   });
 
   disposeAutoruns = () => {
@@ -126,18 +173,33 @@ export class PlayerStore {
     }
   });
 
+  setMute = action(() => {
+    if (this.muted === false) {
+      this.muted = this.volume;
+      this.setVolume(0, true);
+    } else {
+      this.setVolume(this.muted);
+    }
+  })
+
   /**
    * Sets volume
    */
-  debouncedVolumeChange = debounce((volume) => {
-    this.player.setVolume(volume);
-  }, 50, {
-    maxWait: 100,
-    leading: true
-  })
-  setVolume = action((volume) => {
+  debouncedVolumeChange = debounce(
+    (volume) => {
+      this.player.setVolume(volume);
+    },
+    50,
+    {
+      maxWait: 100,
+      leading: true,
+    }
+  );
+  setVolume = action((volume, muting = false) => {
     this.volume = volume;
-    this.debouncedVolumeChange(volume)
+    this.debouncedVolumeChange(volume);
+    if (muting === false) this.muted = false;
+    window.localStorage.setItem("pogify:volume", volume);
   });
 
   /**
@@ -147,22 +209,69 @@ export class PlayerStore {
    * @param {number} pos_ms millisecond position
    */
   newTrack = async (uri, pos_ms) => {
-    this.prevPlaying = this.playing;
-    let res = await Axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-      {
-        uris: [uri],
-        position_ms: pos_ms,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.access_token}`,
+    this.newTrackRetry++;
+    let t0 = Date.now();
+    try {
+      let res = await Axios.put(
+        `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+        {
+          uris: [uri],
+          position_ms: pos_ms,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        }
+      );
+      this.newTrackRetry = 0;
+      return res.data;
+    } catch (e) {
+      // TODO: More Robust Error Handling
+      // BODY Spotify throws more errors than whats handled here.
+      if (e.response) {
+        switch (e.response.status) {
+          case 429:
+            let retryAfter = (e.response.headers["retry-after"] || 1) * 1000;
+
+            setInterval(() => {
+              this.newTrack(uri, pos_ms + Date.now() - t0);
+            }, retryAfter);
+            return;
+          case 403:
+            let reason = e.response.data.reason;
+
+            switch (reason) {
+              case "RATE_LIMITED":
+                modalStore.queue(
+                  <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
+                  2000
+                );
+                return;
+              case "NO_SPECIFIC_TRACK":
+                modalStore.queue(
+                  <WarningModal
+                    title="Pogify was not able to play this track"
+                    content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
+                  />
+                );
+                return;
+              default:
+            }
+            break;
+          default:
+            modalStore.queue(
+              <WarningModal title="An unknown error occured on Spotify's end." />,
+              2000
+            );
+        }
       }
-    );
-    return res.data;
-    // TODO: error handlers.
+      setTimeout(() => {
+        this.newTrack(uri, pos_ms + Date.now() - t0);
+      }, this.newTrackRetry ** 2 * 500);
+      console.error(e);
+    }
   };
 
   /**
@@ -175,12 +284,12 @@ export class PlayerStore {
   debouncedSeek = debounce((pos_ms) => {
     // seek spotify playback sdk
     this.player.seek(pos_ms);
-  }, 50)
+  }, 50);
   seek = action((pos_ms) => {
     // reset stamps
     this.p0 = pos_ms;
     this.t0 = Date.now();
-    this.debouncedSeek(pos_ms)
+    return this.debouncedSeek(pos_ms);
   });
 
   /**
@@ -190,6 +299,17 @@ export class PlayerStore {
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
   initializePlayer = action((title, connect = true) => {
+    if (this.initializeWaiting) clearTimeout(this.initializeWaiting)
+    this.initializeWaiting = setTimeout(() => {
+      Sentry.captureMessage("Spotify Initialize timeout");
+      modalStore.queue(
+        <WarningModal
+          key="LongSpotifyWait"
+          title="It seems like its taking a while to connect to Spotify."
+          content="You can keep waiting or refresh and try again"
+        />
+      );
+    }, 15000);
     return new Promise(async (resolve, reject) => {
       // if player is already connected update name and whether its host, then return
       if (this.player && this.player.setName) {
@@ -197,7 +317,6 @@ export class PlayerStore {
         return resolve();
       }
       // if spotify is not ready then wait till ready then call this function
-      // TODO: add timeout for waiting or something (care for slow connections)
       if (!window.spotifyReady) {
         window.onSpotifyWebPlaybackSDKReady = () => {
           // set global tracker to true
@@ -205,13 +324,14 @@ export class PlayerStore {
 
           // now call this function
           this.initializePlayer(title)
-            .then(() => {
-              resolve();
+            .then((device_id) => {
+              resolve(device_id);
             })
             .catch((e) => {
               reject(e);
             });
         };
+        return
       }
 
       // make spotify playback sdk object
@@ -226,20 +346,44 @@ export class PlayerStore {
       // authentication_error handler
       player.on("initialization_error", reject);
       player.on("authentication_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Authentication Error"
+            errorMessage={`${message}. Refresh and try again.`}
+          />
+        );
         this.error_type = "authentication_error";
         this.error_message = message;
       });
 
       // TODO: proper error handling
       player.on("account_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Account Error"
+            errorMessage={`${message} Refresh and try again.`}
+          />
+        );
         this.error_type = "account_error";
         this.error_message = message;
       });
       player.on("playback_error", ({ message }) => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Playback Error"
+            errorMessage={`${message} Refresh and try again.`}
+          />
+        );
         this.error_type = "authentication_error";
         this.error_message = message;
       });
       player.on("not_ready", () => {
+        modalStore.queue(
+          <ErrorModal
+            errorCode="Spotify Not Ready Error"
+            errorMessage="Spotify is not ready. Refresh and try again."
+          />
+        );
         this.error_type = "not_ready";
         this.error_message = "Player not Ready";
       });
@@ -247,7 +391,6 @@ export class PlayerStore {
       // update this player stuff on player state
       player.on("player_state_changed", async (data) => {
         // if no data then do nothing
-        // TODO: host connected to pogify property
         if (!data) {
           this.device_connected = false;
           this.data = {};
@@ -260,13 +403,15 @@ export class PlayerStore {
         this.p0 = data.position;
         this.t0 = Date.now();
 
-        if (!data.paused) {
-          this.resume();
-        } else {
-          this.pause();
-        }
+        this.playing = !data.paused
 
-        console.log(data);
+        // if (!data.paused) {
+        //   this.resume();
+        // } else {
+        //   this.pause();
+        // }
+
+        // console.log(data);
 
         this.data = data;
       });
@@ -276,14 +421,23 @@ export class PlayerStore {
         // set device id
         this.device_id = device_id;
         // clear player object if it already exists
-        this.player = undefined;
         this.player = player;
+        // if there is a long wait modal then close it
+        if (
+          modalStore.current &&
+          modalStore.current.key === "LongSpotifyWait"
+        ) {
+          modalStore.closeModal();
+        }
 
+        // clear the long wait timeout
+        clearTimeout(this.initializeWaiting);
         // if connect is true call connect to player
         if (connect) {
-          this.connectToPlayer(device_id).then(() => {
-            resolve();
-          });
+          resolve(device_id);
+          // this.connectToPlayer(device_id).then(() => {
+          //   resolve();
+          // });
           // TODO: error handling
         } else {
           resolve();
@@ -298,7 +452,12 @@ export class PlayerStore {
   connectToPlayer = async (device_id) => {
     // get current access token
     // TODO: error handling
-    let access_token = await this.getOAuthToken();
+    let access_token;
+    try {
+      access_token = await this.getOAuthToken();
+    } catch (e) {
+      return e;
+    }
     // call connect to device endpoint
     return Axios.put(
       `https://api.spotify.com/v1/me/player`,
@@ -334,14 +493,17 @@ export class PlayerStore {
 
     // if localStorage doesn't have an access token then go get it
     if (!window.localStorage.getItem("spotify:refresh_token")) {
-      // TODO: show a warning modal. that there will be a redirect to login
       this.goAuth(window.location.pathname);
       return;
     }
 
     // if there is a refresh token and access token expired then get a new token
     //  TODO: error handling
-    await this.refreshAccessToken();
+    try {
+      await this.refreshAccessToken();
+    } catch (e) {
+      return e;
+    }
     // return access token
     return this.access_token;
   });
@@ -411,7 +573,9 @@ export class PlayerStore {
       // TODO: error handling
       console.log(e.response.data);
       if (e.response.data.error_description === "Refresh token revoked") {
-        this.goAuth(window.location.pathname);
+        window.localStorage.removeItem("spotify:refresh_token");
+        runInAction(() => (this.needsRefreshToken = true));
+        throw new Error("Bad refresh token");
       }
     }
   });
@@ -444,13 +608,12 @@ export async function getVerifierAndChallenge(len) {
   let array = new Uint8Array(len);
   window.crypto.getRandomValues(array);
   array = array.map((x) => validChars.charCodeAt(x % validChars.length));
-  const randomState = String.fromCharCode.apply(null, array);
+  const randomState = String.fromCharCode(...array);
   const hashedState = await pkce_challenge_from_verifier(randomState);
 
   return [randomState, hashedState];
 }
 
-window.crypto2 = crypto;
 function sha256(plain) {
   // returns promise ArrayBuffer
   const encoder = new TextEncoder();
@@ -473,4 +636,67 @@ async function pkce_challenge_from_verifier(v) {
   let hashed = await sha256(v);
   let base64encoded = base64urlencode(hashed);
   return base64encoded;
+}
+
+// Text-encoder polyfill
+
+if (typeof window.TextEncoder === "undefined") {
+  window.TextEncoder = function TextEncoder() { };
+  window.TextEncoder.prototype.encode = function encode(str) {
+    var Len = str.length, resPos = -1;
+    // The Uint8Array's length must be at least 3x the length of the string because an invalid UTF-16
+    //  takes up the equivelent space of 3 UTF-8 characters to encode it properly. However, Array's
+    //  have an auto expanding length and 1.5x should be just the right balance for most uses.
+    var resArr = typeof Uint8Array === "undefined" ? new Array(Len * 1.5) : new Uint8Array(Len * 3);
+    for (var point = 0, nextcode = 0, i = 0; i !== Len;) {
+      point = str.charCodeAt(i);
+      i += 1;
+      if (point >= 0xD800 && point <= 0xDBFF) {
+        if (i === Len) {
+          resArr[resPos += 1] = 0xef/*0b11101111*/; resArr[resPos += 1] = 0xbf/*0b10111111*/;
+          resArr[resPos += 1] = 0xbd/*0b10111101*/; break;
+        }
+        // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+        nextcode = str.charCodeAt(i);
+        if (nextcode >= 0xDC00 && nextcode <= 0xDFFF) {
+          point = (point - 0xD800) * 0x400 + nextcode - 0xDC00 + 0x10000;
+          i += 1;
+          if (point > 0xffff) {
+            resArr[resPos += 1] = (0x1e/*0b11110*/ << 3) | (point >>> 18);
+            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 12) & 0x3f/*0b00111111*/);
+            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 6) & 0x3f/*0b00111111*/);
+            resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+            continue;
+          }
+        } else {
+          resArr[resPos += 1] = 0xef/*0b11101111*/; resArr[resPos += 1] = 0xbf/*0b10111111*/;
+          resArr[resPos += 1] = 0xbd/*0b10111101*/; continue;
+        }
+      }
+      if (point <= 0x007f) {
+        resArr[resPos += 1] = (0x0/*0b0*/ << 7) | point;
+      } else if (point <= 0x07ff) {
+        resArr[resPos += 1] = (0x6/*0b110*/ << 5) | (point >>> 6);
+        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+      } else {
+        resArr[resPos += 1] = (0xe/*0b1110*/ << 4) | (point >>> 12);
+        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | ((point >>> 6) & 0x3f/*0b00111111*/);
+        resArr[resPos += 1] = (0x2/*0b10*/ << 6) | (point & 0x3f/*0b00111111*/);
+      }
+    }
+    if (typeof Uint8Array !== "undefined") return resArr.subarray(0, resPos + 1);
+    // else // IE 6-9
+    resArr.length = resPos + 1; // trim off extra weight
+    return resArr;
+  };
+  window.TextEncoder.prototype.toString = function () { return "[object TextEncoder]" };
+  try { // Object.defineProperty only works on DOM prototypes in IE8
+    Object.defineProperty(window.TextEncoder.prototype, "encoding", {
+      get: function () {
+        if (window.TextEncoder.prototype.isPrototypeOf(this)) return "utf-8";
+        else throw TypeError("Illegal invocation");
+      }
+    });
+  } catch (e) { /*IE6-8 fallback*/ window.TextEncoder.prototype.encoding = "utf-8"; }
+  if (typeof Symbol !== "undefined") window.TextEncoder.prototype[Symbol.toStringTag] = "TextEncoder";
 }

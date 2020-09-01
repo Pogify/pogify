@@ -23,15 +23,17 @@ export class ThemeStore {
     // validate saved theme
     savedTheme = AvailableThemes.includes(savedTheme) ? savedTheme : undefined;
 
-    themeQuery.addEventListener("change", (e) => {
-      if (typeof savedTheme === "undefined") {
-        if (e.matches) {
-          this.setTheme("dark")
-        } else {
-          this.setTheme("light")
+    if (typeof themeQuery.addEventListener === "function") {
+      themeQuery.addEventListener("change", (e) => {
+        if (typeof savedTheme === "undefined") {
+          if (e.matches) {
+            this.setTheme("dark", false)
+          } else {
+            this.setTheme("light", false)
+          }
         }
-      }
-    })
+      })
+    }
 
     extendObservable(this, {
       theme: savedTheme || systemDefault,
@@ -43,10 +45,12 @@ export class ThemeStore {
    * set theme to string
    *
    * @param {string} theme theme to set
+   * @param {boolean} save save the theme
    */
-  setTheme = action((theme) => {
-    // set theme in localStorage
-    window.localStorage.setItem("theme", theme);
+  setTheme = action((theme, save = true) => {
+    // set theme in localStorage (only if not default)
+    if (save === true)
+      window.localStorage.setItem("theme", theme);
     // validate theme then set it
     if (AvailableThemes.includes(theme)) {
       this.theme = theme;

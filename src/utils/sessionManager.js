@@ -1,5 +1,6 @@
 import axios from "axios";
 import urlJoin from "url-join";
+import { observable } from "mobx";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -47,6 +48,11 @@ function initializeApp() {
     };
   }
 }
+
+/**
+ * Listener count observable
+ */
+export const SessionCount = observable.box(0);
 
 /**
  * Refresh session token and stick it in localStorage
@@ -104,14 +110,22 @@ export const createSession = async (i = 1) => {
       window.localStorage.setItem("pogify:session", data.session);
       resolve(data);
     } catch (e) {
-      // TODO: flesh out error handling
+      if (e.response) {
+        if (e.response.status === 429) {
+          let retryAfter = e.response.headers["retry-after"] || 1;
+          setTimeout(() => {
+            resolve(createSession(i + 1));
+          }, retryAfter * 1000);
+          return;
+        }
+      }
       // backoff retry implementation
       if (i === 10) {
-        return reject(new Error("max retries reached"));
+        return reject(e);
       }
       setTimeout(() => {
         resolve(createSession(i + 1));
-      }, (i / 10) ** 2);
+      }, (i / 5) ** 2);
     }
   });
 };
@@ -121,7 +135,7 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
   try {
     let user = await FBAuth.signInAnonymously();
     console.log("publishUpdate", uri, position, playing);
-    await axios.post(
+    let res = await axios.post(
       cloudFunctions.postUpdate,
       {
         uri,
@@ -137,6 +151,7 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
         },
       }
     );
+    SessionCount.set(res.data.subscribers);
   } catch (e) {
     if (e.response) {
       if (e.response.status === 401) {
@@ -146,7 +161,6 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
         try {
           await refreshToken();
         } catch (e) {
-          // TODO: if error refreshing token then show session expired modal with redirect to create.
           throw e;
         }
       } else if (e.response.status === 429) {

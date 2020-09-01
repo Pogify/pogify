@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 
-export default function NewTabLink({ children, ...props }) {
+function NewTabLink({ children, ...props }, ref) {
     return (
-        <a target="_blank" rel="noopener noreferrer" {...props}>
+        <a target="_blank" rel="noopener noreferrer" ref={ref} {...props}>
             {children}
         </a>
     )
 }
+
+export default forwardRef(NewTabLink)

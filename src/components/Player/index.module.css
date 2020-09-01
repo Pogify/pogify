@@ -1,35 +1,180 @@
 .player {
-    width: 300px;
-    text-align: center;
-    border-radius: 10px;
-    padding: 30px;
+  width: 300px;
+  text-align: center;
+  border-radius: 10px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .metadataWrapper {
-    margin-bottom: 10px;
+  margin-bottom: 2.5em;
 }
 
 .playButtonWrapper {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .spotifyLink {
-    color: inherit;
-    text-decoration: inherit;
-    margin: 0 3px;
-
+  color: inherit;
+  text-decoration: inherit;
+  margin: 0 3px;
+  white-space: nowrap;
 }
 
 .spotifyLink:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .albumArt {
-    height: 300px;
-    width: 300px;
-    overflow: hidden;
+  height: 300px;
+  width: 300px;
+  overflow: hidden;
+  margin: 0 auto;
 }
 
-.seekBar {
-    width: 70%;
+.titleContainer {
+  margin-bottom: 0.3em;
+}
+
+.title {
+  white-space: normal;
+}
+
+.album {
+  font-style: italic;
+  font-weight: 600;
+  margin-bottom: 0.6em;
+  display: block;
+}
+
+/* .artist:not(:last-child)::after {
+  content: " /";
+  display: inline;
+  text-decoration: none;
+  position: relative;
+  top: 0;
+  right: 0;
+}
+
+.artist:not(:last-child):hover::after {} */
+
+.seekContainer {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.volumeContainer {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  width: 70%;
+  align-items: center;
+}
+
+.muteButton {
+  cursor: pointer;
+}
+
+
+
+
+/* Progress bar */
+
+
+.progressBarContainer {
+  width: 100%;
+  position: relative;
+  height: 16px;
+  margin: 0px 4px;
+}
+
+.progressBarContainer input[type='range'] {
+  background-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.progressBarContainer input[type='range']:focus {
+  outline: none;
+}
+
+.progressBarContainer input[type='range']::-webkit-slider-runnable-track {
+  cursor: pointer;
+  background-color: transparent;
+  color: transparent;
+}
+
+.progressBarContainer input[type='range']::-webkit-slider-thumb {
+  height: 16px;
+  width: 16px;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  border-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.progressBarContainer input[type='range']::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  border-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.progressBarContainer:not(.canChange) input[type='range']::-webkit-slider-thumb {
+  cursor: default;
+}
+
+.progressBarContainer:not(.canChange) input[type='range']::-moz-range-thumb {
+  cursor: default;
+}
+
+.progressBarContainer:not(.canChange) input[type='range']::-webkit-slider-runnable-track {
+  cursor: default;
+}
+
+.progressBarContainer :global(.ui.small.progress .bar) {
+  height: 0.6em;
+  min-width: unset;
+  width: 100%;
+  position: relative;
+  background-color: #72a1e5 !important;
+}
+
+.progressBarContainer :global(.ui.progress):last-child {
+  margin: 0.25em 0.7em 0.25em 0.7em;
+}
+
+.progressBar.canChange :global(.bar)::before {
+  content: "";
+  height: 15px;
+  width: 15px;
+  display: block;
+  background-color: inherit;
+  border-radius: 999px;
+  right: 0;
+  transform: translate(50%, -20%);
+  opacity: 0.3;
+  pointer-events: none;
+  position: absolute;
+}
+
+.warn :global(.ui.small.progress .bar) {
+  min-width: unset;
+  width: 100%;
+  background-color: #fbbd08;
 }

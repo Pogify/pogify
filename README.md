@@ -3,7 +3,7 @@
 <!-- FIXME: change to https when we don't need to redirect -->
 <!-- FIXME: change to badge monitor link when proper host -->
 
-[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fpogify.herokuapp.com)](http://www.pogify.net)
+[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fpogify.herokuapp.com)](https://www.pogify.net)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
 [![Discord](https://img.shields.io/discord/744265206816833617.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bU6E9Xj)
 
@@ -92,47 +92,34 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 This project is still in alpha and as such, there are still lots of bugs.
 
+If you have an issue that isn't listed below or does not have an open issue, please help us by [opening a new one](https://github.com/Pogify/pogify/issues/new/choose).
+
 Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
 
-1. ### Pogify does **NOT** work on Safari, or Mobile Browsers
+### Note: Pogify does **NOT** work on Safari, or Mobile Browsers
 
-   - This is a limitation of the Spotify Web Playback SDK.
-   - ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
-   - ref 2: https://github.com/spotify/web-playback-sdk/issues/10
+- This is a limitation of the Spotify Web Playback SDK.
+- ref 1: https://developer.spotify.com/documentation/web-playback-sdk/#supported-browsers
+- ref 2: https://github.com/spotify/web-playback-sdk/issues/10
 
-2. ~~Listeners cannot play pause their local spotify~~ Fixed by d09acac
-3. ~~Problem in firefox where there is excessive stuttering as a listener~~ Fixed by d09acac
-   - ~~diagnosis: firefox setInterval does not fire exactly as set. A bit later than expected (~10ms)~~
-   - ~~solution: use performance.now() or requestAnimationFrame to set time.~~
-4. ~~Listener Player will stutter.~~ ~~Listener player stutters at end of a track.~~ ~~Fixed by 02cb5dd~~ Fixed by 3061378
-   - ~~diagnosis: spotify player internally consolidates it's position calcuated position with the track position and sends state updates. If these consolidation updates are large, then pogify interprets it as a seek update and stutters.~~
-5. Listener player may cut out a couple seconds to the end of a track.
+### Major Issues
+
+2. Listener player may cut out a couple seconds to the end of a track.
    - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
-6. ~~Listener player unexpectedly seek to beginning of track.~~ Fixed by d09acac
-7. Seeking on a listener player will de-synchronize a listener from the host and will not resynchronize until an update from host. ~~Fixed by d09acac~~
-   - should add some button to resync.
-8. ~~Volume Control is not good.~~ Fixed by f11b003
-9. 'Join Session' / 'Start session' buttons sometimes do not work
-10. Incomplete error handling
-11. Leftover console.logs
-12. No nav bar or alternative
-13. Sessions may timeout even if its active.
-14. ~~Navigating away from player screen shows an alert.~~
-15. ~~Pogify will unexpectedly automatically redirect to the Spotify login page if it fails to refresh the login session.~~ Fixed by f53689
-16. ~~State updates by the Spotify Web Player SDK makes two plus updates per state change. There is not yet a solution to consolidate and/or drop an update and not post an update.~~
-17. ~~Pogify does not yet comply 100% with Spotify Developer Agreement. We are working as fast as possible to remedy this shortfall.~~
-18. ~~Theme enabling dark mode keeps dark mode on refresh even when dark mode toggled off~~ Fixed by f16c313
-19. Excessive skipping forward or backwards will break listener.
-    - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
-    - solution:
-20. ~~there are no tests.~~ there are two tests.
-21. ~~sparse code commenting~~ Fixed by c2e4f26
-22. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
+3. 'Join Session' / 'Start session' buttons sometimes do not work
+4. Incomplete error handling
+5. Leftover console.logs
+6. No nav bar or alternative
+7. Sessions may timeout even if its active.
+8. Excessive skipping forward or backwards will break listener.
+   - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
+   - solution:
+9. ~~there are no tests.~~ there are two tests.
+10. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
     - diagnosis: Spotify doesn't fire a state change event when seeking to 0 if already seeked to 0 once, so Pogify misses it.
     - solution: poll for spotify data periodically (ie once a second) using player.getCurrentState()
-23. And probably many more I forgot about
 
 ## Contributing and Communication
 
@@ -153,7 +140,7 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 
 ## Todo List
 
-- [ ] Make a looping script or something that people can use to develop the listener player without 2 accounts.
+- [x] Make a looping script or something that people can use to develop the listener player without 2 accounts. (available in pogify/pogify-nginx-container)
 - [x] code comments
 - [ ] tests
 - [x] debouncer for client events (would fix no. 15 of Known Issues)
@@ -168,4 +155,10 @@ All Pogify contributors are bound by the [Contributor Covenant Code of Conduct](
 
 ### [Pogify/pogify-functions](https://github.com/Pogify/pogify-functions)
 
-    Repo housing pogify's Google Cloud functions
+Repo housing Pogify's Google Cloud functions
+<br>
+<br>
+
+### [Pogify/pogify-nginx-container](https://github.com/Pogify/pogify-nginx-container)
+
+Repo housing Pogify's message broadcaster system

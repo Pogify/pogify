@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import { Layout } from "../../layouts";
 
@@ -14,28 +15,29 @@ export class Home extends React.Component {
   render() {
     return (
       <Layout>
+        <Helmet>
+          <title>Pogify</title>
+        </Helmet>
         <div className={styles.pogifyLogoWrapper}>
-          <img alt="" className={styles.pogifyLogoImage} src="/logo192.png"></img>
+          <img
+            alt=""
+            className={styles.pogifyLogoImage}
+            src="/logo192.png"
+          ></img>
           <h1 className={styles.pogifyLogoText}>POGIFY</h1>
         </div>
-        <p className={styles.pogifyCatchline}>Listen to music with your live audience without getting DMCA-striked!</p>
+        <p className={styles.pogifyCatchline}>
+          Listen to music with your live audience without getting DMCA-striked!
+        </p>
         <div className={styles.actionWrapper}>
           <Link to="/session">
-            <button>
-              Join a Session
-            </button>
+            <button>Join a Session</button>
           </Link>
           <Link to="/create">
-            <button>
-              Start a session
-            </button>
+            <button>Start a session</button>
           </Link>
         </div>
-        <div className={styles.donationsWrapper}>
-          <p style={{"maxWidth": "55%"}}>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
-          <div style={{"width": "40%"}}><Donations /></div>
-        </div>
-
+        <Donations className={styles.donationButton} />
       </Layout>
     );
   }

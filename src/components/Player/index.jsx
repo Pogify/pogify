@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { playerStore } from "../../stores";
-import { secondsToTimeFormat } from '../../utils/formatters'
+import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -9,37 +9,46 @@ import {
   faVolumeUp,
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
+import "semantic-ui-css/components/progress.min.css";
+
+import { Progress } from "semantic-ui-react";
 
 import NewTabLink from "../utils/NewTabLink";
 
 import styles from "./index.module.css";
 
-
 // Allow MobX to optimize data that does not change regularly
 const TrackMetadata = observer(() => {
-  const trackData = playerStore.data.track_window.current_track
+  const trackData = playerStore.data.track_window.current_track;
   return (
     <div className={styles.metadataWrapper}>
-      <div
-        className={styles.albumArt}
-      >
-        <img src={trackData.album.images[0].url} alt={`Cover art for ${trackData.album.name}`} />
+      <div className={styles.albumArt}>
+        <img
+          src={trackData.album.images[0].url}
+          alt={`Cover art for ${trackData.album.name}`}
+        />
       </div>
       <div>
-        <h3>
-          <NewTabLink href={trackData.uri} className={styles.spotifyLink}>{trackData.name}</NewTabLink>
-        </h3>
-        {trackData.artists.map(({ name, uri }) => (
-          <NewTabLink href={uri} className={styles.spotifyLink} key={uri}>
-            {name}
+        <h3 className={styles.titleContainer}>
+          <NewTabLink href={trackData.uri} className={`${styles.spotifyLink} ${styles.title}`}>
+            {trackData.name}
           </NewTabLink>
-        ))}{" "}
-        <br />
-        <NewTabLink href={trackData.album.uri} className={styles.spotifyLink}>{trackData.album.name}</NewTabLink>
+        </h3>
+        <NewTabLink href={trackData.album.uri} className={`${styles.spotifyLink} ${styles.album}`}>
+          {trackData.album.name}
+        </NewTabLink>
+        {trackData.artists.map(({ name, uri }, index) => (
+          <React.Fragment key={uri}>
+            <NewTabLink href={uri} className={`${styles.spotifyLink} ${styles.artist}`} >
+              {name}
+            </NewTabLink>
+            {index !== trackData.artists.length - 1 && " / "}
+          </React.Fragment>
+        ))}
       </div>
     </div>
-  )
-})
+  );
+});
 
 // transform [0,1] => [-1,1]
 const transform = (a) => a * 2 - 1;
@@ -77,76 +86,92 @@ const output = (vol) => {
  * Player component
  */
 export const Player = observer((props) => {
-
   // if playerStore doesn't have data then player not connected
   if (!Object.keys(playerStore.data).length) {
-    return <div>Spotify not connected</div>
+    return <div>Spotify not connected</div>;
   }
 
   // deconstruct playerStore stuff
   const {
     volume,
     playing,
-    data: {
-      duration
-    }
-  } = playerStore
-
+    data: { duration },
+  } = playerStore;
 
   // set volume handler
   const setVolume = (e) => {
-    playerStore.setVolume(output(parseFloat(e.target.value)))
+    playerStore.setVolume(output(parseFloat(e.target.value)));
   };
 
   const seek = (e) => {
     if (props.isHost) {
-      playerStore.seek(e.target.value * 1000)
+      playerStore.seek(e.target.value * 1000);
     }
-  }
+  };
 
   return (
-    <div
-      className={styles.player}
-    >
-
+    <div className={styles.player}>
       <TrackMetadata />
-      <div>
-        {secondsToTimeFormat((playerStore.position) / 1000)}
-        <input
-          className={styles.seekBar}
-          type="range"
-          name="position"
-          id="position"
-          value={(playerStore.position) / 1000}
+      <div
+        className={styles.seekContainer}
+
+      >
+        {secondsToTimeFormat(playerStore.position / 1000)}
+        <CustomSlider
           onChange={seek}
+          canChange={props.isHost}
           min={0}
           max={duration / 1000}
-          readOnly
+          warn={props.warn}
+          value={playerStore.position / 1000}
         />
         {secondsToTimeFormat(duration / 1000)}
       </div>
-      <div>
-        <FAI icon={faVolumeMute} />
-        <input
-          type="range"
-          name="volume"
-          id="volume"
+      <div
+        className={styles.volumeContainer}
+      >
+        <FAI icon={faVolumeMute} className={styles.muteButton} onClick={playerStore.setMute} />
+        <CustomSlider
           value={input(parseFloat(volume))}
           onChange={setVolume}
           min={-1}
           max={1}
           step={0.01}
+          canChange
         />
         <FAI icon={faVolumeUp} />
       </div>
-      {!props.dontShow && (
-        <div className={styles.playButtonWrapper} onClick={() => playerStore.togglePlay()}>
+      {props.isHost && (
+        <div
+          className={styles.playButtonWrapper}
+          onClick={() => playerStore.togglePlay()}
+        >
           {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
       {props.children}
     </div>
   );
-})
+});
 
-export default Player
+const CustomSlider = (props) => (
+  <div className={`${styles.progressBarContainer} ${props.canChange ? styles.canChange : ""}`}>
+    <input
+      type="range"
+      name="position"
+      id="position"
+      value={props.value}
+      onChange={props.onChange}
+      min={props.min}
+      step={props.step}
+      max={props.max}
+    />
+    <Progress
+      className={`${styles.progressBar} ${props.warn ? styles.warn : ""} ${props.canChange ? styles.canChange : ""}`}
+      size="small"
+      percent={((props.value - props.min) / (props.max - props.min)) * 100}
+    />
+  </div>
+);
+
+export default Player;

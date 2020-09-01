@@ -13,8 +13,7 @@ import {
 import { Terms } from "./routes/Terms";
 import { Privacy } from "./routes/Privacy";
 
-import { ModalSystem, ErrorModal } from "./modals";
-import { messenger } from "./stores";
+import { ModalSystem } from "./modals";
 
 import "./styles/App.css";
 
@@ -37,31 +36,3 @@ function App() {
   );
 }
 export default App;
-
-window.onerror = (evt, source, lineno, colno, error) => {
-  messenger.emit(
-    "POST_MODAL",
-    <ErrorModal errorCode={error.name} errorMessage={error.message}>
-      <div>{JSON.stringify(evt, undefined, 2)}</div>
-      <div>
-        {source} {lineno}:{colno}
-      </div>
-      <div>{JSON.stringify(error, undefined, 2)}</div>
-    </ErrorModal>
-  );
-  console.error(error);
-};
-
-window.onunhandledrejection = (evt, source, lineno, colno, error) => {
-  messenger.emit(
-    "POST_MODAL",
-    <ErrorModal errorCode={error.name} errorMessage={error.message}>
-      <div>{JSON.stringify(evt, undefined, 2)}</div>
-      <div>
-        {source} {lineno}:{colno}
-      </div>
-      <div>{JSON.stringify(error, undefined, 2)}</div>
-    </ErrorModal>
-  );
-  console.error(error);
-};

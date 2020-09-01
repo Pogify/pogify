@@ -1,12 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Layout } from "../../layouts";
+import { Link } from "react-router-dom";
+
 import { createSession } from "../../utils/sessionManager";
+
+import { ErrorModal } from "../../modals";
+import { modalStore } from "../../stores";
 
 import styles from "./index.module.css";
 
 /**
- * Create session component. 
+ * Create session component.
  * One button to create.
  * Shows any active session in localStorage
  */
@@ -21,10 +26,22 @@ export class Create extends React.Component {
 
   // waits to create session
   async create() {
-    // TODO: handle errors
-    let res = await createSession();
-    // redirect on successful session creation
-    this.props.history.push("/session/" + res.session);
+    try {
+      let res = await createSession();
+      // redirect on successful session creation
+      this.props.history.push("/session/" + res.session);
+    } catch (e) {
+      modalStore.queue(
+        <ErrorModal
+          errorCode="Failed to create Session"
+          errorMessage="There was some problem and we were unable to create a session. You can close this modal and try again."
+        >
+          <div>{e.name}</div>
+          <div>{e.message}</div>
+          <div>{e.stack}</div>
+        </ErrorModal>
+      );
+    }
   }
 
   componentDidMount() {
@@ -39,20 +56,32 @@ export class Create extends React.Component {
   render() {
     return (
       <Layout>
-        {Boolean(this.state.activeSession) && (
-          <div className={`textAlignCenter ${styles.previousSessions}`}>
-            Your Active Session:
-            <div>
+        <Helmet>
+          <title>Create a session - Pogify</title>
+        </Helmet>
+        <div className={styles.buttonStack}>
+          {Boolean(this.state.activeSession) && (
+            <>
               <Link
+                className={styles.fullWidth}
                 to={`/session/${this.state.activeSession}`}
-              // TODO: better link styling, more button-like?
               >
-                Resume {this.state.activeSession}
+                <button className={`textAlignCenter ${styles.fullWidth}`}>
+                  Continue Active Session:
+                  <div>
+                    <u>
+                      <b>{this.state.activeSession}</b>
+                    </u>
+                  </div>
+                </button>
               </Link>
-            </div>
-          </div>
-        )}
-        <button onClick={this.create}>Create New Listening Session</button>
+              <div>
+                <h3>or</h3>
+              </div>
+            </>
+          )}
+          <button onClick={this.create}>Create New Listening Session</button>
+        </div>
       </Layout>
     );
   }

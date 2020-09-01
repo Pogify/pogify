@@ -4,7 +4,7 @@ import styles from "./modals.module.css";
 
 /**
  * Default warning modal
- * 
+ *
  * @param {{title: string, content: string}} props title and message to show
  */
 export default function WarningModal(props) {
@@ -13,8 +13,9 @@ export default function WarningModal(props) {
       <div className={styles.warningDiv}>
         <h3>{props.title}</h3>
         <p>{props.content}</p>
+        <div>{props.children}</div>
         <button onClick={props.closeModal}>Close</button>
       </div>
     </div>
-  )
+  );
 }

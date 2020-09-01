@@ -1,7 +1,10 @@
 import React from "react";
+import { observer } from "mobx-react";
+
 import * as SessionManager from "../../utils/sessionManager";
-import { debounce } from "../../utils/debounce";
 import { playerStore } from "../../stores";
+
+import debounce from "lodash/debounce";
 
 import { Layout } from "../../layouts";
 
@@ -15,7 +18,7 @@ import styles from "./index.module.css";
 /**
  * HostPlayer handles logic for Pogify Host
  */
-export default class HostPlayer extends React.Component {
+class HostPlayer extends React.Component {
   // static contextType = storesContext;
   // lastUpdate property keeps track the data sent in the last publish update
   lastUpdate = {
@@ -48,12 +51,18 @@ export default class HostPlayer extends React.Component {
     this.setState({
       loading: true,
     });
-    await playerStore.initializePlayer("Pogify Host");
 
-    playerStore.player.on(
-      "player_state_changed",
-      this.handleData.bind(this)
-    );
+    const playerDeviceId = await playerStore.initializePlayer("Pogify Host");
+    playerStore.connectToPlayer(playerDeviceId).catch((err) => {
+      if (err.message !== "Bad refresh token") {
+        console.error(err);
+      }
+    });
+    playerStore.player.on("player_state_changed", this.handleData.bind(this));
+    window.onbeforeunload = () => {
+      // publish empty string uri on disconnect. Empty string uri means host disconnected
+      SessionManager.publishUpdate("", playerStore.position.value, false);
+    };
     this.setState({ loading: false });
   };
 
@@ -103,25 +112,20 @@ export default class HostPlayer extends React.Component {
     };
     // it seems 400 is about a good sweet spot for debounce.
     // Hesitant to raise it anymore because it would increase latency to listener
-  }, 400);
+  }, 400, { leading: true });
 
   componentDidMount() {
-    window.onbeforeunload = () => {
-      // publish empty string uri on disconnect. Empty string uri means host disconnected
-      this.publishUpdate("", this.state.position, false);
-    };
     // set the token refresh interval
     this.setTokenRefreshInterval();
   }
 
-  componentWillUnmount() {
-    // remove listener on unmount. prevents host disconnected alert
-    // DEFUNCT: should replace it with something else
-    playerStore.player.disconnect();
-    // publish unload update when unmounting player
-    // TODO: cleanup when all logic is moved to stores
-    // this.publishUpdate("", this.state.position, false);
-    // remove listener
+  async componentWillUnmount() {
+    if (playerStore.player) {
+      // publish unload update when unmounting player
+      await SessionManager.publishUpdate("", playerStore.position, false);
+      playerStore.disconnectPlayer();
+    }
+    // remove onbeforeunload handler
     window.onbeforeunload = null;
     // clear refresh interval
     clearInterval(this.refreshInterval);
@@ -141,7 +145,27 @@ export default class HostPlayer extends React.Component {
     if (!window.localStorage.getItem("spotify:refresh_token")) {
       return (
         <Layout>
-          <button onClick={this.initializePlayer}>Login with Spotify</button>
+          <div className="textAlignCenter">
+            <button onClick={this.initializePlayer}>Login with Spotify</button>
+            <p>
+              You'll be redirected to Spotify to login. After that, you'll
+              automatically be connected to your room.
+            </p>
+          </div>
+        </Layout>
+      );
+    }
+    // if the token is not valid, show the login screen
+    if (playerStore.needsRefreshToken) {
+      return (
+        <Layout>
+          <div className="textAlignCenter">
+            <button onClick={this.initializePlayer}>Login with Spotify</button>
+            <p>
+              You've been disconnected from Spotify. Click on the button to
+              login again.
+            </p>
+          </div>
         </Layout>
       );
     }
@@ -161,7 +185,7 @@ export default class HostPlayer extends React.Component {
         <div className="flexContainer">
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting to {this.state.connections} listeners.</h2>
+            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
             <p className="textAlignLeft">
               You can continue using Spotify as you normally would. The music is
               playing through this browser tab, you can open this tab in a new
@@ -181,10 +205,12 @@ export default class HostPlayer extends React.Component {
               </CopyLink>
             </div>
             <PoweredBySpotify />
-            <Donations />
+            <Donations large />
           </div>
         </div>
       </Layout>
     );
   }
 }
+
+export default observer(HostPlayer);

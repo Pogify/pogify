@@ -92,7 +92,7 @@ export class ModalStore {
     return React.cloneElement(
       element,
       { closeModal: this.closeModal },
-      element.children
+      element.props.children
     );
   };
 }

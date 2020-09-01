@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
+
 .layout {
   height: 100%;
   width: 100%;
@@ -10,12 +11,21 @@
   overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Roboto", sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Open Sans",
+    "Roboto",
+    sans-serif;
 }
 
 p {
-  font-family: "Roboto", sans-serif;
+  font-family: "Open Sans",
+    "Roboto",
+    sans-serif;
 }
 
 .content {
@@ -27,7 +37,6 @@ p {
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
   max-width: 90%;
   max-height: 80%;
-  overflow: auto;
 }
 
 .content button {
@@ -75,7 +84,7 @@ p {
 }
 
 .footer a {
-  color: white !important;
+  color: white;
 }
 
 .footer-links {
