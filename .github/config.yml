@@ -1,0 +1,3 @@
+todo:
+  autoAssign: false
+  keyword: ["@todo","TODO","TODO:", "FIXME", "FIXME:"]

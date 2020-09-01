@@ -49,6 +49,9 @@ If you are looking to help with UI/UX, please note that we do not have a style g
    {
      "jwt": {
        "secret": "anysecretyoudlike"
+     },
+     "pubsub": {
+       "url": "https://anystringyoudlike.itdoesntmatteritsnotusedinemulation.com"
      }
    }
    ```
@@ -63,8 +66,8 @@ Congratulations, you should now be running a local environment for the backend o
 
 1. Clone this repo (`git clone https://github.com/Pogify/pogify.git`)
 2. Switch to the `develop` branch (`git checkout develop`)
-2. Change directory `cd` to the newly created `pogify` repo and install dependencies with `yarn install`.
-3. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from your Firebase CLI window) and {CLIENT_ID} with your Spotify API Client ID from the prerequisites.
+3. Change directory `cd` to the newly created `pogify` repo and install dependencies with `yarn install`.
+4. Create a file in the directory named `.env` or `.env.development.local`, replace {URL} with the URL of your emulated functions (from your Firebase CLI window) and {CLIENT_ID} with your Spotify API Client ID from the prerequisites.
    ```
      REACT_APP_SUB=https://messages.pogify.net
      REACT_APP_CLOUD_FUNCTION_EMULATOR_BASE_URL={URL}
@@ -78,6 +81,7 @@ Congratulations, you should now be running a local environment for the backend o
    Congratulations, you should now be running a local environment for the frontend of Pogify!
 
 ###### A couple notes:
+
 - Sessions hosted from local environments cannot be joined from the pogify.net production deployment.
 - Sessions hosted on a pogify.net production deployment can be joined from a local environment.
 - Missing any one step wil throw an error. Be sure to read each and every single instruction carefully.
@@ -94,4 +98,38 @@ Congratulations, you should now be running a local environment for the backend o
 4. Change directory `cd` into the `pogify` repo.
 5. Run `yarn start`.
 
-**Thanks for contributing to Pogify! We can't wait to see what you do with it!**
+## Naming Scheme Conventions
+
+- React components are PascalCased
+- non React js files are camelCased
+- folders are hyphen-cased
+- test files are cased according to the file that the test runs
+- CSS files are PascalCased
+  - Note: please avoid using global namespaced stylesheets and use [css modules](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet/) instead.
+  - [Styled-components](https://styled-components.com/) are also acceptable.
+  - Just avoid using inline styles
+  - We are transitioning away from inline styles.
+
+## Directory structure
+
+- `/src` all source files
+  - `/src/routes` components that react-router
+  - `/src/components` other components
+    - Components can be just jsx files or PascalCased folders with an index.jsx and index.module.css
+  - `/src/components/utils` components
+  - `/src/layouts` layout related HOCs
+  - `/src/modals` modal components
+  - `/src/stores` mobx stores
+  - `/src/context` contexts
+  - `/src/hooks` react hooks
+  - `/src/styles` CSS files for global or reused styles
+    - _Note:_ Please try avoid writing global CSS styles (ie. \[something\].css) and use css modules instead (ie. \[something\]._module_.css)
+  - `/src/utils` utility functions
+- `src/__tests__` all tests
+  - `src/__tests__/unit` unit tests
+    - follows structure of src files
+  - `src/__tests__/integration` integration tests
+- `src/__mocks__` test mocks
+- `src/__utils__` test utils
+
+## **Thanks for contributing to Pogify! We can't wait to see what you do with it!**

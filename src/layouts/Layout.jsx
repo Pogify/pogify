@@ -1,66 +1,36 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Layout.css";
+import { observer } from "mobx-react"
+import { themeStore } from "../stores";
 
-export default class Layout extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      darkMode: 'false'
-    }
-    this.toggleDarkMode = this.toggleDarkMode.bind(this)
-    this.updateDarkMode = this.updateDarkMode.bind(this)
-  }
-  componentDidMount() {
-    let storedDarkMode = false;
-    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    if (localStorage.getItem('darkMode') === null) {
-      console.log('darkmodenotexist')
-      storedDarkMode = darkQuery.matches === 'true';
-    } else {
-      storedDarkMode = localStorage.getItem('darkMode');
-    }
+/** 
+ * Default layout component. 
+ * Center content view with footer 
+ */
+const Layout = ({ children }) => {
+  let { theme/*, toggleTheme*/ } = themeStore
 
-    darkQuery.addEventListener('change', this.updateDarkMode);
-    this.setState({ darkMode: storedDarkMode })
+  let contentClass = "content";
+  const darkMode = theme === "dark"
+  if (darkMode) {
+    contentClass += " darkContent";
   }
 
-  updateDarkMode(event) {
-    if (event.matches && this.state.darkMode === true) return;
-    if (!event.matches && this.state.darkMode === false) return;
-    this.toggleDarkMode();
-  }
-
-  toggleDarkMode() {
-    const newDarkMode = !(this.state.darkMode);
-    this.setState({ darkMode: newDarkMode })
-    localStorage.setItem('darkMode', newDarkMode);
-  }
-
-  render() {
-    let darkMode = this.state.darkMode;
-
-    let contentClass = 'content';
-    if (darkMode) {
-      contentClass += ' darkContent';
-    }
-
-    return (
-      <div className="layout">
-        <div className={contentClass}>
-          {this.props.children}
+  return (
+    <div className="layout">
+      <div className={contentClass}>{children}</div>
+      <footer className="footer">
+        <div className="footer-links">
+          <Link to="/tou">Terms of Use</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+          <a href="https://github.com/Pogify/pogify">GitHub</a>
         </div>
-        <footer className="footer">
-          ©{" "}
-          <a href="https://www.pogify.net/">Pogify</a>{" "}|{" "}
-          <Link to="/tou">Terms of Use</Link>{" "}|{" "}
-          <Link to="/privacy">Privacy Policy</Link>{" "}|{" "}
-          <button onClick={this.toggleDarkMode} className={"mode-toggle"}>Switch to {darkMode ? 'Light' : 'Dark'} Mode!</button>
-          <br />
-          <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB and is not affiliated with Pogify.
-        </footer>
+        <p><a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB and is not affiliated with Pogify</p>
+      </footer>
+    </div>
 
-      </div >
-    );
-  }
-};
+  )
+}
+
+export default observer(Layout)

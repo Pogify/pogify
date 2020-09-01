@@ -1,4 +1,5 @@
 body {
-  background-image: linear-gradient(to right, #7f53ac 0, #657ced 100%);
+  background: hsla(215, 69%, 67%, 1);
+  background: linear-gradient(180deg, hsla(215, 69%, 67%, 1) 0%, hsla(253, 65%, 71%, 1) 100%);
   color: white;
 }

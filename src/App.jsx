@@ -1,7 +1,6 @@
 import React from "react";
-import { Privacy } from "./routes/Privacy";
-import { Terms } from "./routes/Terms";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
   AuthRedirect,
   Room,
@@ -10,6 +9,11 @@ import {
   Home,
   FourOhFour,
 } from "./routes";
+import { Terms } from "./routes/Terms";
+import { Privacy } from "./routes/Privacy";
+
+import { ModalSystem } from "./modals";
+
 import "./styles/App.css";
 
 function App() {
@@ -25,8 +29,8 @@ function App() {
         <Route path="/tou" component={Terms} />
         <Route path="/" component={FourOhFour} />
       </Switch>
+      <ModalSystem />
     </BrowserRouter>
   );
 }
-
 export default App;

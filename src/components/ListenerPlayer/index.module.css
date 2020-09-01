@@ -1,0 +1,26 @@
+.h2 {
+  margin: 0;
+}
+
+.textWrapper {
+  width: 400px;
+  padding: 30px;
+}
+
+.shareExplanations {
+  margin-top: 40px;
+}
+
+.syncButton {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 200ms;
+  /* box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.24); */
+}
+
+.syncButton:hover {
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}

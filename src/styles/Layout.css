@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 .layout {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,12 +10,20 @@
   overflow: hidden;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Roboto", sans-serif;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+}
+
 .content {
   transition: background-color 0.5s, color 0.5s;
-  background-color: white;
-  color: #222222;
+  background-color: #FFFCF2;
+  color: #252422;
   padding: 2rem;
-  border-radius: 12.5px;
+  border-radius: 20px;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
   max-width: 90%;
   max-height: 80%;
@@ -22,13 +32,16 @@
 
 .content button {
   cursor: pointer;
-  border: 1px solid #2c3a3a;
-  padding: 5px 10px;
-  border-radius: 12px;
+  padding: 0.75rem 2rem;
+  border-radius: 500px;
   cursor: pointer;
   transition: box-shadow 0.3s;
-  margin: 5px;
-  background-color: white;
+  border: none;
+  background-color: #72a1e5;
+  outline: none;
+  color: white;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
 }
 
 .content button:hover {
@@ -43,21 +56,21 @@
 }
 
 .darkContent {
-  background-color: #222222;
-  color: white;
+  background-color: #252422;
+  color: #FFFCF2;
 }
 
 .darkContent button {
-  transition: background-color 0.5s, border-color 0.5s, color 0.5s;
-  border-color: white;
-  background-color: #222222;
-  color: white;
+  color: #FFFCF2;
 }
 
 .footer {
   position: absolute;
-  bottom: 0;
-  height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  bottom: 30px;
+  height: 47px;
   text-align: center;
 }
 
@@ -65,14 +78,24 @@
   color: white !important;
 }
 
-.mode-toggle {
-  background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-  outline: inherit;
-  text-decoration: underline;
+.footer-links {
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
 }
 
+.footer-links a {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.mode-toggle {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
+  font: inherit;
+  text-decoration: underline;
+}
