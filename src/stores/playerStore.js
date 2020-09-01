@@ -1,5 +1,5 @@
 import React from "react";
-import { extendObservable, action, runInAction } from "mobx";
+import { extendObservable, action, runInAction, autorun } from "mobx";
 import promiseRetry from "promise-retry";
 import debounce from "lodash/debounce";
 import Axios from "axios";
@@ -9,6 +9,7 @@ import * as Sentry from "@sentry/react";
 import { modalStore } from ".";
 import WarningModal from "../modals/WarningModal";
 import ErrorModal from "../modals/ErrorModal";
+import { fromPromise } from "mobx-utils";
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = window.location.origin + "/auth";
@@ -23,10 +24,6 @@ export class PlayerStore {
     this.disposeTimeAutorun = undefined;
     this.disposeVolumeAutorun = undefined;
     extendObservable(this, {
-      // property on whether or player should be strict
-      // strict means that it only allows play pause seek track change by pogify
-      // if strict: don't allow playing when paused, don't allow seeking, don't allow track change
-      strict: false,
       // Spotify playback sdk object
       player: undefined,
       // Device id of Spotify playback sdk
@@ -65,61 +62,110 @@ export class PlayerStore {
 
     // continuously poll for player state.
     // only update necessary properties.
-    this.poll = setInterval(
-      action(async () => {
-        if (this.player) {
-          let data = await this.player.getCurrentState();
-          this.volume = (await this.player.getVolume()) || 0;
-          this.data = data ?? {};
-          if (data) {
-            runInAction(() => {
-              if (this.position !== data.position) {
-                this.position = data.position;
-              }
-              let uri = data.track_window.current_track.uri;
-              if (this.uri !== uri) {
-                this.uri = data.track_window.current_track.uri;
-              }
-              if (this.playing === data.paused) {
-                this.playing = !data.paused;
-              }
-
-              let diff = Math.abs(
-                Date.now() - this.last - (data.position - this.lastPos)
-              );
-              if (this.diff !== diff) {
-                this.diff = diff;
-              }
-            });
-
-            this.lastPos = data.position;
-            this.last = Date.now();
-          } else {
-            this.device_connected = false;
-          }
-        }
-      }),
-      200
-    );
+    this.poll = setInterval(this.updateState, 200);
   }
+
+  updateState = action(async () => {
+    if (this.player) {
+      let data = await this.player.getCurrentState();
+      this.volume = (await this.player.getVolume()) || 0;
+      runInAction(() => {
+        this.data = data ?? {};
+        if (data) {
+          runInAction(() => {
+            if (this.position !== data.position) {
+              this.position = data.position;
+            }
+            let uri = data.track_window.current_track.uri;
+            if (this.uri !== uri) {
+              this.uri = data.track_window.current_track.uri;
+            }
+            if (this.playing === data.paused) {
+              this.playing = !data.paused;
+            }
+
+            let diff = Math.abs(
+              Date.now() - this.last - (data.position - this.lastPos)
+            );
+            if (this.diff !== diff) {
+              this.diff = diff;
+            }
+            this.device_connected = true;
+          });
+
+          this.lastPos = data.position;
+          this.last = Date.now();
+        } else {
+          this.device_connected = false;
+        }
+      });
+    }
+  });
 
   /**
    * Resume player.
    * Should be called here instead of calling directly to spotify player object
    * @param {boolean} parked whether the player stopped from ending a song
    */
-  resume = action(async (parked = false) => {
-    this.player.resume();
-  });
+  resume = (parked) => {
+    if (
+      this.resumeAttemptPromise &&
+      this.resumeAttemptPromise.state === "pending"
+    )
+      return this.resumeAttemptPromise;
 
+    this.resumeAttemptPromise = fromPromise(
+      promiseRetry(
+        async (retry, n) => {
+          console.log("resume attempt number", n);
+          this.attemptingResume = true;
+          await this.player.resume();
+          await this.updateState();
+          if (this.playing) {
+            return;
+          } else {
+            retry();
+          }
+        },
+        {
+          minTimeout: 100,
+          factor: 1.5,
+        }
+      )
+    );
+    return this.resumeAttemptPromise;
+  };
   /**
    * Pause player.
    * Should be called here instead of calling directly to spotify player object
    * @param {boolean} parked whether the player stopped from ending a song
    */
-  pause = action(async (parked) => {
-    this.player.pause();
-  });
+  pause = (parked) => {
+    if (
+      this.pauseAttemptPromise &&
+      this.pauseAttemptPromise.state === "pending"
+    )
+      return this.pauseAttemptPromise;
+
+    this.pauseAttemptPromise = fromPromise(
+      promiseRetry(
+        async (retry, n) => {
+          console.log("pause attempt number", n);
+          await this.player.pause();
+          await this.updateState();
+          if (!this.playing) {
+            return;
+          } else {
+            retry();
+          }
+        },
+        {
+          minTimeout: 100,
+          factor: 1.5,
+        }
+      )
+    );
+  };
 
   /**
    * Toggle playback.
@@ -168,70 +214,89 @@ export class PlayerStore {
    * @param {string} uri track uri
    * @param {number} pos_ms millisecond position
    */
-  newTrack = async (uri, pos_ms) => {
-    this.newTrackRetry++;
-    let t0 = Date.now();
-    try {
-      let res = await Axios.put(
-        `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-        {
-          uris: [uri],
-          position_ms: pos_ms,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.access_token}`,
+  newTrack = async (uri, pos_ms, playing) => {
+    return new Promise(async (resolve, reject) => {
+      this.newTrackRetry++;
+      let t0 = Date.now();
+      try {
+        let res = await Axios.put(
+          `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+          {
+            uris: [uri],
+            position_ms: pos_ms,
           },
-        }
-      );
-      this.newTrackRetry = 0;
-      return res.data;
-    } catch (e) {
-      // TODO: More Robust Error Handling
-      // BODY Spotify throws more errors than whats handled here.
-      if (e.response) {
-        switch (e.response.status) {
-          case 429:
-            let retryAfter = (e.response.headers["retry-after"] || 1) * 1000;
-
-            setInterval(() => {
-              this.newTrack(uri, pos_ms + Date.now() - t0);
-            }, retryAfter);
-            return;
-          case 403:
-            let reason = e.response.data.reason;
-
-            switch (reason) {
-              case "RATE_LIMITED":
-                modalStore.queue(
-                  <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
-                  2000
-                );
-                return;
-              case "NO_SPECIFIC_TRACK":
-                modalStore.queue(
-                  <WarningModal
-                    title="Pogify was not able to play this track"
-                    content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
-                  />
-                );
-                return;
-              default:
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.access_token}`,
+            },
+          }
+        );
+        this.newTrackRetry = 0;
+        this.updateState();
+        autorun(async (r) => {
+          console.log("a");
+          if (this.uri === uri) {
+            console.log("b");
+            r.dispose();
+            if (playing) {
+              await this.resume();
+            } else {
+              console.log("in");
+              await this.pause();
+              console.log("out");
             }
-            break;
-          default:
-            modalStore.queue(
-              <WarningModal title="An unknown error occured on Spotify's end." />,
-              2000
-            );
+            resolve();
+          }
+        });
+
+        return res.data;
+      } catch (e) {
+        // TODO: More Robust Error Handling
+        // BODY Spotify throws more errors than whats handled here.
+        if (e.response) {
+          switch (e.response.status) {
+            case 429:
+              let retryAfter = (e.response.headers["retry-after"] || 1) * 1000;
+
+              setInterval(() => {
+                this.newTrack(uri, pos_ms + Date.now() - t0);
+              }, retryAfter);
+              return;
+            case 403:
+              let reason = e.response.data.reason;
+
+              switch (reason) {
+                case "RATE_LIMITED":
+                  modalStore.queue(
+                    <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
+                    2000
+                  );
+                  return;
+                case "NO_SPECIFIC_TRACK":
+                  modalStore.queue(
+                    <WarningModal
+                      title="Pogify was not able to play this track"
+                      content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
+                    />
+                  );
+                  return;
+                default:
+              }
+              break;
+            default:
+              modalStore.queue(
+                <WarningModal title="An unknown error occured on Spotify's end." />,
+                2000
+              );
+          }
         }
+        setTimeout(() => {
+          this.newTrack(uri, pos_ms + Date.now() - t0);
+        }, this.newTrackRetry ** 2 * 500);
+        console.error(e);
       }
-      setTimeout(() => {
-        this.newTrack(uri, pos_ms + Date.now() - t0);
-      }, this.newTrackRetry ** 2 * 500);
-      console.error(e);
-    }
+    });
   };
 
   /**
@@ -246,10 +311,8 @@ export class PlayerStore {
     this.player.seek(pos_ms);
   }, 50);
   seek = action((pos_ms) => {
-    // reset stamps
-    this.p0 = pos_ms;
-    this.t0 = Date.now();
-    return this.debouncedSeek(pos_ms);
+    this.player.seek(pos_ms);
+    // return this.debouncedSeek(pos_ms);
   });
 
   /**

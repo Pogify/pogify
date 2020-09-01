@@ -60,14 +60,14 @@ class HostPlayer extends React.Component {
       }
     });
 
-    reaction(
+    this.updateReactionDisposer = reaction(
       (r) => ({
         uri: playerStore.uri,
         playing: playerStore.playing,
         diff: playerStore.diff,
       }),
       debounce(({ uri, playing }) => {
-        console.log(uri, playerStore.position, playing);
+        SessionManager.publishUpdate(uri, playerStore.position, playing);
       }, 400),
       {
         equals: (a, b) => {
@@ -129,6 +129,9 @@ class HostPlayer extends React.Component {
     }
     // remove onbeforeunload handler
     window.onbeforeunload = null;
+    if (typeof this.updateReactionDisposer === "function") {
+      this.updateReactionDisposer();
+    }
     // clear refresh interval
     clearInterval(this.refreshInterval);
   }
