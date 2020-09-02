@@ -29,20 +29,22 @@ const TrackMetadata = observer(() => {
         />
       </div>
       <div>
-        <h3>
-          <NewTabLink href={trackData.uri} className={styles.spotifyLink}>
+        <h3 className={styles.titleContainer}>
+          <NewTabLink href={trackData.uri} className={`${styles.spotifyLink} ${styles.title}`}>
             {trackData.name}
           </NewTabLink>
         </h3>
-        {trackData.artists.map(({ name, uri }) => (
-          <NewTabLink href={uri} className={styles.spotifyLink} key={uri}>
-            {name}
-          </NewTabLink>
-        ))}{" "}
-        <br />
-        <NewTabLink href={trackData.album.uri} className={styles.spotifyLink}>
+        <NewTabLink href={trackData.album.uri} className={`${styles.spotifyLink} ${styles.album}`}>
           {trackData.album.name}
         </NewTabLink>
+        {trackData.artists.map(({ name, uri }, index) => (
+          <React.Fragment key={uri}>
+            <NewTabLink href={uri} className={`${styles.spotifyLink} ${styles.artist}`} >
+              {name}
+            </NewTabLink>
+            {index !== trackData.artists.length - 1 && " / "}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );

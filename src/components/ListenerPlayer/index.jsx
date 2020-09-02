@@ -410,7 +410,7 @@ class ListenerPlayer extends React.Component {
               </CopyLink>
             </div>
             <PoweredBySpotify />
-            <Donations />
+            <Donations large />
           </div>
         </div>
       </Layout>
