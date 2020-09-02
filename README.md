@@ -94,8 +94,6 @@ This project is still in alpha and as such, there are still lots of bugs.
 
 If you have an issue that isn't listed below or does not have an open issue, please help us by [opening a new one](https://github.com/Pogify/pogify/issues/new/choose).
 
-Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
-
 ### Note: Pogify does **NOT** work on Safari, or Mobile Browsers
 
 - This is a limitation of the Spotify Web Playback SDK.
