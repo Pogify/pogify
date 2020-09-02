@@ -48,11 +48,13 @@ class ListenerPlayer extends React.Component {
 
     // synchronization checker
     this.syncCheckDisposer = reaction(
+      // only listen for these changes
       () => ({
         uri: playerStore.uri,
         diff: playerStore.diff,
         playing: playerStore.playing,
       }),
+      // if listener player changed compare to host player
       ({ uri, playing }) => {
         if (this.syncing) {
           console.log("sync blocked...");
@@ -92,6 +94,7 @@ class ListenerPlayer extends React.Component {
         }
       },
       {
+        // only react if the listener player changed
         equals: (a, b) => {
           if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
             return false;
