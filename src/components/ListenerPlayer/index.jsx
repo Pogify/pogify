@@ -59,7 +59,7 @@ class ListenerPlayer extends React.Component {
       // if listener player changed compare to host player
       ({ uri, playing }) => {
         if (this.syncing) {
-          console.log("sync blocked...");
+          console.log("sync check blocked...");
           return;
         }
         console.log("checking sync");
@@ -83,9 +83,17 @@ class ListenerPlayer extends React.Component {
               synced: false,
             },
             async () => {
+              let calcPos = hostPlaying
+                ? hostPosition + Date.now() - updateTimestamp
+                : hostPosition;
               // only update if player is in strict mode.
               // only update if host is connected
-              if (this.state.hostConnected && this.state.strict) {
+              // don't try and sync if host position goes past duration of the track
+              if (
+                this.state.hostConnected &&
+                this.state.strict &&
+                calcPos + 1000 < playerStore.data.duration
+              ) {
                 await this.syncListener(hostUri, calcPos, hostPlaying);
               }
             }
