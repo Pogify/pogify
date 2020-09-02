@@ -188,10 +188,11 @@ class HostPlayer extends React.Component {
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
             <p className="textAlignLeft">
               You can continue using Spotify as you normally would. The music is
-              playing through this browser tab, you can open this tab in a new
-              window to exclude it from OBS.
+              playing through this window, so you should exclude it from your list
+              of audio sources in your streaming software.
               <br></br>
-              <b>Please do not close this tab.</b>
+              <b>Please do not close or minimize this tab.</b>
+              <b>Doing so will disconnect you from the session.</b>
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
