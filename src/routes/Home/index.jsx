@@ -30,9 +30,9 @@ export class Home extends React.Component {
           Listen to music with your live audience without getting DMCA-striked!
         </p>
         <div className={styles.actionWrapper}>
-          <Link to="/session">
+          {!window.MSHTMLWebViewElement && (<Link to="/session">
             <button>Join a Session</button>
-          </Link>
+          </Link>)}
           <Link to="/create">
             <button>Start a session</button>
           </Link>
