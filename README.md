@@ -87,7 +87,7 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 ## Known Issues / Limitations
 
-This project is still in alpha and as such, there are still lots of bugs.
+This project is still in beta and as such, there are still lots of bugs.
 
 If you have an issue that isn't listed below or does not have an open issue, please help us by [opening a new one](https://github.com/Pogify/pogify/issues/new/choose).
 
