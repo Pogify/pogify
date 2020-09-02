@@ -83,9 +83,17 @@ class ListenerPlayer extends React.Component {
               synced: false,
             },
             async () => {
+              let calcPos = hostPlaying
+                ? hostPosition + Date.now() - updateTimestamp
+                : hostPosition;
               // only update if player is in strict mode.
               // only update if host is connected
-              if (this.state.hostConnected && this.state.strict) {
+              // don't try and sync if host position goes past duration of the track
+              if (
+                this.state.hostConnected &&
+                this.state.strict &&
+                calcPos + 1000 < playerStore.data.duration
+              ) {
                 await this.syncListener(hostUri, calcPos, hostPlaying);
               }
             }
