@@ -59,7 +59,7 @@ class ListenerPlayer extends React.Component {
       // if listener player changed compare to host player
       ({ uri, playing }) => {
         if (this.syncing) {
-          console.log("sync blocked...");
+          console.log("sync check blocked...");
           return;
         }
         console.log("checking sync");
