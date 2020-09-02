@@ -13,7 +13,6 @@ import styles from "./index.module.css";
  */
 export class Home extends React.Component {
   render() {
-    alert("Using webview: " + window.MSHTMLWebViewElement);
     return (
       <Layout>
         <Helmet>
