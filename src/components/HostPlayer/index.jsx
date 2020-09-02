@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import { reaction } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
@@ -58,7 +59,26 @@ class HostPlayer extends React.Component {
         console.error(err);
       }
     });
-    playerStore.player.on("player_state_changed", this.handleData.bind(this));
+
+    this.updateReactionDisposer = reaction(
+      (r) => ({
+        uri: playerStore.uri,
+        playing: playerStore.playing,
+        diff: playerStore.diff,
+      }),
+      debounce(({ uri, playing }) => {
+        SessionManager.publishUpdate(uri, playerStore.position, playing);
+      }, 400),
+      {
+        equals: (a, b) => {
+          if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
+            return false;
+          }
+          return true;
+        },
+      }
+    );
+
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
       SessionManager.publishUpdate("", playerStore.position.value, false);
@@ -66,53 +86,33 @@ class HostPlayer extends React.Component {
     this.setState({ loading: false });
   };
 
-  handleData = debounce((data) => {
-    // debounce incoming data.
-    let uri, position, playing;
-    if (data) {
-      uri = data.track_window.current_track.uri;
-      position = data.position;
-      playing = !data.paused;
-      // check that uri or playing changed
-      if (this.lastUpdate.uri !== uri || this.lastUpdate.playing !== playing) {
-        SessionManager.publishUpdate(uri, position, playing);
+  handleData = debounce(
+    (data) => {
+      // debounce incoming data.
+      let uri, position, playing;
+      if (data) {
+        uri = playerStore.uri;
+        position = data.position;
+        playing = !data.paused;
+        // check that uri or playing changed
       } else {
-        // if uri and playing didn't change then,
-        // check that difference is beyond threshold to update
-        // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
-        console.log(
-          Math.abs(
-            position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
-          ),
-          position,
-          this.lastUpdate.position,
-          Date.now() - this.lastUpdate.time
-        );
-        if (
-          Math.abs(
-            position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
-          ) > 1000
-        ) {
-          SessionManager.publishUpdate(uri, position, playing);
-        }
+        uri = "";
+        position = playerStore.position;
+        playing = false;
       }
-    } else {
-      uri = "";
-      position = playerStore.position;
-      playing = false;
       SessionManager.publishUpdate(uri, position, playing);
-    }
-    this.lastUpdate = {
-      uri,
-      playing,
-      position,
-      time: Date.now(),
-    };
-    // it seems 400 is about a good sweet spot for debounce.
-    // Hesitant to raise it anymore because it would increase latency to listener
-  }, 400, { leading: true });
+      this.lastUpdate = {
+        uri,
+        playing,
+        position,
+        time: Date.now(),
+      };
+      // it seems 400 is about a good sweet spot for debounce.
+      // Hesitant to raise it anymore because it would increase latency to listener
+    },
+    400,
+    { leading: true }
+  );
 
   componentDidMount() {
     // set the token refresh interval
@@ -122,11 +122,16 @@ class HostPlayer extends React.Component {
   async componentWillUnmount() {
     if (playerStore.player) {
       // publish unload update when unmounting player
-      await SessionManager.publishUpdate("", playerStore.position, false);
+      if (playerStore.position !== undefined) {
+        await SessionManager.publishUpdate("", playerStore.position, false);
+      }
       playerStore.disconnectPlayer();
     }
     // remove onbeforeunload handler
     window.onbeforeunload = null;
+    if (typeof this.updateReactionDisposer === "function") {
+      this.updateReactionDisposer();
+    }
     // clear refresh interval
     clearInterval(this.refreshInterval);
   }
