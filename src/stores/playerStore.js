@@ -195,6 +195,7 @@ export class PlayerStore {
         }
       )
     );
+    return this.pauseAttemptPromise;
   };
 
   /**
