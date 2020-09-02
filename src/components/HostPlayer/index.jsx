@@ -191,8 +191,10 @@ class HostPlayer extends React.Component {
               playing through this window, so you should exclude it from your list
               of audio sources in your streaming software.
               <br></br>
-              <b>Please do not close or minimize this tab.</b>
-              <b>Doing so will disconnect you from the session.</b>
+              <b>
+              Please do not close or minimize this window.
+              Doing so will disconnect you from the session.
+              </b>
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
