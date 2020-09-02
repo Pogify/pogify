@@ -38,7 +38,7 @@ class ListenerPlayer extends React.Component {
     parked: false,
     changeSongCallback: null,
     // should always maintain sync toggle.
-    strict: false,
+    strict: true,
   };
 
   /**
