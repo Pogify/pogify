@@ -37,6 +37,8 @@ class ListenerPlayer extends React.Component {
     synced: true,
     parked: false,
     changeSongCallback: null,
+    // should always maintain sync toggle.
+    strict: false,
   };
 
   /**
@@ -81,7 +83,9 @@ class ListenerPlayer extends React.Component {
               synced: false,
             },
             async () => {
-              if (this.state.hostConnected) {
+              // only update if player is in strict mode.
+              // only update if host is connected
+              if (this.state.hostConnected && this.state.strict) {
                 await this.syncListener(hostUri, calcPos, hostPlaying);
               }
             }
