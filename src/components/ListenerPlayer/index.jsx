@@ -58,7 +58,7 @@ class ListenerPlayer extends React.Component {
           console.log("sync blocked...");
           return;
         }
-        console.log("checking sync", this.state.synced);
+        console.log("checking sync");
         const {
           hostUri,
           hostPosition,
@@ -73,6 +73,7 @@ class ListenerPlayer extends React.Component {
           Math.abs(calcPos - playerStore.position) > 1000 ||
           hostPlaying !== playing
         ) {
+          console.log("not synced");
           this.setState(
             {
               synced: false,
@@ -84,6 +85,7 @@ class ListenerPlayer extends React.Component {
             }
           );
         } else {
+          console.log("synced");
           this.setState({
             synced: true,
           });
