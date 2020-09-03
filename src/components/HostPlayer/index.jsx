@@ -71,7 +71,12 @@ class HostPlayer extends React.Component {
       }, 400),
       {
         equals: (a, b) => {
-          if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
+          if (
+            a.uri !== b.uri ||
+            // if document is hidden setInterval gets throttled to once per sec. raise difference threshold in that case
+            b.diff > (document.hidden ? 2000 : 1000) ||
+            a.playing !== b.playing
+          ) {
             return false;
           }
           return true;
