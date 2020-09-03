@@ -246,7 +246,13 @@ class ListenerPlayer extends React.Component {
     this.syncing = true;
     console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
-      await playerStore.newTrack(uri, position, playing);
+      let indexOf = playerStore.track_window.indexOf(uri);
+
+      if (indexOf === -1) {
+        await playerStore.newTrack(uri, position, playing);
+      } else {
+        await playerStore.skipTrack(indexOf - this.trackOffset);
+      }
     } else {
       playerStore.seek(position);
       if (playing) {
