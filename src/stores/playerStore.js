@@ -346,6 +346,20 @@ export class PlayerStore {
     );
   };
 
+  skipTrack = async (num = 1) => {
+    if (num > 0) {
+      for (let i = 0; i < num; i++) {
+        await this.player.nextTrack();
+      }
+    } else if (num === 0) {
+      return;
+    } else if (num < 0) {
+      for (let i = 0; i > num; i--) {
+        await this.player.previousTrack();
+      }
+    }
+  };
+
   /**
    * Seeks to a location.
    * Call this instead of using seek on spotify playback object
