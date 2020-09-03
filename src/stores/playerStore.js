@@ -47,6 +47,8 @@ export class PlayerStore {
       muted: false,
       // uri for current track
       uri: "",
+      // current play context
+      context: "",
       // WebPlaybackState Object
       data: {},
       // Flag to display the "Login to Spotify" if needed
@@ -83,6 +85,12 @@ export class PlayerStore {
             if (this.position !== data.position) {
               this.position = data.position;
             }
+
+            // only update context if it changed
+            if (this.context !== data.context.uri) {
+              this.context = data.context.uri;
+            }
+
             // only update uri if it changed
             let uri = data.track_window.current_track.uri;
             if (this.uri !== uri) {
@@ -239,14 +247,19 @@ export class PlayerStore {
    * @param {number} pos_ms millisecond position
    */
   newTrack = async (context, uri, pos_ms, playing) => {
-    let t0 = Date.now();
     return promiseRetry(
       async (retry) => {
         try {
           let res = await Axios.put(
             `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
             {
-              uris: [uri],
+              context: context,
+              offset: context
+                ? {
+                    uri: uri,
+                  }
+                : undefined,
+              uris: context ? undefined : [uri],
               position_ms: pos_ms,
             },
             {

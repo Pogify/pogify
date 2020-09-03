@@ -130,14 +130,21 @@ export const createSession = async (i = 1) => {
   });
 };
 
-export const publishUpdate = async (uri, position, playing, retries = 0) => {
+export const publishUpdate = async (
+  context,
+  uri,
+  position,
+  playing,
+  retries = 0
+) => {
   if (!FBAuth) initializeApp();
   try {
     let user = await FBAuth.signInAnonymously();
-    console.log("publishUpdate", uri, position, playing);
+    console.log("publishUpdate", context, uri, position, playing);
     let res = await axios.post(
       cloudFunctions.postUpdate,
       {
+        context,
         uri,
         position,
         playing,
@@ -167,7 +174,10 @@ export const publishUpdate = async (uri, position, playing, retries = 0) => {
       }
     }
     if (retries < 3) {
-      setTimeout(() => publishUpdate(uri, position, playing, retries + 1), 100);
+      setTimeout(
+        () => publishUpdate(context, uri, position, playing, retries + 1),
+        100
+      );
     } else {
       throw e;
     }
