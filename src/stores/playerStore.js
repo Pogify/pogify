@@ -19,7 +19,6 @@ const REDIRECT_URI = window.location.origin + "/auth";
  */
 export class PlayerStore {
   constructor(messenger) {
-    this.newTrackRetry = 0;
     this.messenger = messenger;
     this.disposeTimeAutorun = undefined;
     this.disposeVolumeAutorun = undefined;
@@ -239,7 +238,7 @@ export class PlayerStore {
    * @param {string} uri track uri
    * @param {number} pos_ms millisecond position
    */
-  newTrack = async (uri, pos_ms, playing) => {
+  newTrack = async (context, uri, pos_ms, playing) => {
     let t0 = Date.now();
     return promiseRetry(
       async (retry) => {
