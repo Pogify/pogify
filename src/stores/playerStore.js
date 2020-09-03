@@ -19,7 +19,6 @@ const REDIRECT_URI = window.location.origin + "/auth";
  */
 export class PlayerStore {
   constructor(messenger) {
-    this.newTrackRetry = 0;
     this.messenger = messenger;
     this.disposeTimeAutorun = undefined;
     this.disposeVolumeAutorun = undefined;
@@ -238,94 +237,93 @@ export class PlayerStore {
    *
    * @param {string} uri track uri
    * @param {number} pos_ms millisecond position
-   *
-   * @todo Refactor newTrack
    */
-  newTrack = async (uri, pos_ms, playing) => {
-    return new Promise(async (resolve, reject) => {
-      this.newTrackRetry++;
-      let t0 = Date.now();
-      try {
-        let res = await Axios.put(
-          `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-          {
-            uris: [uri],
-            position_ms: pos_ms,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.access_token}`,
+  newTrack = async (context, uri, pos_ms, playing) => {
+    let t0 = Date.now();
+    return promiseRetry(
+      async (retry) => {
+        try {
+          let res = await Axios.put(
+            `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+            {
+              uris: [uri],
+              position_ms: pos_ms,
             },
-          }
-        );
-        this.newTrackRetry = 0;
-        // update state after new track
-        await this.updateState();
-        autorun(async (r) => {
-          // check that player uri equal to the requested uri
-          if (this.uri === uri) {
-            // dispose autorun when is the same
-            r.dispose();
-            if (playing) {
-              // if the track should be playing then resume
-              await this.resume();
-            } else {
-              // if the track should be paused then pause after new track
-              await this.pause();
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${this.access_token}`,
+              },
             }
-            // once play/pause resolves resolve newTrack
-            resolve();
-          }
-        });
-
-        return res.data;
-      } catch (e) {
-        // TODO: More Robust Error Handling
-        // BODY Spotify throws more errors than whats handled here.
-        if (e.response) {
-          switch (e.response.status) {
-            case 429:
-              let retryAfter = (e.response.headers["retry-after"] || 1) * 1000;
-
-              setInterval(() => {
-                this.newTrack(uri, pos_ms + Date.now() - t0);
-              }, retryAfter);
-              return;
-            case 403:
-              let reason = e.response.data.reason;
-
-              switch (reason) {
-                case "RATE_LIMITED":
-                  modalStore.queue(
-                    <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
-                    2000
-                  );
-                  return;
-                case "NO_SPECIFIC_TRACK":
-                  modalStore.queue(
-                    <WarningModal
-                      title="Pogify was not able to play this track"
-                      content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
-                    />
-                  );
-                  return;
-                default:
+          );
+          await this.updateState();
+          return new Promise((resolve, reject) => {
+            autorun(async (r) => {
+              // check that player uri equal to the requested uri
+              if (this.uri === uri) {
+                // dispose autorun when is the same
+                r.dispose();
+                if (playing) {
+                  // if the track should be playing then resume
+                  await this.resume();
+                } else {
+                  // if the track should be paused then pause after new track
+                  await this.pause();
+                }
+                // once play/pause resolves resolve newTrack
+                resolve();
               }
-              break;
-            default:
-              modalStore.queue(
-                <WarningModal title="An unknown error occured on Spotify's end." />,
-                2000
-              );
+            });
+          });
+        } catch (e) {
+          // TODO: More Robust Error Handling
+          // BODY Spotify throws more errors than whats handled here.
+          if (e.response) {
+            switch (e.response.status) {
+              case 429:
+                let retryAfter =
+                  (e.response.headers["retry-after"] || 1) * 1000;
+
+                setInterval(() => {
+                  retry();
+                }, retryAfter);
+                return;
+              case 403:
+                let reason = e.response.data.reason;
+
+                switch (reason) {
+                  case "RATE_LIMITED":
+                    modalStore.queue(
+                      <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
+                      2000
+                    );
+                    return;
+                  case "NO_SPECIFIC_TRACK":
+                    modalStore.queue(
+                      <WarningModal
+                        title="Pogify was not able to play this track"
+                        content={`Host started a track: ${uri}, but Pogify was not able to play it on your account, probably due to your country's licencing limitations.`}
+                      />
+                    );
+                    return;
+                  default:
+                }
+                break;
+              default:
+                modalStore.queue(
+                  <WarningModal title="An unknown error occured on Spotify's end." />,
+                  2000
+                );
+            }
+            return retry();
           }
+          throw e;
         }
-        setTimeout(() => {
-          this.newTrack(uri, pos_ms + Date.now() - t0);
-        }, this.newTrackRetry ** 2 * 500);
-        console.error(e);
+      },
+      {
+        retries: 5,
       }
-    });
+    );
   };
 
   /**
