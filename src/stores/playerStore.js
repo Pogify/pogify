@@ -1,7 +1,8 @@
 import React from "react";
-import { extendObservable, action, runInAction, autorun } from "mobx";
+import { extendObservable, action, runInAction, autorun, computed } from "mobx";
 import promiseRetry from "promise-retry";
 import debounce from "lodash/debounce";
+import difference from "lodash/difference";
 import Axios from "axios";
 import crypto from "crypto";
 import * as Sentry from "@sentry/react";
@@ -48,6 +49,8 @@ export class PlayerStore {
       muted: false,
       // uri for current track
       uri: "",
+      // track window
+      track_window: [],
       // WebPlaybackState Object
       data: {},
       // Flag to display the "Login to Spotify" if needed
@@ -89,6 +92,18 @@ export class PlayerStore {
             if (this.uri !== uri) {
               this.uri = data.track_window.current_track.uri;
             }
+
+            let track_window = [
+              ...data.track_window.previous_tracks.map((e) => e.uri),
+              uri,
+              ...data.track_window.next_tracks.map((e) => e.uri),
+            ];
+
+            if (difference(track_window, this.track_window).length) {
+              this.track_window.replace(track_window);
+              console.log(track_window);
+            }
+
             // only update playing if changed
             if (this.playing === data.paused) {
               this.playing = !data.paused;
@@ -114,6 +129,10 @@ export class PlayerStore {
         }
       });
     }
+  });
+
+  trackOffset = computed(() => {
+    return this.track_window.indexOf(this.uri);
   });
 
   /**
