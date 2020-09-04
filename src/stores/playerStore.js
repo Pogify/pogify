@@ -263,7 +263,7 @@ export class PlayerStore {
     return promiseRetry(
       async (retry) => {
         try {
-          let res = await Axios.put(
+          await Axios.put(
             `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
             {
               // [uri] for backwards compatibility
@@ -271,7 +271,7 @@ export class PlayerStore {
               offset: {
                 uri: uri,
               },
-              position_ms: pos_ms,
+              position_ms: pos_ms + Date.now() - t0,
             },
             {
               headers: {
