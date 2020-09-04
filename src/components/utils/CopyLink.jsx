@@ -13,7 +13,7 @@ export default function CopyLink({ children, className, title, ...props }) {
     const linkTitle = typeof title !== "undefined" ? title : "Click to copy and share"
     const [tooltipState, setTooltipState] = useState(false);
     const [tooltipText, setTooltipText] = useState(linkTitle);
-    const linkRef = useRef(null);
+    // const linkRef = useRef(null);
     const copiedLink = () => {
         setTooltipText("Copied!");
     }
