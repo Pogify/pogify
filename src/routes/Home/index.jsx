@@ -31,7 +31,7 @@ export class Home extends React.Component {
         </p>
         <div className={styles.actionWrapper}>
           <Link to="/session" style={{textDecoration: "none"}}>
-            <div className={[styles.actionButton, styles.joinButton].join(' ')}>
+            <div className={`${styles.actionButton} ${styles.joinButton}`}>
               <div className={styles.actionIcon}>
                 <img src="headphones.svg" alt="" />
               </div>
@@ -39,7 +39,7 @@ export class Home extends React.Component {
               </div>
           </Link>
           <Link to="/create" style={{textDecoration: "none"}}>
-            <div className={[styles.actionButton, styles.hostButton].join(' ')}>
+            <div className={`${styles.actionButton} ${styles.hostButton}`}>
               <div className={styles.actionIcon}>
                 <img src="play.svg" alt="" />
               </div>
