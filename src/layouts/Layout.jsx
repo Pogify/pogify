@@ -36,10 +36,8 @@ function Layout(props) {
           <div className="onoffswitch">
             <input
               type="checkbox"
-              name="onoffswitch"
               className="onoffswitch-checkbox"
               id="myonoffswitch"
-              tabIndex="0"
               onChange={toggleTheme}
               checked={!darkMode}
             />
