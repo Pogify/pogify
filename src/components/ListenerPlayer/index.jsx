@@ -94,12 +94,7 @@ class ListenerPlayer extends React.Component {
                 this.state.strict &&
                 calcPos + 1000 < playerStore.data.duration
               ) {
-                await this.syncListener(
-                  undefined,
-                  hostUri,
-                  calcPos,
-                  hostPlaying
-                );
+                await this.syncListener(hostUri, calcPos, hostPlaying);
               }
             }
           );
@@ -184,7 +179,7 @@ class ListenerPlayer extends React.Component {
         },
         async () => {
           // must call in callback else causes race conditions
-          await this.syncListener(undefined, uri, calcPos, playing);
+          await this.syncListener(uri, calcPos, playing);
         }
       );
     };
@@ -244,14 +239,14 @@ class ListenerPlayer extends React.Component {
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
    */
-  async syncListener(context, uri, position, playing) {
+  async syncListener(uri, position, playing) {
     console.log("<<<< start sync");
     // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
     // so set flag here until play/pause/newTrack is all encapsulated in an action.
     this.syncing = true;
     console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
-      await playerStore.newTrack(undefined, uri, position, playing);
+      await playerStore.newTrack(uri, position, playing);
     } else {
       playerStore.seek(position);
       if (playing) {
