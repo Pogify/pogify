@@ -406,7 +406,7 @@ class ListenerPlayer extends React.Component {
     }
 
     return (
-      <Layout>
+      <Layout noBackground>
         <div className="flexContainer">
           <Player isHost={false} warn={!this.state.synced}>
             {/* <div>
