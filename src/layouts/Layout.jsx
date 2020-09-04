@@ -33,7 +33,13 @@ function Layout(props) {
         </Link>
         <div className="themeContainer">
           <p className="themeText">Theme</p>
-          <button className="themeSwitch" onClick={toggleTheme}></button>
+          <div class="onoffswitch">
+            <input type="checkbox" name="onoffswitch" className="onoffswitch-checkbox" id="myonoffswitch" tabIndex="0" onClick={toggleTheme} checked={darkMode ?  null:"true"}/>
+              <label class="onoffswitch-label" for="myonoffswitch">
+                  <span class="onoffswitch-inner"></span>
+                  <span class="onoffswitch-switch"><img style={{marginLeft:darkMode?"8px": "7px", marginTop:darkMode?"8px": "7px"}} src={darkMode ?"/moon.svg": "/sun.svg"}/></span>
+            </label>
+          </div>
         </div>
       </header>
       <div className={contentClass}>{props.children}</div>
