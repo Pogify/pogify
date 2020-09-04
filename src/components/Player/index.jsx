@@ -27,7 +27,7 @@ const TrackMetadata = observer(() => {
 
   return (
     <>
-      <img src={trackData.album.images[0].url} className={styles.albumArt} />
+      <img src={trackData.album.images[0].url} className={styles.albumArt} alt="" />
       <div className={styles.songInfo}>
         <span className={styles.infoBold}>
           <NewTabLink

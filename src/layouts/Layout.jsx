@@ -52,6 +52,7 @@ function Layout(props) {
                     marginTop: darkMode ? "8px" : "7px",
                   }}
                   src={darkMode ? "/moon.svg" : "/sun.svg"}
+                  alt=""
                 />
               </span>
             </label>
