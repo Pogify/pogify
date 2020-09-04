@@ -77,16 +77,16 @@ p {
 
 .content button {
   cursor: pointer;
-  /*padding: 0.75rem 2rem;*/
+  padding: 0.75rem 2rem;
   border-radius: 30px;
   cursor: pointer;
   transition: box-shadow 0.3s;
   border: none;
-  /*background-color: #72a1e5;*/
+  background-color: #72a1e5;
   outline: none;
   color: white;
   font-family: "Roboto", sans-serif;
-  /*font-size: 20px;*/
+  font-size: 20px;
 }
 
 .content button:hover {
