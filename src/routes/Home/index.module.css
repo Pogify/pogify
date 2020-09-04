@@ -2,12 +2,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 4.5rem;
+    height: 70px;
 }
 
 .pogifyLogoText {
     text-align: center;
-    font-size: 3.5rem;
+    font-size: 56px;
     font-weight: normal;
 }
 
@@ -19,7 +19,7 @@
 .pogifyCatchline {
     text-align: center;
     font-size: 1rem;
-    margin: 2rem 0;
+    margin: 40px 0;
 }
 
 .actionWrapper {
@@ -28,6 +28,60 @@
     width: 100%;
 }
 
-.donationButton {
+.actionIcon {
+    height: 60px;
+    width: 60px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.actionIcon > img {
+    width: 50%;
+}
+
+.actionButton {
+    background-color: red;
+    width: 180px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    border-radius: 30px;
+}
+
+.joinButton {
+    background: linear-gradient(90deg, #639AE9 0%, #247DFF 100%);
+    box-shadow: 0px 0px 10px 6px rgba(85, 145, 231, 0.25);
+}
+
+.hostButton {
+    background: linear-gradient(90deg, #0FBD7F 0%, #009962 100%);
+    box-shadow: 0px 0px 10px 6px rgba(15, 189, 127, 0.25);
+}
+
+.actionText {
+    color: white;
+    flex: 1;
+    margin-right: 15px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+
+.donations {
+    border-radius: 16px;
+    width: 500px;
+    height: 100px;
     margin-top: 2em;
+    background: #FFE8B3;
+    box-shadow: 0px 2px 15px -5px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.donations > p {
+    width: 300px;
 }
