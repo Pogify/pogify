@@ -297,3 +297,8 @@
 .shareLink:visited {
   color: white;
 }
+
+.connectSpotify {
+  margin-right: 165px;
+  line-height: 80px;
+}

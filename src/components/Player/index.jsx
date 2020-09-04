@@ -19,6 +19,9 @@ import styles from "./index.module.css";
 
 // Allow MobX to optimize data that does not change regularly
 const TrackMetadata = observer(() => {
+  if (!playerStore.data.track_window) {
+    return null;
+  }
   const trackData = playerStore.data.track_window.current_track;
 
   return (
@@ -94,23 +97,13 @@ const output = (vol) => {
  */
 export const Player = observer((props) => {
   // if playerStore doesn't have data then player not connected
-  if (!Object.keys(playerStore.data).length) {
-    return <div>Spotify not connected</div>;
-  }
 
   // deconstruct playerStore stuff
   const {
     volume,
     playing,
-    data: {
-      duration,
-      track_window: {
-        current_track: {
-          name,
-          album: { images },
-        },
-      },
-    },
+    data: { duration },
+    device_connected,
   } = playerStore;
 
   // set volume handler
@@ -134,42 +127,55 @@ export const Player = observer((props) => {
         </div>
       </div>
       <div className={styles.playerBar}>
-        {props.isHost && (
-          <div
-            className={styles.playButtonWrapper}
-            onClick={() => playerStore.togglePlay()}
-          >
-            {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+        {!device_connected && (
+          <div className={styles.connectSpotify}>
+            <button
+              onClick={() => playerStore.connectToPlayer(playerStore.device_id)}
+            >
+              Connect Spotify
+            </button>
           </div>
         )}
-        <div className={styles.seekContainer}>
-          {secondsToTimeFormat(playerStore.position / 1000)}
-          <CustomSlider
-            onChange={seek}
-            canChange={props.isHost}
-            min={0}
-            max={duration / 1000}
-            warn={props.warn}
-            value={playerStore.position / 1000}
-          />
-          {secondsToTimeFormat(duration / 1000)}
-        </div>
-        <div className={styles.volumeContainer}>
-          <FAI
-            icon={faVolumeMute}
-            className={styles.muteButton}
-            onClick={playerStore.setMute}
-          />
-          <CustomSlider
-            value={input(parseFloat(volume))}
-            onChange={setVolume}
-            min={-1}
-            max={1}
-            step={0.01}
-            canChange
-          />
-          <FAI icon={faVolumeUp} />
-        </div>
+        {device_connected && (
+          <>
+            {props.isHost && (
+              <div
+                className={styles.playButtonWrapper}
+                onClick={() => playerStore.togglePlay()}
+              >
+                {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+              </div>
+            )}
+            <div className={styles.seekContainer}>
+              {secondsToTimeFormat(playerStore.position / 1000)}
+              <CustomSlider
+                onChange={seek}
+                canChange={props.isHost}
+                min={0}
+                max={duration / 1000}
+                warn={props.warn}
+                value={playerStore.position / 1000}
+              />
+              {secondsToTimeFormat(duration / 1000)}
+            </div>
+            <div className={styles.volumeContainer}>
+              <FAI
+                icon={faVolumeMute}
+                className={styles.muteButton}
+                onClick={playerStore.setMute}
+              />
+              <CustomSlider
+                value={input(parseFloat(volume))}
+                onChange={setVolume}
+                min={-1}
+                max={1}
+                step={0.01}
+                canChange
+              />
+              <FAI icon={faVolumeUp} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
