@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
@@ -121,7 +122,9 @@ export const Player = observer((props) => {
       <div className={styles.playerInfoBar}>
         <TrackMetadata />
         <div className={styles.listenerInfo}>
-          <span className={styles.infoBold}>152</span>
+          <span className={styles.infoBold}>
+            {SessionManager.SessionCount.get()}
+          </span>
           <br />
           Listeners
         </div>
