@@ -12,18 +12,22 @@ import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
 import { showReportDialog } from "@sentry/react";
+import { reaction } from "mobx";
 
 /**
  * ListenerPlayer handles logic for listeners
  */
 class ListenerPlayer extends React.Component {
   eventListenerRetry = 0;
+  syncing = false;
   state = {
     device_id: "",
     loading: false,
     lastTimestamp: 0,
+    updateTimestamp: 0,
     subConnected: false,
     hostUri: "",
+    hostTrackWindow: [],
     hostConnected: false,
     hostPlaying: false,
     hostPosition: 0,
@@ -34,6 +38,8 @@ class ListenerPlayer extends React.Component {
     synced: true,
     parked: false,
     changeSongCallback: null,
+    // should always maintain sync toggle.
+    strict: true,
   };
 
   /**
@@ -44,73 +50,78 @@ class ListenerPlayer extends React.Component {
     this.setEventListener();
 
     // synchronization checker
-    playerStore.player.on("player_state_changed", (data) => {
-      // set synced to false
-      if (!data) {
-        return this.setState({
-          synced: false,
-        });
-      }
-
-      console.log("Spotify sent an update! (hoorray)", data);
-
-      const {
-        hostPosition,
-        hostUri,
-        hostPlaying,
-        hostConnected,
-        updateTimestamp,
-      } = this.state;
-
-      // don't update sync state if player parks.
-      // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
-      // if the player reaches end of track and stops playing but host is still playing then skip sync update.
-      // set parked flag
-      if (data.position > data.duration - 500) {
-        // console.log("parked");
-        return this.setState({
-          parked: true,
-        });
-      } else if (this.state.parked && data.position === 0 && data.paused) {
-        // console.log("still parked");
-        return;
-      }
-
-      this.setState({
-        parked: false,
-      });
-
-      // calculated position based on host timestamp, playing state and elapsed time.
-      let calcPos = hostPlaying
-        ? hostPosition + Date.now() - updateTimestamp
-        : hostPosition;
-
-      if (
-        hostConnected &&
-        (hostUri !== data.track_window.current_track.uri ||
-          hostPlaying !== !data.paused ||
-          Math.abs(calcPos - data.position) > 2000)
-      ) {
-        // console.log("not synced");
-        this.setState(
-          {
-            synced: false,
+    this.syncCheckDisposer = reaction(
+      // only listen for these changes
+      () => ({
+        uri: playerStore.uri,
+        diff: playerStore.diff,
+        playing: playerStore.playing,
+      }),
+      // if listener player changed compare to host player
+      ({ uri, playing }) => {
+        if (this.syncing) {
+          console.log("sync check blocked...");
+          return;
+        }
+        console.log("checking sync");
+        const {
+          hostUri,
+          hostPosition,
+          hostPlaying,
+          hostTrackWindow,
+          updateTimestamp,
+        } = this.state;
+        let calcPos = hostPlaying
+          ? hostPosition + Date.now() - updateTimestamp
+          : hostPosition;
+        if (
+          hostUri !== uri ||
+          Math.abs(calcPos - playerStore.position) > 1000 ||
+          hostPlaying !== playing
+        ) {
+          console.log("not synced");
+          this.setState(
+            {
+              synced: false,
+            },
+            async () => {
+              let calcPos = hostPlaying
+                ? hostPosition + Date.now() - updateTimestamp
+                : hostPosition;
+              // only update if player is in strict mode.
+              // only update if host is connected
+              // don't try and sync if host position goes past duration of the track
+              if (
+                this.state.hostConnected &&
+                this.state.strict &&
+                calcPos + 1000 < playerStore.data.duration
+              ) {
+                await this.syncListener(
+                  hostUri,
+                  calcPos,
+                  hostPlaying,
+                  hostTrackWindow
+                );
+              }
+            }
+          );
+        } else {
+          console.log("synced");
+          this.setState({
+            synced: true,
+          });
+        }
+      },
+      {
+        // only react if the listener player changed
+        equals: (a, b) => {
+          if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
+            return false;
           }
-          // () => this.syncListener(hostUri, calcPos, hostPlaying)
-        );
-      } else {
-        // console.log("synced");
-        this.setState({
-          synced: true,
-        });
+          return true;
+        },
       }
-      // playerStore.resyncPosition(data.position)
-      if (typeof this.state.changeSongCallback === "function") {
-        console.log("Executing changed song callback");
-        this.state.changeSongCallback();
-      }
-      this.setState({ changeSongCallback: null });
-    });
+    );
   };
 
   setEventListener = () => {
@@ -119,7 +130,10 @@ class ListenerPlayer extends React.Component {
         process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
       );
     } else {
-      this.eventListener = new WebSocket("ws://localhost/sub/" + this.props.sessionId)
+      // TODO: replace to nginx endpoint/ env var
+      this.eventListener = new WebSocket(
+        "ws://localhost/sub/" + this.props.sessionId
+      );
     }
 
     // update state on open
@@ -133,7 +147,13 @@ class ListenerPlayer extends React.Component {
     // message Handler
     this.eventListener.onmessage = async (event) => {
       console.log(event.data);
-      let { timestamp, uri, position, playing } = JSON.parse(event.data);
+      let {
+        timestamp,
+        uri,
+        position,
+        playing,
+        track_window: trackWindow,
+      } = JSON.parse(event.data);
       // if message timestamp is less than previously received timestamp it is stale. don't act on it
       if (this.state.lastTimestamp > timestamp) return;
 
@@ -164,6 +184,7 @@ class ListenerPlayer extends React.Component {
         {
           lastTimestamp: timestamp,
           hostUri: uri,
+          hostTrackWindow: trackWindow,
           hostPosition: calcPos,
           updateTimestamp: Date.now(),
           hostPlaying: playing,
@@ -172,7 +193,7 @@ class ListenerPlayer extends React.Component {
         },
         async () => {
           // must call in callback else causes race conditions
-          await this.syncListener(uri, calcPos, playing);
+          await this.syncListener(uri, calcPos, playing, trackWindow);
         }
       );
     };
@@ -232,44 +253,50 @@ class ListenerPlayer extends React.Component {
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
    */
-  async syncListener(uri, position, playing) {
+  async syncListener(uri, position, playing, trackWindow) {
+    console.log("<<<< start sync");
+    // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
+    // so set flag here until play/pause/newTrack is all encapsulated in an action.
+    this.syncing = true;
+    console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
-      await playerStore.newTrack(uri, position);
-      console.log(playing, position, playerStore.position.value);
-      // defer setting play/pause till after update
-      this.setState({
-        changeSongCallback: () => {
-          if (
-            playing &&
-            position > playerStore.position &&
-            playerStore.position > 0
-          ) {
-            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-            playerStore.resume(this.state.parked);
-          } else if (!playing) {
-            // if host pauses, pause
-            playerStore.pause(this.parked);
-          }
-        },
-      });
+      console.log(uri, "!==", playerStore.uri);
+      let indexOf = playerStore.track_window.indexOf(uri);
+
+      if (indexOf === -1) {
+        console.log("uri not in track window, fetching");
+        await playerStore.newTrack(uri, position, playing, trackWindow);
+      } else {
+        let offset = indexOf - playerStore.trackOffset;
+        if (offset !== 1) {
+          console.log(
+            "uri is in local track window but not next, skipping: ",
+            offset
+          );
+        } else {
+          console.log("uri is next in local track window, continuing");
+        }
+        await playerStore.skipTrack(offset);
+      }
     } else {
-      await playerStore.seek(position);
-      // defer setting play/pause till after update
-      this.setState({
-        changeSongCallback: () => {
-          if (playing) {
-            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-            playerStore.resume(this.state.parked);
-          } else if (!playing) {
-            // if host pauses, pause
-            playerStore.pause(this.state.parked);
-          }
-        },
-      });
+      playerStore.seek(position);
+      if (playing) {
+        await playerStore.resume();
+      } else {
+        console.log("in");
+        await playerStore.pause();
+        console.log("out");
+      }
     }
-    this.setState({
-      synced: true,
-    });
+    this.setState(
+      {
+        synced: true,
+      },
+      () => {
+        console.log(">>>> end sync");
+        this.syncing = false;
+      }
+    );
   }
 
   // syncOnClick = () => {
@@ -302,8 +329,10 @@ class ListenerPlayer extends React.Component {
     if (playerStore.player) {
       playerStore.player.disconnect();
     }
-    // dispose auto run
-    // this.forceUpdateAutorunDisposer();
+    // dispose sync check
+    if (typeof this.syncCheckDisposer === "function") {
+      this.syncCheckDisposer();
+    }
   }
 
   render() {
