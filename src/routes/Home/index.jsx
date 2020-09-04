@@ -30,14 +30,28 @@ export class Home extends React.Component {
           Listen to music with your live audience without getting DMCA-striked!
         </p>
         <div className={styles.actionWrapper}>
-          <Link to="/session">
-            <button>Join a Session</button>
+          <Link to="/session" style={{textDecoration: "none"}}>
+            <div className={[styles.actionButton, styles.joinButton].join(' ')}>
+              <div className={styles.actionIcon}>
+                <img src="headphones.svg" alt="" />
+              </div>
+              <span className={styles.actionText}>Join a Session</span>
+              </div>
           </Link>
-          <Link to="/create">
-            <button>Start a session</button>
+          <Link to="/create" style={{textDecoration: "none"}}>
+            <div className={[styles.actionButton, styles.hostButton].join(' ')}>
+              <div className={styles.actionIcon}>
+                <img src="play.svg" alt="" />
+              </div>
+              <span className={styles.actionText}>Host a session</span>
+            </div>
           </Link>
         </div>
-        <Donations className={styles.donationButton} />
+        <div className={styles.donations}>
+          <p>Do you like what we're doing? Help us out to keep our servers running! Even just one dollar will help.</p>
+          <Donations noText buttonStyle={{padding: "1rem"}}/>
+        </div>
+        
       </Layout>
     );
   }
