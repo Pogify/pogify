@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import NewTabLink from './NewTabLink';
 
 import styles from "./CopyLink.module.css";
-import { useRef } from 'react';
+// import { useRef } from 'react';
 
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
