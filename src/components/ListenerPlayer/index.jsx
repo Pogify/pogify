@@ -27,6 +27,7 @@ class ListenerPlayer extends React.Component {
     updateTimestamp: 0,
     subConnected: false,
     hostUri: "",
+    hostTrackWindow: [],
     hostConnected: false,
     hostPlaying: false,
     hostPosition: 0,
@@ -67,6 +68,7 @@ class ListenerPlayer extends React.Component {
           hostUri,
           hostPosition,
           hostPlaying,
+          hostTrackWindow,
           updateTimestamp,
         } = this.state;
         let calcPos = hostPlaying
@@ -94,7 +96,12 @@ class ListenerPlayer extends React.Component {
                 this.state.strict &&
                 calcPos + 1000 < playerStore.data.duration
               ) {
-                await this.syncListener(hostUri, calcPos, hostPlaying);
+                await this.syncListener(
+                  hostUri,
+                  calcPos,
+                  hostPlaying,
+                  hostTrackWindow
+                );
               }
             }
           );
@@ -140,7 +147,13 @@ class ListenerPlayer extends React.Component {
     // message Handler
     this.eventListener.onmessage = async (event) => {
       console.log(event.data);
-      let { timestamp, uri, position, playing } = JSON.parse(event.data);
+      let {
+        timestamp,
+        uri,
+        position,
+        playing,
+        track_window: trackWindow,
+      } = JSON.parse(event.data);
       // if message timestamp is less than previously received timestamp it is stale. don't act on it
       if (this.state.lastTimestamp > timestamp) return;
 
@@ -171,6 +184,7 @@ class ListenerPlayer extends React.Component {
         {
           lastTimestamp: timestamp,
           hostUri: uri,
+          hostTrackWindow: trackWindow,
           hostPosition: calcPos,
           updateTimestamp: Date.now(),
           hostPlaying: playing,
@@ -179,7 +193,7 @@ class ListenerPlayer extends React.Component {
         },
         async () => {
           // must call in callback else causes race conditions
-          await this.syncListener(uri, calcPos, playing);
+          await this.syncListener(uri, calcPos, playing, trackWindow);
         }
       );
     };
@@ -239,19 +253,30 @@ class ListenerPlayer extends React.Component {
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
    */
-  async syncListener(uri, position, playing) {
+  async syncListener(uri, position, playing, trackWindow) {
     console.log("<<<< start sync");
     // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
     // so set flag here until play/pause/newTrack is all encapsulated in an action.
     this.syncing = true;
     console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
+      console.log(uri, "!==", playerStore.uri);
       let indexOf = playerStore.track_window.indexOf(uri);
 
       if (indexOf === -1) {
-        await playerStore.newTrack(uri, position, playing);
+        console.log("uri not in track window, fetching");
+        await playerStore.newTrack(uri, position, playing, trackWindow);
       } else {
-        await playerStore.skipTrack(indexOf - this.trackOffset);
+        let offset = indexOf - playerStore.trackOffset;
+        if (offset !== 1) {
+          console.log(
+            "uri is in local track window but not next, skipping: ",
+            offset
+          );
+        } else {
+          console.log("uri is next in local track window, continuing");
+        }
+        await playerStore.skipTrack(offset);
       }
     } else {
       playerStore.seek(position);

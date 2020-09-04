@@ -67,7 +67,12 @@ class HostPlayer extends React.Component {
         diff: playerStore.diff,
       }),
       debounce(({ uri, playing }) => {
-        SessionManager.publishUpdate(uri, playerStore.position, playing);
+        SessionManager.publishUpdate(
+          uri,
+          playerStore.position,
+          playing,
+          playerStore.track_window
+        );
       }, 400),
       {
         equals: (a, b) => {
@@ -86,7 +91,12 @@ class HostPlayer extends React.Component {
 
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
-      SessionManager.publishUpdate("", playerStore.position.value, false);
+      SessionManager.publishUpdate(
+        "",
+        playerStore.position.value,
+        false,
+        playerStore.track_window
+      );
     };
     this.setState({ loading: false });
   };
@@ -128,7 +138,12 @@ class HostPlayer extends React.Component {
     if (playerStore.player) {
       // publish unload update when unmounting player
       if (playerStore.position !== undefined) {
-        await SessionManager.publishUpdate("", playerStore.position, false);
+        await SessionManager.publishUpdate(
+          "",
+          playerStore.position,
+          false,
+          playerStore.track_window
+        );
       }
       playerStore.disconnectPlayer();
     }

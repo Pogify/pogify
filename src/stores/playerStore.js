@@ -99,9 +99,9 @@ export class PlayerStore {
               ...data.track_window.next_tracks.map((e) => e.uri),
             ];
 
+            // only update track window if it changed
             if (difference(track_window, this.track_window).length) {
               this.track_window.replace(track_window);
-              console.log(track_window);
             }
 
             // only update playing if changed
@@ -258,7 +258,7 @@ export class PlayerStore {
    * @param {string} uri track uri
    * @param {number} pos_ms millisecond position
    */
-  newTrack = async (uri, pos_ms, playing) => {
+  newTrack = async (uri, pos_ms, playing, track_window) => {
     let t0 = Date.now();
     return promiseRetry(
       async (retry) => {
@@ -266,7 +266,11 @@ export class PlayerStore {
           let res = await Axios.put(
             `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
             {
-              uris: [uri],
+              // [uri] for backwards compatibility
+              uris: track_window || [uri],
+              offset: {
+                uri: uri,
+              },
               position_ms: pos_ms,
             },
             {
