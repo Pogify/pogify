@@ -211,38 +211,35 @@ class HostPlayer extends React.Component {
           <div className={styles.titleBar}>
             <h1>Session</h1>
             <div className={styles.linkWrapper}>
-              <p>{window.location.href}</p>
-            </div>
-          </div>
-          
-          <div className={styles.player}>
-            <div className={styles.playerInfoBar}>
-            <img src="https://www.rhino.com/sites/rhino.com/files/styles/article_image/public/2019-06/a-ha%20Hunting%20High%20and%20Low_v1_current.jpg?itok=lDDbuYtL" className={styles.albumArt} />
-              <div className={styles.songInfo}>
-              
-                <span className={styles.infoBold}>Take on Me</span>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
                 <br />
-                a-ha • Hunting High and Low
-              </div>
-              <div className={styles.listenerInfo}>
-                <span className={styles.infoBold}>152</span>
-                <br />
-                Listeners
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
               </div>
             </div>
-            <div className={styles.playerBar}>
-            </div>
           </div>
-         
+
+          <Player isHost />
+
           <div className={styles.infoBar}>
             <div className={styles.info}>
-              <span className={styles.infoBold}>Please do not close this tab.</span>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
               <br />
-              You can continue using Spotify as you normally would. The music is playing through this browser tab, you
-              can open this tab in a new window to exclude it from OBS.
+              You can continue using Spotify as you normally would. The music is
+              playing through this browser tab, you can open this tab in a new
+              window to exclude it from OBS.
             </div>
             <div className={`${styles.donations} ${styles.info}`}>
-              Do you like what we're doing? Help us our with a donation to keep our dev servers running! Even just one dollar will help.
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
               <Donations noText />
             </div>
           </div>
@@ -257,17 +254,6 @@ class HostPlayer extends React.Component {
               <br></br>
               <b>Please do not close this tab.</b>
             </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink
-                href={window.location.href}
-                className={styles.shareLink}
-                title="Click to copy and share to your audience"
-              >
-                {window.location.href}
-              </CopyLink>
-            </div>
             <PoweredBySpotify />
             <Donations large />
           </div>*/}
