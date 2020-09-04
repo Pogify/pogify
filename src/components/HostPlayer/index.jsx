@@ -206,7 +206,7 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout>
+      <Layout noBackground>
         <div className="flexContainer">
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
