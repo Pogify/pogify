@@ -1,18 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Layout.css";
-import { observer } from "mobx-react"
+import { observer } from "mobx-react";
 import { themeStore } from "../stores";
 
-/** 
- * Default layout component. 
- * Center content view with footer 
+/**
+ * Default layout component.
+ * Center content view with footer
  */
 function Layout(props) {
-  let { theme/*, toggleTheme*/ } = themeStore
+  let { theme, toggleTheme } = themeStore;
 
   let contentClass = "content";
-  const darkMode = theme === "dark"
+  const darkMode = theme === "dark";
   if (darkMode) {
     contentClass += " darkContent";
   }
@@ -24,12 +24,16 @@ function Layout(props) {
     <div className="layout">
       <header className="header">
         <Link to="/" className="pogifyLogo">
-            <img alt="Pogify Logo" className="pogifyLogoImage" src="/logo192.png"></img>
-            <p className="pogifyLogoText">POGIFY</p>
+          <img
+            alt="Pogify Logo"
+            className="pogifyLogoImage"
+            src="/logo192.png"
+          ></img>
+          <p className="pogifyLogoText">POGIFY</p>
         </Link>
         <div className="themeContainer">
           <p className="themeText">Theme</p>
-          <button className="themeSwitch"></button>
+          <button className="themeSwitch" onClick={toggleTheme}></button>
         </div>
       </header>
       <div className={contentClass}>{props.children}</div>
@@ -39,11 +43,13 @@ function Layout(props) {
           <Link to="/privacy">Privacy Policy</Link>
           <a href="https://github.com/Pogify/pogify">GitHub</a>
         </div>
-        <p><a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB and is not affiliated with Pogify</p>
+        <p>
+          <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB
+          and is not affiliated with Pogify
+        </p>
       </footer>
     </div>
-
-  )
+  );
 }
 
-export default observer(Layout)
+export default observer(Layout);
