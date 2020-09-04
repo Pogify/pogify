@@ -23,10 +23,10 @@ function Layout(props) {
   return (
     <div className="layout">
       <header className="header">
-        <div className="pogifyLogo">
-          <img alt="Pogify Logo" className="pogifyLogoImage" src="/logo192.png"></img>
-          <p className="pogifyLogoText">POGIFY</p>
-        </div>
+        <Link to="/" className="pogifyLogo">
+            <img alt="Pogify Logo" className="pogifyLogoImage" src="/logo192.png"></img>
+            <p className="pogifyLogoText">POGIFY</p>
+        </Link>
         <div className="themeContainer">
           <p className="themeText">Theme</p>
           <button className="themeSwitch"></button>
