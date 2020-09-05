@@ -237,7 +237,7 @@ class HostPlayer extends React.Component {
               playing through this browser tab, you can open this tab in a new
               window to exclude it from OBS.
             </div>
-            <div className={`${styles.donations} ${styles.info}`}>
+            <div className={`${styles.donations} ${styles.info} donation-box `}>
               Do you like what we're doing? Help us our with a donation to keep
               our dev servers running! Even just one dollar will help.
               <Donations noText />
