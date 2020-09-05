@@ -212,11 +212,14 @@ class HostPlayer extends React.Component {
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
             <p className="textAlignLeft">
-              You can continue using Spotify as you normally would. The music is
-              playing through this browser tab, you can open this tab in a new
-              window to exclude it from OBS.
+              "Pogify Host" should appear in your "Devices Available" list in Spotify.
+              Once you select Pogify as your playback device on Spotify, make sure to
+              mute this window in your streaming software.
               <br></br>
-              <b>Please do not close this tab.</b>
+              <b>
+                Please do not close this window.
+                Doing so will disconnect you from the session.
+              </b>
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:

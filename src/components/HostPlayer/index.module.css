@@ -7,9 +7,9 @@
     margin-top: 40px;
 }
 
-.shareLink {
-    color: white;
+not(.darkContent) .shareLink{
+    color: black;
 }
-.shareLink:visited {
-    color: white;
+not(.darkContent) .shareLink:visited {
+    color: black;
 }
