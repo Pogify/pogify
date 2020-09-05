@@ -19,7 +19,7 @@
 .pogifyCatchline {
     text-align: center;
     font-size: 1rem;
-    margin: 40px 0;
+    margin: 2em 0;
 }
 
 .actionWrapper {
@@ -48,16 +48,25 @@
     display: flex;
     align-items: center;
     border-radius: 30px;
+    transition: box-shadow 0.3s;
 }
 
 .joinButton {
     background: linear-gradient(90deg, #639AE9 0%, #247DFF 100%);
-    box-shadow: 0px 0px 10px 6px rgba(85, 145, 231, 0.25);
+    box-shadow: 0px 0px 9px 6px rgba(85, 145, 231, 0.25);
 }
 
 .hostButton {
     background: linear-gradient(90deg, #0FBD7F 0%, #009962 100%);
-    box-shadow: 0px 0px 10px 6px rgba(15, 189, 127, 0.25);
+    box-shadow: 0px 0px 9px 6px rgba(15, 189, 127, 0.25);
+}
+
+.joinButton:hover {
+    box-shadow: 0 9px 13px 0 rgba(85, 145, 231, 0.4), 0 17px 50px 0 rgba(85, 145, 231, 0.3);
+}
+
+.hostButton:hover {
+    box-shadow: 0 9px 13px 0 rgba(15, 189, 127, 0.4), 0 17px 50px 0 rgba(15, 189, 127, 0.3);
 }
 
 .actionText {
@@ -80,6 +89,10 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+}
+
+.donationsDarkTheme {
+    background: #CC8F00;
 }
 
 .donations > p {
