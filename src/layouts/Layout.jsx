@@ -42,7 +42,9 @@ function Layout(props) {
           </div>
         </div>
       </header>
+      <br/>
       <div className={contentClass}>{props.children}</div>
+      <br/>
       <footer className="footer">
         <div className="footer-links">
           <Link to="/tou">Terms of Use</Link>
