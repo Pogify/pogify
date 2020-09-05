@@ -33,18 +33,32 @@ function Layout(props) {
         </Link>
         <div className="themeContainer">
           <p className="themeText">Theme</p>
-          <div class="themeSwitchContainer">
-            <input type="checkbox" name="Theme Switch" id="themeSwitchCheckbox" className="themeSwitchCheckbox" tabIndex="0" onClick={toggleTheme} checked={darkMode ? null : "true"} />
-            <label class="themeSwitchLabel" for="themeSwitchCheckbox">
-              <span class="themeSwitchInner"></span>
-              <span class="themeSwitch"><img className={`themeSwitchIcon${darkMode ? 'Dark' : 'Light'}`} src={darkMode ? "/moon.svg" : "/sun.svg"} alt="" /></span>
+          <div className="themeSwitchContainer">
+            <input
+              type="checkbox"
+              name="Theme Switch"
+              id="themeSwitchCheckbox"
+              className="themeSwitchCheckbox"
+              tabIndex="0"
+              onChange={toggleTheme}
+              checked={!darkMode}
+            />
+            <label className="themeSwitchLabel" htmlFor="themeSwitchCheckbox">
+              <span className="themeSwitchInner"></span>
+              <span className="themeSwitch">
+                <img
+                  className={`themeSwitchIcon${darkMode ? "Dark" : "Light"}`}
+                  src={darkMode ? "/moon.svg" : "/sun.svg"}
+                  alt=""
+                />
+              </span>
             </label>
           </div>
         </div>
       </header>
-      <br/>
+      <br />
       <div className={contentClass}>{props.children}</div>
-      <br/>
+      <br />
       <footer className="footer">
         <div className="footerLinks">
           <Link to="/tou">Terms of Use</Link>
