@@ -55,7 +55,9 @@ export class ThemeStore {
     if (AvailableThemes.includes(theme)) {
       this.theme = theme;
       AvailableThemes.forEach(theme => document.documentElement.classList.remove("theme-" + theme))
-      document.documentElement.classList.add("theme-" + theme)
+      AvailableThemes.forEach(theme => document.body.classList.remove("theme-" + theme))
+      document.documentElement.classList.add("theme-" + theme);
+      document.body.classList.add("theme-" + theme);
     }
     // if theme not in available themes then do nothing
   });
