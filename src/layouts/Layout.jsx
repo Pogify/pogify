@@ -46,7 +46,7 @@ function Layout(props) {
       <div className={contentClass}>{props.children}</div>
       <br/>
       <footer className="footer">
-        <div className="footer-links">
+        <div className="footerLinks">
           <Link to="/tou">Terms of Use</Link>
           <Link to="/privacy">Privacy Policy</Link>
           <a href="https://github.com/Pogify/pogify">GitHub</a>
