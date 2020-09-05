@@ -407,9 +407,25 @@ class ListenerPlayer extends React.Component {
 
     return (
       <Layout noBackground>
-        <div className="flexContainer">
-          <Player isHost={false} warn={!this.state.synced}>
-            {/* <div>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
+            </div>
+          </div>
+          <Player isHost={false} warn={!this.state.synced} />
+          {/* <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
               {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
               {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
@@ -420,10 +436,26 @@ class ListenerPlayer extends React.Component {
                 </div>
               )}
             </div> */}
-          </Player>
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
+              Your playback is controlled by the host. If you play or pause on a different Spotify
+              client, you will be de-synchronised from the host. You will have to refresh to sync
+              again. This is a known problem and we are working on getting it fixed. If you want to
+              pause while staying in sync, please simply mute.
+            </div>
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <Donations noText />
+            </div>
+          </div>
 
-          <div className={`textAlignCenter ${styles.textWrapper}`}>
-            {/* <h2>Hosting to {this.state.connections} listeners.</h2> */}
+          {/*<div className={`textAlignCenter ${styles.textWrapperw}`}>
+            {/* <h2>Hosting to {this.state.connections} listeners.</h2>
             <h2>
               This is a <b>BETA</b> build of pogify.
             </h2>
@@ -436,10 +468,10 @@ class ListenerPlayer extends React.Component {
               again. This is a known problem and we are working on getting it
               fixed. If you want to pause while staying in sync please press{" "}
               <i>mute</i>.
-              {/*Pressing pause will pause
+              {Pressing pause will pause
               playback locally only. On resume, playback will be resynchronised
               with the host. Controlling Spotify will not work as long as you
-              are connected to "Pogify Listener". */}
+              are connected to "Pogify Listener".
             </p>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
@@ -450,7 +482,7 @@ class ListenerPlayer extends React.Component {
             </div>
             <PoweredBySpotify />
             <Donations large />
-          </div>
+              </div>*/}
         </div>
       </Layout>
     );
