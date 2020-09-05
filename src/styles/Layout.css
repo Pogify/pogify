@@ -102,9 +102,13 @@ p {
   box-shadow: 0 3px 7px 1pt rgba(0, 0, 0, 0.24);
 }
 
-.darkContent {
+.darkContent :not(.noTheme) {
   background-color: #252422;
   color: #FFFCF2;
+}
+
+.darkContent div :not(.noTheme) {
+  background-color: #252422;
 }
 
 .darkContent button {
@@ -124,13 +128,13 @@ p {
   color: white !important;
 }
 
-.footer-links {
+.footerLinks {
   width: 75%;
   display: flex;
   justify-content: space-between;
 }
 
-.footer-links a {
+.footerLinks a {
   font-weight: bold;
   text-decoration: none;
 }
