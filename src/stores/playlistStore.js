@@ -30,12 +30,8 @@ export class PlaylistStore {
   initClient = async () => {
     console.log("init");
     await window.gapi.client.init({
-      apiKey:
-        process.env.REACT_APP_GAPI_KEY ||
-        "AIzaSyAinhOijmpXDxJR-zgIfYXYkiXs0X2dmRk",
-      clientId:
-        process.env.REACT_APP_GAPI_CLIENT_ID ||
-        "444153529634-g6ha2c41cb6g97v1it7kbkgd36d0cpvm.apps.googleusercontent.com",
+      apiKey: process.env.REACT_APP_GAPI_KEY,
+      clientId: process.env.REACT_APP_GAPI_CLIENT_ID,
       scope: "https://www.googleapis.com/auth/youtube.readonly",
       discoveryDocs: [
         "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest",
