@@ -90,6 +90,10 @@
     align-items: center;
 }
 
+.donations {
+    color: black;
+}
+
 .donationsDarkTheme {
     background: #CC8F00;
 }
