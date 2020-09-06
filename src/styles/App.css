@@ -9,11 +9,3 @@ body {
   background: linear-gradient(0deg, #000000, #000000), linear-gradient(117deg, #9883E5 0%, #7F53AC 99.49%);
   background-blend-mode: soft-light, normal;
 }
-
-.donation-box {
-  background-color: #FFE8B3;
-}
-
-.theme-dark .donation-box {
-  background-color: #CC8F00;
-}
