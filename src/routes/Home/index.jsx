@@ -47,7 +47,7 @@ export class Home extends React.Component {
             </div>
           </Link>
         </div>
-        <div className={`${styles.donations} donation-box`}>
+        <div className={styles.donations}>
           <p>Do you like what we're doing? Help us out to keep our servers running! Even just one dollar will help.</p>
           <Donations noText buttonStyle={{padding: "1rem"}}/>
         </div>
