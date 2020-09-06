@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/Layout.css";
+import styles from "../styles/Layout.css";
 import { observer } from "mobx-react";
 import { themeStore } from "../stores";
 
@@ -11,43 +11,43 @@ import { themeStore } from "../stores";
 function Layout(props) {
   let { theme, toggleTheme } = themeStore;
 
-  let contentClass = "content";
+  let contentClass = `${styles.contentClass}`
   const darkMode = theme === "dark";
   if (darkMode) {
-    contentClass += " darkContent";
+    contentClass += ` ${styles.darkContent}`;
   }
   if (props.noBackground) {
-    contentClass += " noBackground";
+    contentClass += ` ${styles.noBackground}`;
   }
 
   return (
-    <div className="layout">
-      <header className="header">
-        <Link to="/" className="pogifyLogo">
+    <div className={styles.layout}>
+      <header className={styles.header}>
+        <Link to="/" className={styles.pogifyLogo}>
           <img
             alt="Pogify Logo"
             className="pogifyLogoImage"
             src="/logo192.png"
           ></img>
-          <p className="pogifyLogoText">POGIFY</p>
+          <p className={styles.pogifyLogoText}>POGIFY</p>
         </Link>
-        <div className="themeContainer">
-          <p className="themeText">Theme</p>
-          <div className="themeSwitchContainer">
+        <div className={styles.themeContainer}>
+          <p className={styles.themeText}>Theme</p>
+          <div className={styles.themeSwitchContainer}>
             <input
               type="checkbox"
               name="Theme Switch"
               id="themeSwitchCheckbox"
-              className="themeSwitchCheckbox"
+              className={styles.themeSwitchCheckbox}
               tabIndex="0"
               onChange={toggleTheme}
               checked={!darkMode}
             />
-            <label className="themeSwitchLabel" htmlFor="themeSwitchCheckbox">
-              <span className="themeSwitchInner"></span>
-              <span className="themeSwitch">
+            <label className={styles.themeSwitchLabel} htmlFor="themeSwitchCheckbox">
+              <span className={styles.themeSwitchInner}></span>
+              <span className={styles.themeSwitch}>
                 <img
-                  className={`themeSwitchIcon${darkMode ? "Dark" : "Light"}`}
+                  className={darkMode ? styles.themeSwitchIconDark : styles.themeSwitchIconLight}
                   src={darkMode ? "/moon.svg" : "/sun.svg"}
                   alt=""
                 />
@@ -59,8 +59,8 @@ function Layout(props) {
       <br />
       <div className={contentClass}>{props.children}</div>
       <br />
-      <footer className="footer">
-        <div className="footerLinks">
+      <footer className={styles.footer}>
+        <div className={styles.footerLinks}>
           <Link to="/tou">Terms of Use</Link>
           <Link to="/privacy">Privacy Policy</Link>
           <a href="https://github.com/Pogify/pogify">GitHub</a>
