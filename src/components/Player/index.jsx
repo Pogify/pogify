@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import { autorun } from "mobx";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
@@ -10,6 +11,7 @@ import {
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
 import "semantic-ui-css/components/progress.min.css";
+import YouTube from "react-youtube";
 
 import { Progress } from "semantic-ui-react";
 
@@ -30,16 +32,25 @@ const TrackMetadata = observer(() => {
       </div>
       <div>
         <h3 className={styles.titleContainer}>
-          <NewTabLink href={trackData.uri} className={`${styles.spotifyLink} ${styles.title}`}>
+          <NewTabLink
+            href={trackData.uri}
+            className={`${styles.spotifyLink} ${styles.title}`}
+          >
             {trackData.name}
           </NewTabLink>
         </h3>
-        <NewTabLink href={trackData.album.uri} className={`${styles.spotifyLink} ${styles.album}`}>
+        <NewTabLink
+          href={trackData.album.uri}
+          className={`${styles.spotifyLink} ${styles.album}`}
+        >
           {trackData.album.name}
         </NewTabLink>
         {trackData.artists.map(({ name, uri }, index) => (
           <React.Fragment key={uri}>
-            <NewTabLink href={uri} className={`${styles.spotifyLink} ${styles.artist}`} >
+            <NewTabLink
+              href={uri}
+              className={`${styles.spotifyLink} ${styles.artist}`}
+            >
               {name}
             </NewTabLink>
             {index !== trackData.artists.length - 1 && " / "}
@@ -86,17 +97,19 @@ const output = (vol) => {
  * Player component
  */
 export const Player = observer((props) => {
-  // if playerStore doesn't have data then player not connected
-  if (!Object.keys(playerStore.data).length) {
-    return <div>Spotify not connected</div>;
-  }
+  const [playing, setPlaying] = React.useState(false);
 
-  // deconstruct playerStore stuff
-  const {
-    volume,
-    playing,
-    data: { duration },
-  } = playerStore;
+  let player;
+  let duration = 0,
+    volume = 0;
+
+  // autorun(() => {
+  //   if (playerStore.playing) {
+  //     player.playVideo();
+  //   } else {
+  //     player.pauseVideo();
+  //   }
+  // });
 
   // set volume handler
   const setVolume = (e) => {
@@ -105,34 +118,55 @@ export const Player = observer((props) => {
 
   const seek = (e) => {
     if (props.isHost) {
-      playerStore.seek(e.target.value * 1000);
+      playerStore.seek(+e.target.value);
     }
+  };
+
+  const mouseDown = () => {
+    console.log("mouseDown");
+    playerStore.seeking = true;
+  };
+  const mouseUp = () => {
+    console.log("mouseUp");
+    playerStore.seeking = false;
   };
 
   return (
     <div className={styles.player}>
-      <TrackMetadata />
-      <div
-        className={styles.seekContainer}
-
-      >
-        {secondsToTimeFormat(playerStore.position / 1000)}
+      <YouTube
+        opts={{
+          width: "100%",
+          height: 145,
+          playerVars: {
+            controls: 0,
+          },
+        }}
+        onReady={playerStore.onYoutubeReady}
+        onStateChange={playerStore.handleEvents}
+      />
+      {/* <TrackMetadata /> */}
+      <div className={styles.seekContainer}>
+        {secondsToTimeFormat(playerStore.position)}
         <CustomSlider
           onChange={seek}
           canChange={props.isHost}
+          onMouseDown={mouseDown}
+          onMouseUp={mouseUp}
           min={0}
-          max={duration / 1000}
+          max={playerStore.duration}
           warn={props.warn}
-          value={playerStore.position / 1000}
+          value={playerStore.position}
         />
-        {secondsToTimeFormat(duration / 1000)}
+        {secondsToTimeFormat(playerStore.duration)}
       </div>
-      <div
-        className={styles.volumeContainer}
-      >
-        <FAI icon={faVolumeMute} className={styles.muteButton} onClick={playerStore.setMute} />
+      <div className={styles.volumeContainer}>
+        <FAI
+          icon={faVolumeMute}
+          className={styles.muteButton}
+          onClick={playerStore.setMute}
+        />
         <CustomSlider
-          value={input(parseFloat(volume))}
+          value={input(parseFloat(playerStore.volume))}
           onChange={setVolume}
           min={-1}
           max={1}
@@ -144,9 +178,9 @@ export const Player = observer((props) => {
       {props.isHost && (
         <div
           className={styles.playButtonWrapper}
-          onClick={() => playerStore.togglePlay()}
+          onClick={playerStore.togglePlay}
         >
-          {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+          {playerStore.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
         </div>
       )}
       {props.children}
@@ -155,8 +189,14 @@ export const Player = observer((props) => {
 });
 
 const CustomSlider = (props) => (
-  <div className={`${styles.progressBarContainer} ${props.canChange ? styles.canChange : ""}`}>
+  <div
+    className={`${styles.progressBarContainer} ${
+      props.canChange ? styles.canChange : ""
+    }`}
+  >
     <input
+      onMouseDown={props.onMouseDown}
+      onMouseUp={props.onMouseUp}
       type="range"
       name="position"
       id="position"
@@ -167,7 +207,9 @@ const CustomSlider = (props) => (
       max={props.max}
     />
     <Progress
-      className={`${styles.progressBar} ${props.warn ? styles.warn : ""} ${props.canChange ? styles.canChange : ""}`}
+      className={`${styles.progressBar} ${props.warn ? styles.warn : ""} ${
+        props.canChange ? styles.canChange : ""
+      }`}
       size="small"
       percent={((props.value - props.min) / (props.max - props.min)) * 100}
     />

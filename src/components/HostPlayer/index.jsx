@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { reaction } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
-import { playerStore } from "../../stores";
+import { playerStore, playlistStore } from "../../stores";
 
 import debounce from "lodash/debounce";
 
@@ -53,38 +53,27 @@ class HostPlayer extends React.Component {
       loading: true,
     });
 
-    const playerDeviceId = await playerStore.initializePlayer("Pogify Host");
-    playerStore.connectToPlayer(playerDeviceId).catch((err) => {
-      if (err.message !== "Bad refresh token") {
-        console.error(err);
-      }
-    });
-
     this.updateReactionDisposer = reaction(
-      (r) => ({
-        uri: playerStore.uri,
+      () => ({
+        videoId: playerStore.videoId,
         playing: playerStore.playing,
-        diff: playerStore.diff,
+        seeking: playerStore.seeking,
       }),
-      debounce(({ uri, playing }) => {
+      debounce(({ videoId, playing }) => {
         SessionManager.publishUpdate(
-          uri,
-          playerStore.position,
-          playing,
-          playerStore.track_window
+          videoId,
+          playerStore.position.value,
+          playing
         );
       }, 400),
       {
-        equals: (a, b) => {
-          if (
-            a.uri !== b.uri ||
-            // if document is hidden setInterval gets throttled to once per sec. raise difference threshold in that case
-            b.diff > (document.hidden ? 2000 : 1000) ||
-            a.playing !== b.playing
-          ) {
-            return false;
-          }
-          return true;
+        equals: () => {
+          return (
+            playerStore.ended ||
+            playerStore.unstarted ||
+            playerStore.buffering ||
+            playerStore.seeking
+          );
         },
       }
     );
@@ -101,35 +90,8 @@ class HostPlayer extends React.Component {
     this.setState({ loading: false });
   };
 
-  handleData = debounce(
-    (data) => {
-      // debounce incoming data.
-      let uri, position, playing;
-      if (data) {
-        uri = playerStore.uri;
-        position = data.position;
-        playing = !data.paused;
-        // check that uri or playing changed
-      } else {
-        uri = "";
-        position = playerStore.position;
-        playing = false;
-      }
-      SessionManager.publishUpdate(uri, position, playing);
-      this.lastUpdate = {
-        uri,
-        playing,
-        position,
-        time: Date.now(),
-      };
-      // it seems 400 is about a good sweet spot for debounce.
-      // Hesitant to raise it anymore because it would increase latency to listener
-    },
-    400,
-    { leading: true }
-  );
-
   componentDidMount() {
+    this.initializePlayer();
     // set the token refresh interval
     this.setTokenRefreshInterval();
   }
@@ -137,15 +99,7 @@ class HostPlayer extends React.Component {
   async componentWillUnmount() {
     if (playerStore.player) {
       // publish unload update when unmounting player
-      if (playerStore.position !== undefined) {
-        await SessionManager.publishUpdate(
-          "",
-          playerStore.position,
-          false,
-          playerStore.track_window
-        );
-      }
-      playerStore.disconnectPlayer();
+      await SessionManager.publishUpdate("", playerStore.position, false);
     }
     // remove onbeforeunload handler
     window.onbeforeunload = null;
@@ -166,44 +120,6 @@ class HostPlayer extends React.Component {
       );
     }
 
-    // check that there exists a refresh token
-    if (!window.localStorage.getItem("spotify:refresh_token")) {
-      return (
-        <Layout>
-          <div className="textAlignCenter">
-            <button onClick={this.initializePlayer}>Login with Spotify</button>
-            <p>
-              You'll be redirected to Spotify to login. After that, you'll
-              automatically be connected to your room.
-            </p>
-          </div>
-        </Layout>
-      );
-    }
-    // if the token is not valid, show the login screen
-    if (playerStore.needsRefreshToken) {
-      return (
-        <Layout>
-          <div className="textAlignCenter">
-            <button onClick={this.initializePlayer}>Login with Spotify</button>
-            <p>
-              You've been disconnected from Spotify. Click on the button to
-              login again.
-            </p>
-          </div>
-        </Layout>
-      );
-    }
-
-    // check that player is mounted in playerStore
-    if (!playerStore.player) {
-      return (
-        <Layout>
-          <button onClick={this.initializePlayer}>Start Session</button>
-        </Layout>
-      );
-    }
-
     // return <div>done</div>
     return (
       <Layout>
@@ -211,16 +127,7 @@ class HostPlayer extends React.Component {
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <p className="textAlignLeft">
-              "Pogify Host" should appear in your "Devices Available" list in Spotify.
-              Once you select Pogify as your playback device on Spotify, make sure to
-              mute this window in your streaming software.
-              <br></br>
-              <b>
-                Please do not close this window.
-                Doing so will disconnect you from the session.
-              </b>
-            </p>
+            <PlaylistList />
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
               <br />
@@ -232,7 +139,6 @@ class HostPlayer extends React.Component {
                 {window.location.href}
               </CopyLink>
             </div>
-            <PoweredBySpotify />
             <Donations large />
           </div>
         </div>
@@ -242,3 +148,51 @@ class HostPlayer extends React.Component {
 }
 
 export default observer(HostPlayer);
+
+class _PlaylistList extends React.Component {
+  state = {
+    videoId: "",
+  };
+  render() {
+    if (!playlistStore.signedIn && playlistStore.gapiInit) {
+      return (
+        <div>
+          not logged in
+          <button onClick={playlistStore.signIn}>Sign In</button>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            playerStore.newTrack(this.state.videoId, undefined, true);
+          }}
+        >
+          <input
+            type="text"
+            placeholder="video id"
+            onChange={(e) => {
+              this.setState({ videoId: e.target.value });
+            }}
+          />
+          <button type="submit">Load Video</button>
+        </form>
+        {/* <ul>
+          {playlistStore.playlists.map((item) => {
+            return (
+              <li key={item.item}>
+                <img src={item.snippet.thumbnails.default.url} alt="" />
+                {item.snippet.title}
+              </li>
+            );
+          })}
+        </ul> */}
+        {/* {JSON.stringify(playlistStore.playlists)} */}
+      </div>
+    );
+  }
+}
+const PlaylistList = observer(_PlaylistList);
