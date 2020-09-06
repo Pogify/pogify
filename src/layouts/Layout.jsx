@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/Layout.css";
+import styles from "./Layout.module.css";
 import { observer } from "mobx-react";
 import { themeStore } from "../stores";
 
@@ -11,7 +11,7 @@ import { themeStore } from "../stores";
 function Layout(props) {
   let { theme, toggleTheme } = themeStore;
 
-  let contentClass = `${styles.contentClass}`
+  let contentClass = `${styles.content}`
   const darkMode = theme === "dark";
   if (darkMode) {
     contentClass += ` ${styles.darkContent}`;
@@ -26,7 +26,7 @@ function Layout(props) {
         <Link to="/" className={styles.pogifyLogo}>
           <img
             alt="Pogify Logo"
-            className="pogifyLogoImage"
+            className={styles.pogifyLogoImage}
             src="/logo192.png"
           ></img>
           <p className={styles.pogifyLogoText}>POGIFY</p>
