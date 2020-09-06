@@ -7,6 +7,8 @@ export class PlaylistStore {
     extendObservable(this, {
       signedIn: false,
       playlists: [],
+      currentIdx: -1,
+      playlistItems: [],
       gapiInit: false,
     });
     let signedInAutorunDisposer = autorun(async (r) => {
@@ -54,5 +56,30 @@ export class PlaylistStore {
     this.googleAuth.signIn().then(() => {
       this.signedIn = true;
     });
+  };
+
+  loadPlaylist = async (playlistId) => {
+    let playlistItems = await window.gapi.client.youtube.playlistItems.list({
+      part: "snippet",
+      playlistId: playlistId,
+    });
+    console.log();
+    this.playlistItems = this.playlistItems.concat(playlistItems.result.items);
+  };
+
+  next = () => {
+    this.currentIdx++;
+    let ret = this.playlistItems[this.currentIdx];
+    console.log(ret);
+    return ret;
+  };
+
+  get current() {
+    return this.playlistItems[this.currentIdx];
+  }
+
+  previous = () => {
+    this.currentIdx--;
+    return this.playlistItems[this.currentIdx];
   };
 }

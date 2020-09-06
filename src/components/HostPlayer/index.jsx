@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { reaction } from "mobx";
+import { reaction, autorun } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
 import { playerStore, playlistStore } from "../../stores";
@@ -31,6 +31,7 @@ class HostPlayer extends React.Component {
   state = {
     loading: false,
     pso: undefined,
+    tab: "playlists",
   };
 
   /**
@@ -51,6 +52,16 @@ class HostPlayer extends React.Component {
   initializePlayer = async () => {
     this.setState({
       loading: true,
+    });
+
+    this.nextTrackDisposer = autorun(() => {
+      if (playerStore.ended) {
+        playerStore.newTrack(
+          playlistStore.next().snippet.resourceId.videoId,
+          0,
+          true
+        );
+      }
     });
 
     this.updateReactionDisposer = reaction(
@@ -105,12 +116,26 @@ class HostPlayer extends React.Component {
     window.onbeforeunload = null;
     if (typeof this.updateReactionDisposer === "function") {
       this.updateReactionDisposer();
+      this.nextTrackDisposer();
     }
     // clear refresh interval
     clearInterval(this.refreshInterval);
   }
 
   render() {
+    const Buttons = (
+      <div>
+        <button onClick={() => this.setState({ tab: "playlists" })}>
+          Playlists
+        </button>
+        <button onClick={() => this.setState({ tab: "playlistItems" })}>
+          playlistItems
+        </button>
+        <button onClick={() => this.setState({ tab: "current" })}>
+          now Playing
+        </button>
+      </div>
+    );
     // loading
     if (this.state.loading && this.state.pso) {
       return (
@@ -123,11 +148,39 @@ class HostPlayer extends React.Component {
     // return <div>done</div>
     return (
       <Layout>
+        {Buttons}
         <div className="flexContainer">
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <PlaylistList />
+            {this.state.tab === "playlists" && <PlaylistList />}
+            {this.state.tab === "playlistItems" && (
+              <pre style={{ textAlign: "left" }}>
+                {JSON.stringify(
+                  playlistStore.playlistItems.map((e) => {
+                    return playlistStore.current.snippet.title ===
+                      e.snippet.title
+                      ? "-> " + e.snippet.title
+                      : e.snippet.title;
+                  }),
+                  undefined,
+                  2
+                )}
+              </pre>
+            )}
+            {this.state.tab === "current" && (
+              <pre style={{ textAlign: "left" }}>
+                {JSON.stringify(
+                  playlistStore.current.snippet.title,
+                  undefined,
+                  2
+                )}
+              </pre>
+            )}
+            <div>
+              <button onClick={() => playerStore.previous()}>Previous</button>
+              <button onClick={() => playerStore.next()}>Next</button>
+            </div>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
               <br />
@@ -144,6 +197,15 @@ class HostPlayer extends React.Component {
         </div>
       </Layout>
     );
+
+    if (this.state.tab === "playlistItems") {
+      return (
+        <div>
+          {Buttons}
+          {JSON.stringify(playlistStore.playlistItems)}
+        </div>
+      );
+    }
   }
 }
 
@@ -180,17 +242,23 @@ class _PlaylistList extends React.Component {
           />
           <button type="submit">Load Video</button>
         </form>
-        {/* <ul>
-          {playlistStore.playlists.map((item) => {
-            return (
-              <li key={item.item}>
-                <img src={item.snippet.thumbnails.default.url} alt="" />
-                {item.snippet.title}
-              </li>
-            );
-          })}
-        </ul> */}
-        {/* {JSON.stringify(playlistStore.playlists)} */}
+        <div style={{ height: 300, overflow: "auto" }}>
+          <div>
+            {playlistStore.playlists.map((item) => {
+              return (
+                <div
+                  key={item.item}
+                  onClick={(e) => {
+                    playlistStore.loadPlaylist(item.id);
+                  }}
+                >
+                  <img src={item.snippet.thumbnails.default.url} alt="" />
+                  {item.snippet.title}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     );
   }

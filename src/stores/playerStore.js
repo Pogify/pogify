@@ -7,7 +7,7 @@ import Axios from "axios";
 import crypto from "crypto";
 import * as Sentry from "@sentry/react";
 
-import { modalStore } from ".";
+import { modalStore, playlistStore } from ".";
 import WarningModal from "../modals/WarningModal";
 import ErrorModal from "../modals/ErrorModal";
 import { fromPromise, now } from "mobx-utils";
@@ -69,6 +69,7 @@ export class PlayerStore {
   });
 
   handleEvents = action(({ target, data, initialVol }) => {
+    console.log(data);
     this.player = target;
 
     this.playing = data === 1;
@@ -77,6 +78,8 @@ export class PlayerStore {
     this.buffering = data === 3;
     this.videoCued = data === 5;
     this.duration = target.getDuration();
+
+    console.log(this.ended, "a");
 
     let videoUrl = target.getVideoUrl();
 
@@ -95,14 +98,20 @@ export class PlayerStore {
   togglePlay = () => {
     console.log(this.player);
     if (this.player && this.playing) {
-      this.player.pauseVideo();
+      this.pause();
     } else if (this.player) {
-      this.player.playVideo();
+      this.resume();
     }
   };
 
   resume = () => {
-    this.player.playVideo();
+    console.log(this.videoId);
+    if (this.videoId === null) {
+      console.log(playlistStore.playlistItems);
+      this.newTrack(playlistStore.next().snippet.resourceId.videoId, 0, true);
+    } else {
+      this.player.playVideo();
+    }
   };
 
   pause = () => {
@@ -137,5 +146,21 @@ export class PlayerStore {
         this.player.cueVideoById(videoId, pos);
       }
     }
+  };
+
+  next = () => {
+    this.newTrack(
+      playlistStore.next().snippet.resourceId.videoId,
+      undefined,
+      true
+    );
+  };
+
+  previous = () => {
+    this.newTrack(
+      playlistStore.previous().snippet.resourceId.videoId,
+      undefined,
+      true
+    );
   };
 }
