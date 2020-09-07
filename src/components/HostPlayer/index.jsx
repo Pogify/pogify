@@ -148,11 +148,11 @@ class HostPlayer extends React.Component {
     // return <div>done</div>
     return (
       <Layout>
-        {Buttons}
         <div className="flexContainer">
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
+            {Buttons}
             {this.state.tab === "playlists" && <PlaylistList />}
             {this.state.tab === "playlistItems" && (
               <pre style={{ textAlign: "left" }}>
@@ -247,7 +247,7 @@ class _PlaylistList extends React.Component {
             {playlistStore.playlists.map((item) => {
               return (
                 <div
-                  key={item.item}
+                  key={item.Id}
                   onClick={(e) => {
                     playlistStore.loadPlaylist(item.id);
                   }}
