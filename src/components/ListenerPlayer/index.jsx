@@ -235,6 +235,7 @@ class ListenerPlayer extends React.Component {
     const playerDeviceId = await playerStore.initializePlayer(
       "Pogify Listener"
     );
+    this.spotifyWindow = window.open(undefined, "spotifyWindow");
     await playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
         console.error(err);
@@ -260,24 +261,29 @@ class ListenerPlayer extends React.Component {
     this.syncing = true;
     console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
+      await playerStore.pause();
       console.log(uri, "!==", playerStore.uri);
       let indexOf = playerStore.track_window.indexOf(uri);
 
-      if (indexOf === -1) {
-        console.log("uri not in track window, fetching");
-        await playerStore.newTrack(uri, position, playing, trackWindow);
-      } else {
-        let offset = indexOf - playerStore.trackOffset;
-        if (offset !== 1) {
-          console.log(
-            "uri is in local track window but not next, skipping: ",
-            offset
-          );
-        } else {
-          console.log("uri is next in local track window, continuing");
-        }
-        await playerStore.skipTrack(offset);
-      }
+      this.spoitfyWindow = window.open(
+        "https://open.spotify.com/track/" + uri.split(":")[2],
+        "spotifyWindow"
+      );
+      await playerStore.newTrack(uri, position, playing, trackWindow);
+      // if (indexOf === -1) {
+      //   console.log("uri not in track window, fetching");
+      // } else {
+      //   let offset = indexOf - playerStore.trackOffset;
+      //   if (offset !== 1) {
+      //     console.log(
+      //       "uri is in local track window but not next, skipping: ",
+      //       offset
+      //     );
+      //   } else {
+      //     console.log("uri is next in local track window, continuing");
+      //   }
+      //   await playerStore.skipTrack(offset);
+      // }
     } else {
       playerStore.seek(position);
       if (playing) {

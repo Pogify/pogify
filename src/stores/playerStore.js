@@ -263,23 +263,23 @@ export class PlayerStore {
     return promiseRetry(
       async (retry) => {
         try {
-          await Axios.put(
-            `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-            {
-              // [uri] for backwards compatibility
-              uris: track_window || [uri],
-              offset: {
-                uri: uri,
-              },
-              position_ms: playing ? pos_ms + Date.now() - t0 : pos_ms,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.access_token}`,
-              },
-            }
-          );
+          // await Axios.put(
+          //   `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+          //   {
+          //     // [uri] for backwards compatibility
+          //     uris: track_window || [uri],
+          //     offset: {
+          //       uri: uri,
+          //     },
+          //     position_ms: playing ? pos_ms + Date.now() - t0 : pos_ms,
+          //   },
+          //   {
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //       Authorization: `Bearer ${this.access_token}`,
+          //     },
+          //   }
+          // );
           await this.updateState();
           return new Promise((resolve, reject) => {
             autorun(async (r) => {
