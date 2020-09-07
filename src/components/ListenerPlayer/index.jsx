@@ -265,10 +265,9 @@ class ListenerPlayer extends React.Component {
       console.log(uri, "!==", playerStore.uri);
       let indexOf = playerStore.track_window.indexOf(uri);
 
-      this.spoitfyWindow = window.open(
-        "https://open.spotify.com/track/" + uri.split(":")[2],
-        "spotifyWindow"
-      );
+      this.spotifyWindow.location =
+        "https://open.spotify.com/track/" + uri.split(":")[2];
+
       await playerStore.newTrack(uri, position, playing, trackWindow);
       // if (indexOf === -1) {
       //   console.log("uri not in track window, fetching");
@@ -389,10 +388,11 @@ class ListenerPlayer extends React.Component {
           </div>
           <button
             onClick={() => {
+              window.name = "pogifyMain";
               this.spotifyWindow = window.open(
                 "/popunder",
-                "spotifyWindow",
-                "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
+                "spotifyWindow"
+                // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
               );
               this.setState({
                 hasSpotifyWindow: true,
