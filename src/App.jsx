@@ -43,7 +43,8 @@ function Popunder() {
       <div>Please keep this tab open</div>
       <button
         onClick={() => {
-          let opener = window.open("", window.opener.name);
+          document.title = "Keep this tab open || Pogify";
+          window.open("", window.opener.name);
           window.opener.external.returned();
         }}
       >

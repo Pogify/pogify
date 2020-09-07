@@ -330,6 +330,10 @@ class ListenerPlayer extends React.Component {
     if (this.eventListener) {
       this.eventListener.close();
     }
+    if (this.openInterval) {
+      clearInterval(this.openInterval);
+    }
+
     // disconnect current player
     if (playerStore.player) {
       playerStore.player.disconnect();
@@ -394,8 +398,18 @@ class ListenerPlayer extends React.Component {
                 "spotifyWindow"
                 // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
               );
+              this.openInterval = setInterval(() => {
+                if (this.spotifyWindow.closed) {
+                  this.setState({
+                    hasSpotifyWindow: false,
+                  });
+                }
+              }, 1000);
+
               window.external.returned = () => {
-                this.connect();
+                if (!this.state.spotConnected) {
+                  this.connect();
+                }
                 delete window.external.returned;
               };
               this.setState({
