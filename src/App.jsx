@@ -15,6 +15,7 @@ import { Privacy } from "./routes/Privacy";
 import { ModalSystem } from "./modals";
 
 import "./styles/App.css";
+import { Layout } from "./layouts";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/session" component={ConnectToSession} exact />
         <Route path="/privacy" component={Privacy} />
         <Route path="/tou" component={Terms} />
+        <Route path="/popunder" component={Popunder} />
         <Route path="/" component={FourOhFour} />
       </Switch>
       <ModalSystem />
@@ -34,3 +36,18 @@ function App() {
   );
 }
 export default App;
+
+function Popunder() {
+  return (
+    <Layout>
+      <div>Please keep this tab open</div>
+      <button
+        onClick={() => {
+          window.open().close();
+        }}
+      >
+        Return to Pogify
+      </button>
+    </Layout>
+  );
+}
