@@ -58,6 +58,7 @@ export class PlaylistStore {
     let playlistItems = await window.gapi.client.youtube.playlistItems.list({
       part: "snippet",
       playlistId: playlistId,
+      maxResults: 25,
     });
     console.log();
     this.playlistItems = this.playlistItems.concat(playlistItems.result.items);
