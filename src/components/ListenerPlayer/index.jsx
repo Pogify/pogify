@@ -383,8 +383,8 @@ class ListenerPlayer extends React.Component {
         <Layout>
           <div>
             Pogify uses a workaround to be able to scale to thousands of
-            listeners. It requires that you have a background tab with{" "}
-            <u>open.spotify.com</u> open. Click below to open the background tab
+            listeners. It requires that you have a background tab open. Click
+            below to open the background tab
           </div>
           <button
             onClick={() => {
@@ -394,6 +394,10 @@ class ListenerPlayer extends React.Component {
                 "spotifyWindow"
                 // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
               );
+              window.external.returned = () => {
+                this.connect();
+                delete window.external.returned;
+              };
               this.setState({
                 hasSpotifyWindow: true,
               });

@@ -44,7 +44,7 @@ function Popunder() {
       <button
         onClick={() => {
           let opener = window.open("", window.opener.name);
-          opener.focus();
+          window.opener.external.returned();
         }}
       >
         Return to Pogify
