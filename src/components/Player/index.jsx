@@ -90,6 +90,7 @@ export const Player = observer((props) => {
   if (!Object.keys(playerStore.data).length) {
     return (<div className={styles.notConnectedMessage}>
       Spotify not connected{
+        props.listenerPlayer != null &&
         props.listenerPlayer.state.spotifyFree && (
           <React.Fragment>
             <br />Using a non-premium account
