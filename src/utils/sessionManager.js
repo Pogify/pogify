@@ -127,19 +127,20 @@ export const createSession = () => {
   });
 };
 
-export const publishUpdate = (videoId, position, playing) => {
+export const publishUpdate = (videoId, position, playing, queue) => {
   if (!FBAuth) initializeApp();
 
   return promiseRetry(async (retry) => {
     try {
       let user = await FBAuth.signInAnonymously();
-      console.log("publishUpdate", videoId, position, playing);
+      console.log("publishUpdate", videoId, position, playing, queue);
       let res = await axios.post(
         cloudFunctions.postUpdate,
         {
           videoId,
           position,
           playing,
+          queue,
           timestamp: Date.now(),
         },
         {

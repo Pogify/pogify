@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { reaction, autorun } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
-import { playerStore, playlistStore } from "../../stores";
+import { playerStore, playlistStore, queueStore } from "../../stores";
 
 import debounce from "lodash/debounce";
 
@@ -56,8 +56,8 @@ class HostPlayer extends React.Component {
 
     this.nextTrackDisposer = autorun(() => {
       if (playerStore.ended) {
-        playerStore.newTrack(
-          playlistStore.next().snippet.resourceId.videoId,
+        playerStore.newVideo(
+          playlistStore.nextVideo().snippet.resourceId.videoId,
           0,
           true
         );
@@ -71,10 +71,20 @@ class HostPlayer extends React.Component {
         seeking: playerStore.seeking,
       }),
       debounce(({ videoId, playing }) => {
+        let { queue, currentIndex } = queueStore;
+        let queueSlice = (currentIndex
+          ? [queue[currentIndex - 1].snippet]
+          : []
+        ).concat(
+          queue
+            .slice(currentIndex, currentIndex + 5)
+            .map((item) => item.snippet)
+        );
         SessionManager.publishUpdate(
           videoId,
           playerStore.position.value,
-          playing
+          playing,
+          queueSlice
         );
       }, 400),
       {
@@ -128,8 +138,8 @@ class HostPlayer extends React.Component {
         <button onClick={() => this.setState({ tab: "playlists" })}>
           Playlists
         </button>
-        <button onClick={() => this.setState({ tab: "playlistItems" })}>
-          playlistItems
+        <button onClick={() => this.setState({ tab: "queueItems" })}>
+          queueItems
         </button>
         <button onClick={() => this.setState({ tab: "current" })}>
           now Playing
@@ -154,12 +164,11 @@ class HostPlayer extends React.Component {
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
             {Buttons}
             {this.state.tab === "playlists" && <PlaylistList />}
-            {this.state.tab === "playlistItems" && (
+            {this.state.tab === "queueItems" && (
               <pre style={{ textAlign: "left" }}>
                 {JSON.stringify(
-                  playlistStore.playlistItems.map((e) => {
-                    return playlistStore.current.snippet.title ===
-                      e.snippet.title
+                  queueStore.queue.map((e) => {
+                    return queueStore.current.snippet.title === e.snippet.title
                       ? "-> " + e.snippet.title
                       : e.snippet.title;
                   }),
@@ -170,11 +179,7 @@ class HostPlayer extends React.Component {
             )}
             {this.state.tab === "current" && (
               <pre style={{ textAlign: "left" }}>
-                {JSON.stringify(
-                  playlistStore.current.snippet.title,
-                  undefined,
-                  2
-                )}
+                {JSON.stringify(queueStore.current.snippet.title, undefined, 2)}
               </pre>
             )}
             <div>
@@ -198,11 +203,11 @@ class HostPlayer extends React.Component {
       </Layout>
     );
 
-    if (this.state.tab === "playlistItems") {
+    if (this.state.tab === "queueItems") {
       return (
         <div>
           {Buttons}
-          {JSON.stringify(playlistStore.playlistItems)}
+          {JSON.stringify(playlistStore.queueItems)}
         </div>
       );
     }
@@ -230,7 +235,7 @@ class _PlaylistList extends React.Component {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            playerStore.newTrack(this.state.videoId, undefined, true);
+            playerStore.newVideo(this.state.videoId, undefined, true);
           }}
         >
           <input
@@ -249,7 +254,7 @@ class _PlaylistList extends React.Component {
                 <div
                   key={item.Id}
                   onClick={(e) => {
-                    playlistStore.loadPlaylist(item.id);
+                    playlistStore.addPlaylistToQueue(item.id);
                   }}
                 >
                   <img src={item.snippet.thumbnails.default.url} alt="" />

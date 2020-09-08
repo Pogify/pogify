@@ -246,7 +246,7 @@ class ListenerPlayer extends React.Component {
     this.syncing = true;
     console.log(playing, position, playerStore.position.value);
     if (videoId !== playerStore.videoId) {
-      await playerStore.newTrack(videoId, position, playing);
+      await playerStore.newVideo(videoId, position, playing);
     } else {
       playerStore.seek(position);
       if (playing) {

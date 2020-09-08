@@ -7,7 +7,7 @@ import Axios from "axios";
 import crypto from "crypto";
 import * as Sentry from "@sentry/react";
 
-import { modalStore, playlistStore } from ".";
+import { queueStore } from ".";
 import WarningModal from "../modals/WarningModal";
 import ErrorModal from "../modals/ErrorModal";
 import { fromPromise, now } from "mobx-utils";
@@ -24,7 +24,7 @@ export class PlayerStore {
     extendObservable(this, {
       player: null,
       youTubeReady: false,
-      videoId: "iDjQSdN_ig8",
+      videoId: null,
       playing: false,
       unstarted: false,
       ended: false,
@@ -79,8 +79,6 @@ export class PlayerStore {
     this.videoCued = data === 5;
     this.duration = target.getDuration();
 
-    console.log(this.ended, "a");
-
     let videoUrl = target.getVideoUrl();
 
     if (videoUrl) {
@@ -107,8 +105,13 @@ export class PlayerStore {
   resume = () => {
     console.log(this.videoId);
     if (this.videoId === null) {
-      console.log(playlistStore.playlistItems);
-      this.newTrack(playlistStore.next().snippet.resourceId.videoId, 0, true);
+      if (queueStore.currentVideo) {
+        this.newVideo(
+          queueStore.currentVideo.snippet.resourceId.videoId,
+          0,
+          true
+        );
+      }
     } else {
       this.player.playVideo();
     }
@@ -137,7 +140,7 @@ export class PlayerStore {
     }
   };
 
-  newTrack = (videoId, pos, play) => {
+  newVideo = (videoId, pos, play) => {
     console.log(videoId, pos, play);
     if (this.player) {
       if (play) {
@@ -149,18 +152,22 @@ export class PlayerStore {
   };
 
   next = () => {
-    this.newTrack(
-      playlistStore.next().snippet.resourceId.videoId,
+    this.newVideo(
+      queueStore.nextVideo().snippet.resourceId.videoId,
       undefined,
       true
     );
   };
 
   previous = () => {
-    this.newTrack(
-      playlistStore.previous().snippet.resourceId.videoId,
+    this.newVideo(
+      queueStore.previousVideo().snippet.resourceId.videoId,
       undefined,
       true
     );
+  };
+
+  cueQueue = () => {
+    this.newVideo(queueStore.currentVideo.snippet.resourceId.videoId, 0, false);
   };
 }

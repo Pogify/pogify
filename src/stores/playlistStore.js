@@ -1,27 +1,23 @@
-import { extendObservable, autorun } from "mobx";
+import { extendObservable, autorun, action, runInAction } from "mobx";
+import { playerStore, queueStore } from ".";
 
 export class PlaylistStore {
-  constructor(messenger) {
-    this.messenger = messenger;
+  constructor() {
     this.googleAuth = null;
     extendObservable(this, {
       signedIn: false,
       playlists: [],
-      currentIdx: -1,
-      playlistItems: [],
+      playlistsNextPageToken: "",
       gapiInit: false,
+      playlistCache: {},
     });
     let signedInAutorunDisposer = autorun(async (r) => {
       console.log("this.signedIn", this.signedIn);
       if (this.signedIn) {
         r.dispose();
-        const playlists = await window.gapi.client.youtube.playlists.list({
-          part: "snippet",
-          mine: "true",
-          maxResults: "25",
-        });
-        this.playlists.replace(playlists.result.items);
-        console.log(this.playlists);
+        this.getUserPlaylists();
+      } else {
+        this.playlists.replace([]);
       }
     });
     window.gapi.load("client:auth2", this.initClient);
@@ -54,29 +50,83 @@ export class PlaylistStore {
     });
   };
 
-  loadPlaylist = async (playlistId) => {
-    let playlistItems = await window.gapi.client.youtube.playlistItems.list({
+  addPlaylistToQueue = async (playlistId) => {
+    let playlistItems = await this.getPlaylistItems(playlistId);
+    console.log(playlistItems);
+    queueStore.addMultipleToQueue(playlistItems.items);
+  };
+
+  getPlaylistItems = async (playlistId, force) => {
+    if (this.playlistCache[playlistId] && !force) {
+      console.log("return cache");
+      return this.playlistCache[playlistId];
+    }
+    if (force) {
+      console.log("force getPlaylistItems");
+    }
+
+    let playlistItemsRes = await window.gapi.client.youtube.playlistItems.list({
+      playlistId,
+      maxResults: 50,
       part: "snippet",
-      playlistId: playlistId,
-      maxResults: 25,
     });
-    console.log();
-    this.playlistItems = this.playlistItems.concat(playlistItems.result.items);
+    this.playlistCache[playlistId] = {
+      items: playlistItemsRes.result.items,
+      nextPageToken: playlistItemsRes.result.nextPageToken,
+    };
+    return this.playlistCache[playlistId];
   };
 
-  next = () => {
-    this.currentIdx++;
-    let ret = this.playlistItems[this.currentIdx];
-    console.log(ret);
-    return ret;
+  hasNextPage = (playlistId) => {
+    return (
+      this.playlistCache[playlistId] &&
+      !this.playlistCache[playlistId].nextPageToken
+    );
   };
 
-  get current() {
-    return this.playlistItems[this.currentIdx];
-  }
+  getNextPage = action(async (playlistId) => {
+    if (!this.hasNextPage(playlistId)) return;
 
-  previous = () => {
-    this.currentIdx--;
-    return this.playlistItems[this.currentIdx];
-  };
+    let playlistItemsRes = await window.gapi.client.youtube.playlistItems.list({
+      playlistId,
+      maxResults: 50,
+      part: "snippet",
+      pageToken: this.playlistCache[playlistId].nextPageToken,
+    });
+    runInAction(() => {
+      this.playlistCache[playlistId].items = this.playlistCache[
+        playlistId
+      ].items.concat(playlistItemsRes.result.items);
+      this.playlistCache[playlistId].nextPageToken =
+        playlistItemsRes.result.nextPageToken;
+    });
+  });
+
+  getNextPlaylists = action(async () => {
+    if (!this.playlistsNextPageToken) return;
+    let nextPage = await window.gapi.client.youtube.playlists.items({
+      part: "snippet",
+      maxResults: 50,
+      pageToken: this.playlistsNextPageToken,
+    });
+
+    this.playlistsNextPageToken = nextPage.result.nextPageToken;
+    this.playlists = this.playlists.concat(nextPage.result.items);
+  });
+
+  getMixPlaylistFromVideo = action(async (videoId) => {
+    // this is a hack someone found. monitor for changes)
+    let mixPlaylist = await this.getPlaylistItems("RD" + videoId);
+  });
+
+  getUserPlaylists = action(async () => {
+    const playlists = await window.gapi.client.youtube.playlists.list({
+      part: "snippet",
+      mine: "true",
+      maxResults: "50",
+    });
+    this.playlists.replace(playlists.result.items);
+    this.playlistsNextPageToken = playlists.result.nextPageToken;
+    console.log(this.playlists);
+  });
 }
