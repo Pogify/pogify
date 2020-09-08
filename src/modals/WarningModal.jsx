@@ -14,7 +14,7 @@ export default function WarningModal(props) {
         <h3>{props.title}</h3>
         <p>{props.content}</p>
         <div>{props.children}</div>
-        <button onClick={props.closeModal}>Close</button>
+        <button onClick={props.closeModal}>{props.buttonMessage || "Close"}</button>
       </div>
     </div>
   );

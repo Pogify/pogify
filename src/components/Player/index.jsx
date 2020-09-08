@@ -88,7 +88,16 @@ const output = (vol) => {
 export const Player = observer((props) => {
   // if playerStore doesn't have data then player not connected
   if (!Object.keys(playerStore.data).length) {
-    return <div>Spotify not connected</div>;
+    return (<div className={styles.notConnectedMessage}>
+      Spotify not connected{
+        props.listenerPlayer.state.spotifyFree && (
+          <React.Fragment>
+            <br />Using a non-premium account
+            <br />Seeking and ad-free listening is not available
+          </React.Fragment>
+        )
+      }
+    </div>);
   }
 
   // deconstruct playerStore stuff

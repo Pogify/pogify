@@ -80,7 +80,9 @@
   cursor: pointer;
 }
 
-
+.notConnectedMessage {
+  text-align: center;
+}
 
 
 /* Progress bar */

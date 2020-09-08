@@ -11,7 +11,7 @@ import { themeStore } from "../stores";
 const Layout = ({ children }) => {
   let { theme/*, toggleTheme*/ } = themeStore
 
-  let contentClass = "content";
+  let contentClass = "content textAlignCenter";
   const darkMode = theme === "dark"
   if (darkMode) {
     contentClass += " darkContent";

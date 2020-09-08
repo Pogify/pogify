@@ -40,7 +40,7 @@ export default App;
 function Popunder() {
   return (
     <Layout>
-      <div>Please keep this tab open</div>
+      <div>Please keep this tab open!</div>
       <button
         onClick={() => {
           document.title = "Keep this tab open || Pogify";

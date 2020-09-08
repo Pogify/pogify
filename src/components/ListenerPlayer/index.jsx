@@ -41,6 +41,8 @@ class ListenerPlayer extends React.Component {
     // should always maintain sync toggle.
     strict: true,
     hasSpotifyWindow: false,
+    hasStandaloneSpotifyWindow: false,
+    spotifyFree: false
   };
 
   /**
@@ -229,12 +231,15 @@ class ListenerPlayer extends React.Component {
   /**
    * Initialize player as listener
    */
-  connect = async () => {
+  connect = async (ignoreTimeout = false) => {
     this.setState({ loading: true });
 
     // TODO: listener title based on session code?
     const playerDeviceId = await playerStore.initializePlayer(
-      "Pogify Listener"
+      "Pogify Listener",
+      true,
+      this,
+      ignoreTimeout
     );
     await playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
@@ -255,6 +260,10 @@ class ListenerPlayer extends React.Component {
    * @param {boolean} playing playing state
    */
   async syncListener(uri, position, playing, trackWindow) {
+    if (this.state.spotifyFree && !this.state.hasStandaloneSpotifyWindow) {
+      console.log("<<<< Window has not returned, not syncing");
+      return;
+    }
     console.log("<<<< start sync");
     // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
     // so set flag here until play/pause/newTrack is all encapsulated in an action.
@@ -388,7 +397,7 @@ class ListenerPlayer extends React.Component {
           <div>
             Pogify uses a workaround to be able to scale to thousands of
             listeners. It requires that you have a background tab open. Click
-            below to open the background tab
+            below to open the background tab.
           </div>
           <button
             onClick={() => {
@@ -398,10 +407,12 @@ class ListenerPlayer extends React.Component {
                 "spotifyWindow"
                 // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
               );
+              window.addEventListener("beforeunload", () => this.spotifyWindow.close());
               this.openInterval = setInterval(() => {
                 if (this.spotifyWindow.closed) {
                   this.setState({
                     hasSpotifyWindow: false,
+                    hasStandaloneSpotifyWindow: false
                   });
                 }
               }, 1000);
@@ -458,7 +469,7 @@ class ListenerPlayer extends React.Component {
     return (
       <Layout>
         <div className="flexContainer">
-          <Player isHost={false} warn={!this.state.synced}>
+          <Player isHost={false} warn={!this.state.synced} listenerPlayer={this}>
             {/* <div>
               {!this.state.hostPlaying && this.state.synced && "Paused by host"}
               {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
