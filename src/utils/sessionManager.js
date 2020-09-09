@@ -28,6 +28,7 @@ var cloudFunctions = {
   refreshToken: urlJoin(cloudFunctionBaseURL, "refreshToken"),
   startSession: urlJoin(cloudFunctionBaseURL, "startSession"),
   postUpdate: urlJoin(cloudFunctionBaseURL, "postUpdate"),
+  makeRequest: urlJoin(cloudFunctionBaseURL, "makeRequest"),
 };
 
 // lazy load firebase client sdk since only hosts need it
@@ -174,3 +175,32 @@ export const publishUpdate = (videoId, position, playing, queue) => {
     }
   });
 };
+
+export const makeRequest = (provider, token, request, session) => {
+  if (!FBAuth) initializeApp();
+
+  return promiseRetry(async (retry) => {
+    try {
+      return await axios.post(cloudFunctions.makeRequest, {
+        provider,
+        token,
+        request,
+        session,
+      });
+    } catch (e) {
+      if (e.response) {
+        switch (e.response.status) {
+          case 429:
+            throw e;
+          case 400:
+            throw e;
+          default:
+            retry(e);
+        }
+      } else {
+        throw e;
+      }
+    }
+  });
+};
+window.makeRequest = makeRequest;
