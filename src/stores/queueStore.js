@@ -22,6 +22,10 @@ export class QueueStore {
     }
   });
 
+  addNext = action((item) => {
+    this.queue.splice(1, 0, item);
+  });
+
   addMultipleToQueue = action((items) => {
     // add to queue
     this.queue = this.queue.concat(items);
@@ -53,5 +57,10 @@ export class QueueStore {
     let item = this.queue.splice(from, 1);
     // put it back in into the to index
     this.queue.splice(to, 0, item);
+  });
+
+  clearQueue = action(() => {
+    this.queue.clear();
+    this.currentIndex = 0;
   });
 }
