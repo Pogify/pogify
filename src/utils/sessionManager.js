@@ -34,7 +34,7 @@ var cloudFunctions = {
 // lazy load firebase client sdk since only hosts need it
 let FBAuth;
 function initializeApp() {
-  if (process.env.NODE_ENV !== "development" || true) {
+  if (process.env.NODE_ENV !== "development") {
     firebase.initializeApp(firebaseConfig);
     FBAuth = firebase.auth();
   } else {
