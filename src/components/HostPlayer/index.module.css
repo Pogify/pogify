@@ -76,3 +76,11 @@
 .shareLink:visited {
   color: white;
 }
+
+.donations {
+  background-color: #FFE8B3;
+}
+
+:global(.theme-dark) .donations {
+  background-color: #CC8F00;
+}

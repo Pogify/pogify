@@ -88,14 +88,15 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    background-color: #FFE8B3;
+}
+
+:global(.theme-dark) .donations {
+    background-color: #CC8F00;
 }
 
 .donations {
     color: black;
-}
-
-.donationsDarkTheme {
-    background: #CC8F00;
 }
 
 .donations > p {

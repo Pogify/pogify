@@ -447,7 +447,7 @@ class ListenerPlayer extends React.Component {
               again. This is a known problem and we are working on getting it fixed. If you want to
               pause while staying in sync, please simply mute.
             </div>
-            <div className={`donation-box ${styles.info}`}>
+            <div className={`${styles.donations} ${styles.info}`}>
               Do you like what we're doing? Help us our with a donation to keep
               our dev servers running! Even just one dollar will help.
               <Donations noText />
