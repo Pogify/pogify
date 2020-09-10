@@ -168,7 +168,8 @@ class HostPlayer extends React.Component {
               <pre style={{ textAlign: "left" }}>
                 {JSON.stringify(
                   queueStore.queue.map((e) => {
-                    return queueStore.current.snippet.title === e.snippet.title
+                    return queueStore.currentVideo.snippet.title ===
+                      e.snippet.title
                       ? "-> " + e.snippet.title
                       : e.snippet.title;
                   }),
