@@ -1,10 +1,10 @@
-import { extendObservable, action } from "mobx";
+import { extendObservable, action, computed } from "mobx";
 
 export class RequestStore {
   subscription = null;
   constructor() {
     extendObservable(this, {
-      requests: new Set(),
+      requests: {},
       requestsOpen: false,
     });
   }
@@ -20,9 +20,27 @@ export class RequestStore {
       console.error(e);
     });
     this.subscription.onmessage(({ data }) => {
-      this.requests.add(data);
+      this.addRequest(data.request);
     });
   };
+
+  addRequest = action((videoId) => {
+    if (this.requests[videoId]) {
+      this.requests[videoId]++;
+    } else {
+      this.requests[videoId] = 1;
+    }
+  });
+
+  requestsByMostRequested = computed(() => {
+    return Object.keys(this.requests).sort(
+      (a, b) => this.requests[a] - this.requests[b]
+    );
+  });
+
+  requestsByRecent = computed(() => {
+    return Object.keys(this.requests);
+  });
 
   unsubscribeToRequests = action(() => {
     if (this.subscription) {
