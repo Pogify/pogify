@@ -65,12 +65,7 @@ class HostPlayer extends React.Component {
     });
 
     this.updateReactionDisposer = reaction(
-      () => ({
-        videoId: playerStore.videoId,
-        playing: playerStore.playing,
-        seeking: playerStore.seeking,
-      }),
-      debounce(({ videoId, playing }) => {
+      () => {
         let { queue, currentIndex } = queueStore;
         let queueSlice = (currentIndex
           ? [queue[currentIndex - 1].snippet]
@@ -80,6 +75,15 @@ class HostPlayer extends React.Component {
             .slice(currentIndex, currentIndex + 5)
             .map((item) => item.snippet)
         );
+
+        return {
+          videoId: playerStore.videoId,
+          playing: playerStore.playing,
+          seeking: playerStore.seeking,
+          queueSlice,
+        };
+      },
+      debounce(({ videoId, playing, queueSlice }) => {
         SessionManager.publishUpdate(
           videoId,
           playerStore.position.value,
