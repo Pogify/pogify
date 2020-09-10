@@ -2,8 +2,6 @@ import React from "react";
 import { observer } from "mobx-react";
 import { playerStore, modalStore } from "../../stores";
 
-import YouTube from "react-youtube";
-
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
@@ -400,21 +398,3 @@ class ListenerPlayer extends React.Component {
 }
 
 export default observer(ListenerPlayer);
-
-class Yt extends React.Component {
-  onReady = ({ target }) => {
-    console.log("ready");
-    target.playVideo();
-    // target.seekTo(100);
-  };
-
-  render() {
-    return (
-      <YouTube
-        videoId="QIN5_tJRiyY"
-        onReady={this.onReady}
-        onStateChange={console.log}
-      />
-    );
-  }
-}

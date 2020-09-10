@@ -1,6 +1,5 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { autorun } from "mobx";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
@@ -97,20 +96,6 @@ const output = (vol) => {
  * Player component
  */
 export const Player = observer((props) => {
-  const [playing, setPlaying] = React.useState(false);
-
-  let player;
-  let duration = 0,
-    volume = 0;
-
-  // autorun(() => {
-  //   if (playerStore.playing) {
-  //     player.playVideo();
-  //   } else {
-  //     player.pauseVideo();
-  //   }
-  // });
-
   // set volume handler
   const setVolume = (e) => {
     playerStore.setVolume(output(parseFloat(e.target.value)));

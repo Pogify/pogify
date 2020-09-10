@@ -11,7 +11,6 @@ import debounce from "lodash/debounce";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -207,15 +206,6 @@ class HostPlayer extends React.Component {
         </div>
       </Layout>
     );
-
-    if (this.state.tab === "queueItems") {
-      return (
-        <div>
-          {Buttons}
-          {JSON.stringify(playlistStore.queueItems)}
-        </div>
-      );
-    }
   }
 }
 

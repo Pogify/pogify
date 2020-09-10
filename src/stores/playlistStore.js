@@ -12,7 +12,7 @@ export class PlaylistStore {
       playlistCache: {},
     });
 
-    let playlistGetterOnSigninAutorunDisposer = autorun((r) => {
+    this.playlistGetterOnSigninAutorunDisposer = autorun((r) => {
       if (gapiAuth.gapiSignedIn.get()) {
         r.dispose();
         this.getUserPlaylists();
@@ -22,7 +22,6 @@ export class PlaylistStore {
 
   addPlaylistToQueue = async (playlistId) => {
     let playlistItems = await this.getPlaylistItems(playlistId);
-    console.log(playlistItems);
     queueStore.addMultipleToQueue(playlistItems.items);
   };
 
@@ -85,7 +84,7 @@ export class PlaylistStore {
   });
 
   getMixPlaylistFromVideo = action(async (videoId) => {
-    // this is a hack someone found. monitor for changes)
+    // this is a hack someone found. monitor for changes
     let mixPlaylist = await this.getPlaylistItems("RD" + videoId);
   });
 

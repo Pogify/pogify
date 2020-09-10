@@ -1,19 +1,7 @@
-import React from "react";
-import { extendObservable, action, runInAction, autorun, computed } from "mobx";
-import promiseRetry from "promise-retry";
+import { extendObservable, action, runInAction, computed } from "mobx";
 import debounce from "lodash/debounce";
-import difference from "lodash/difference";
-import Axios from "axios";
-import crypto from "crypto";
-import * as Sentry from "@sentry/react";
 
 import { queueStore } from ".";
-import WarningModal from "../modals/WarningModal";
-import ErrorModal from "../modals/ErrorModal";
-import { fromPromise, now } from "mobx-utils";
-
-const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-const REDIRECT_URI = window.location.origin + "/auth";
 
 /**
  * PlayerStore manages state and logic for spotify playback sdk.
