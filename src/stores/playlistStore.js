@@ -1,54 +1,24 @@
 import { extendObservable, autorun, action, runInAction } from "mobx";
-import { playerStore, queueStore } from ".";
+import { queueStore } from ".";
+
+import * as gapiAuth from "../utils/gapiAuth";
 
 export class PlaylistStore {
   constructor() {
-    this.googleAuth = null;
     extendObservable(this, {
       signedIn: false,
       playlists: [],
       playlistsNextPageToken: "",
-      gapiInit: false,
       playlistCache: {},
     });
-    let signedInAutorunDisposer = autorun(async (r) => {
-      console.log("this.signedIn", this.signedIn);
-      if (this.signedIn) {
+
+    let playlistGetterOnSigninAutorunDisposer = autorun((r) => {
+      if (gapiAuth.gapiSignedIn.get()) {
         r.dispose();
         this.getUserPlaylists();
-      } else {
-        this.playlists.replace([]);
       }
     });
-    window.gapi.load("client:auth2", this.initClient);
   }
-
-  initClient = async () => {
-    console.log("init");
-    await window.gapi.client.init({
-      apiKey: process.env.REACT_APP_GAPI_KEY,
-      clientId: process.env.REACT_APP_GAPI_CLIENT_ID,
-      scope: "https://www.googleapis.com/auth/youtube.readonly",
-      discoveryDocs: [
-        "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest",
-      ],
-    });
-    this.googleAuth = window.gapi.auth2.getAuthInstance();
-    this.signedIn = this.googleAuth.isSignedIn.get();
-    this.googleAuth.isSignedIn.listen((isSignedIn) => {
-      console.log("isslignedin", isSignedIn);
-      this.signedIn = isSignedIn;
-    });
-    this.gapiInit = true;
-  };
-
-  signIn = () => {
-    console.log("signin");
-
-    this.googleAuth.signIn().then(() => {
-      this.signedIn = true;
-    });
-  };
 
   addPlaylistToQueue = async (playlistId) => {
     let playlistItems = await this.getPlaylistItems(playlistId);

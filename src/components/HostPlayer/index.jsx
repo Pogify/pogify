@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { reaction, autorun } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
+import * as gapiAuth from "../../utils/gapiAuth";
 import { playerStore, playlistStore, queueStore } from "../../stores";
 
 import debounce from "lodash/debounce";
@@ -222,11 +223,11 @@ class _PlaylistList extends React.Component {
     videoId: "",
   };
   render() {
-    if (!playlistStore.signedIn && playlistStore.gapiInit) {
+    if (!gapiAuth.gapiSignedIn.get()) {
       return (
         <div>
           not logged in
-          <button onClick={playlistStore.signIn}>Sign In</button>
+          <button onClick={gapiAuth.signIn}>Sign In</button>
         </div>
       );
     }
