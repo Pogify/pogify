@@ -57,11 +57,10 @@ class HostPlayer extends React.Component {
 
     this.nextTrackDisposer = autorun(() => {
       if (playerStore.ended) {
-        playerStore.newVideo(
-          queueStore.nextVideo().snippet.resourceId.videoId,
-          0,
-          true
-        );
+        let nextVideo = queueStore.nextVideo();
+        if (nextVideo) {
+          playerStore.newVideo(nextVideo.snippet.resourceId.videoId, 0, true);
+        }
       }
     });
 
