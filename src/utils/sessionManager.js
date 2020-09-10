@@ -177,8 +177,6 @@ export const publishUpdate = (videoId, position, playing, queue) => {
 };
 
 export const makeRequest = (provider, token, request, session) => {
-  if (!FBAuth) initializeApp();
-
   return promiseRetry(async (retry) => {
     try {
       return await axios.post(cloudFunctions.makeRequest, {
