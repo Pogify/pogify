@@ -30,3 +30,11 @@ export const signIn = () => {
     gapiSignedIn.set(true);
   });
 };
+
+export const signOut = () => {
+  console.log("signout");
+
+  gapiAuth.signOut().then(() => {
+    gapiSignedIn.set(false);
+  });
+};
