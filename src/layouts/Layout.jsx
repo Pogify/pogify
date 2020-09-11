@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./Layout.module.css";
 import { observer } from "mobx-react";
 import { themeStore } from "../stores";
+import NewTabLink from "../components/utils/NewTabLink.jsx";
 
 /**
  * Default layout component.
@@ -61,9 +62,9 @@ function Layout(props) {
       <br />
       <footer className={styles.footer}>
         <div className={styles.footerLinks}>
-          <Link to="/tou">Terms of Use</Link>
-          <Link to="/privacy">Privacy Policy</Link>
-          <a href="https://github.com/Pogify/pogify">GitHub</a>
+          <NewTabLink href="/tos">Terms of Use</NewTabLink>
+          <NewTabLink href="/privacy">Privacy Policy</NewTabLink>
+          <a target="_blank" href="https://github.com/Pogify/pogify">GitHub</a>
         </div>
         <p>
           <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB

@@ -15,7 +15,8 @@ export default function Donations(props) {
         backgroundColor: "#FFC43B",
         color: "#000000",
         margin: "auto",
-        padding: "0.7rem 2rem"
+        padding: "0.7rem 2rem",
+        marginTop: "1rem"
       }}
     >
       <strong>Donate</strong>
