@@ -12,7 +12,7 @@ import NewTabLink from "../components/utils/NewTabLink.jsx";
 function Layout(props) {
   let { theme, toggleTheme } = themeStore;
 
-  let contentClass = `${styles.content}`
+  let contentClass = `${styles.content}`;
   const darkMode = theme === "dark";
   if (darkMode) {
     contentClass += ` ${styles.darkContent}`;
@@ -44,11 +44,18 @@ function Layout(props) {
               onChange={toggleTheme}
               checked={!darkMode}
             />
-            <label className={styles.themeSwitchLabel} htmlFor="themeSwitchCheckbox">
+            <label
+              className={styles.themeSwitchLabel}
+              htmlFor="themeSwitchCheckbox"
+            >
               <span className={styles.themeSwitchInner}></span>
               <span className={styles.themeSwitch}>
                 <img
-                  className={darkMode ? styles.themeSwitchIconDark : styles.themeSwitchIconLight}
+                  className={
+                    darkMode
+                      ? styles.themeSwitchIconDark
+                      : styles.themeSwitchIconLight
+                  }
                   src={darkMode ? "/moon.svg" : "/sun.svg"}
                   alt=""
                 />
@@ -64,7 +71,13 @@ function Layout(props) {
         <div className={styles.footerLinks}>
           <NewTabLink href="/tos">Terms of Use</NewTabLink>
           <NewTabLink href="/privacy">Privacy Policy</NewTabLink>
-          <a target="_blank" href="https://github.com/Pogify/pogify">GitHub</a>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/Pogify/pogify"
+          >
+            GitHub
+          </a>
         </div>
         <p>
           <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB
