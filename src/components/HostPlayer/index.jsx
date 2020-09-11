@@ -243,19 +243,6 @@ class HostPlayer extends React.Component {
             </div>
           </div>
         </div>
-        {/*<Player isHost />
-          <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <p className="textAlignLeft">
-              You can continue using Spotify as you normally would. The music is
-              playing through this browser tab, you can open this tab in a new
-              window to exclude it from OBS.
-              <br></br>
-              <b>Please do not close this tab.</b>
-            </p>
-            <PoweredBySpotify />
-            <Donations large />
-          </div>*/}
       </Layout>
     );
   }
