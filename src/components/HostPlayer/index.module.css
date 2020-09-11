@@ -55,7 +55,7 @@
 }
 
 :global(.theme-dark) .info {
-  background-color: black;
+  background-color: #222222;
 }
 
 .playerInfoBar {

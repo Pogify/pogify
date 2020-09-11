@@ -54,8 +54,8 @@
   transition: background-color 200ms;
 }
 
-:global(.theme-dark) .info{
-  background-color: black;
+:global(.theme-dark) .info {
+  background-color: #222222;
 }
 
 .playerInfoBar {
