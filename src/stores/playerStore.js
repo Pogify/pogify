@@ -259,6 +259,7 @@ export class PlayerStore {
    * @param {number} pos_ms millisecond position
    */
   newTrack = async (uri, pos_ms, playing, track_window) => {
+    let t0 = Date.now();
     return promiseRetry(
       async (retry) => {
         try {
