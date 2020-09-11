@@ -155,6 +155,12 @@
   margin: 0.25em 0.7em 0.25em 0.7em;
 }
 
+.progressBar {
+}
+:global(.theme-dark) .progressBar {
+  background-color: #4e4e4e !important;
+}
+
 .progressBar.canChange :global(.bar)::before {
   content: "";
   height: 15px;
