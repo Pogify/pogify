@@ -185,5 +185,3 @@ export const publishUpdate = (
     }
   });
 };
-
-window.refreshToken = refreshToken;
