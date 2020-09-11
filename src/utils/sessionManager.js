@@ -66,6 +66,9 @@ export const refreshToken = () => {
     try {
       let user = await FBAuth.signInAnonymously();
       let res = await axios.get(cloudFunctions.refreshToken, {
+        params: {
+          refreshToken: window.localStorage.getItem("pogify:refreshToken"),
+        },
         headers: {
           "X-Session-Token": window.localStorage.getItem("pogify:token"),
           Authorization: "Bearer " + (await user.user.getIdToken()),
@@ -73,6 +76,7 @@ export const refreshToken = () => {
       });
 
       window.localStorage.setItem("pogify:token", res.data.token);
+      window.localStorage.setItem("pogify:refreshToken", res.data.refreshToken);
       window.localStorage.setItem(
         "pogify:expiresAt",
         res.data.expiresIn * 1000 + Date.now()
@@ -106,6 +110,7 @@ export const createSession = () => {
       });
 
       window.localStorage.setItem("pogify:token", data.token);
+      window.localStorage.setItem("pogify:refreshToken", data.refreshToken);
       window.localStorage.setItem(
         "pogify:expiresAt",
         data.expiresIn * 1000 + Date.now()
