@@ -6,7 +6,6 @@ import { Layout } from "../../layouts";
 
 import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -442,9 +441,10 @@ class ListenerPlayer extends React.Component {
                 Please do not close this tab.
               </span>
               <br />
-              Your playback is controlled by the host. If you play or pause on a different Spotify
-              client, you will be de-synchronised from the host. You will have to refresh to sync
-              again. This is a known problem and we are working on getting it fixed. If you want to
+              Your playback is controlled by the host. If you play or pause on a
+              different Spotify client, you will be de-synchronised from the
+              host. You will have to refresh to sync again. This is a known
+              problem and we are working on getting it fixed. If you want to
               pause while staying in sync, please simply mute.
             </div>
             <div className={`${styles.donations} ${styles.info}`}>

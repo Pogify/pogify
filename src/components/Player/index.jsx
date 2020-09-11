@@ -15,6 +15,7 @@ import "semantic-ui-css/components/progress.min.css";
 import { Progress } from "semantic-ui-react";
 
 import NewTabLink from "../utils/NewTabLink";
+import PoweredBySpotify from "../utils/PoweredBySpotify";
 
 import styles from "./index.module.css";
 
@@ -27,7 +28,11 @@ const TrackMetadata = observer(() => {
 
   return (
     <>
-      <img src={trackData.album.images[0].url} className={styles.albumArt} alt=""/>
+      <img
+        src={trackData.album.images[0].url}
+        className={styles.albumArt}
+        alt=""
+      />
       <div className={styles.songInfo}>
         <span className={styles.infoBold}>
           <NewTabLink
@@ -179,6 +184,7 @@ export const Player = observer((props) => {
             </div>
           </>
         )}
+        <PoweredBySpotify />
       </div>
     </div>
   );

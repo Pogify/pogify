@@ -10,7 +10,6 @@ import debounce from "lodash/debounce";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 

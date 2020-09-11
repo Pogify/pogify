@@ -1,19 +1,19 @@
 .poweredBySpotifyWrapper {
-    margin: 30px 0;
+  margin: auto 10px;
 }
 
 .noDecorationLink {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .text {
-    margin: 0;
-    font-size: 0.6em;
-    display: inline-block;
+  margin: 0;
+  font-size: 0.6em;
+  display: inline-block;
 }
 
 .spotifyLogo {
-    vertical-align: middle;
-    padding: 12px;
-    width: 80px;
+  vertical-align: middle;
+  padding: 12px;
+  width: 80px;
 }
