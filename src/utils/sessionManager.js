@@ -1,6 +1,7 @@
 import axios from "axios";
 import urlJoin from "url-join";
 import { observable } from "mobx";
+import promiseRetry from "promise-retry";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -57,43 +58,44 @@ export const SessionCount = observable.box(0);
 /**
  * Refresh session token and stick it in localStorage
  */
-export const refreshToken = async () => {
+export const refreshToken = () => {
   if (!FBAuth) initializeApp();
 
-  try {
-    let user = await FBAuth.signInAnonymously();
-    let res = await axios.get(cloudFunctions.refreshToken, {
-      headers: {
-        "X-Session-Token": window.localStorage.getItem("pogify:token"),
-        Authorization: "Bearer " + (await user.user.getIdToken()),
-      },
-    });
+  return promiseRetry(async (retry) => {
+    try {
+      let user = await FBAuth.signInAnonymously();
+      let res = await axios.get(cloudFunctions.refreshToken, {
+        headers: {
+          "X-Session-Token": window.localStorage.getItem("pogify:token"),
+          Authorization: "Bearer " + (await user.user.getIdToken()),
+        },
+      });
 
-    window.localStorage.setItem("pogify:token", res.data.token);
-    window.localStorage.setItem(
-      "pogify:expiresAt",
-      res.data.expiresIn * 1000 + Date.now()
-    );
-    return res.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-    // TODO: error handling
-    //     let { code: errorCode, message: errorMessage } = error;
+      window.localStorage.setItem("pogify:token", res.data.token);
+      window.localStorage.setItem(
+        "pogify:expiresAt",
+        res.data.expiresIn * 1000 + Date.now()
+      );
+      return res.data;
+    } catch (error) {
+      retry(error);
+      // TODO: error handling
+      //     let { code: errorCode, message: errorMessage } = error;
 
-    //     if (errorCode === "auth/operation-not-allowed") {
-    //     }
-  }
+      //     if (errorCode === "auth/operation-not-allowed") {
+      //     }
+    }
+  });
 };
 
 /**
  * create session
  *
  */
-export const createSession = async (i = 1) => {
+export const createSession = () => {
   if (!FBAuth) initializeApp();
 
-  return new Promise(async (resolve, reject) => {
+  return promiseRetry(async (retry) => {
     try {
       const user = await FBAuth.signInAnonymously();
       let { data } = await axios.post(cloudFunctions.startSession, undefined, {
@@ -108,29 +110,24 @@ export const createSession = async (i = 1) => {
         data.expiresIn * 1000 + Date.now()
       );
       window.localStorage.setItem("pogify:session", data.session);
-      resolve(data);
+      return data;
     } catch (e) {
       if (e.response) {
         if (e.response.status === 429) {
           let retryAfter = e.response.headers["retry-after"] || 1;
+
           setTimeout(() => {
-            resolve(createSession(i + 1));
+            retry(e);
           }, retryAfter * 1000);
-          return;
         }
+      } else {
+        retry(e);
       }
-      // backoff retry implementation
-      if (i === 10) {
-        return reject(e);
-      }
-      setTimeout(() => {
-        resolve(createSession(i + 1));
-      }, (i / 5) ** 2);
     }
   });
 };
 
-export const publishUpdate = async (
+export const publishUpdate = (
   uri,
   position,
   playing,
@@ -138,48 +135,48 @@ export const publishUpdate = async (
   retries = 0
 ) => {
   if (!FBAuth) initializeApp();
-  try {
-    let user = await FBAuth.signInAnonymously();
-    console.log("publishUpdate", uri, position, playing, trackWindow);
-    let res = await axios.post(
-      cloudFunctions.postUpdate,
-      {
-        uri,
-        position,
-        playing,
-        track_window: trackWindow,
-        timestamp: Date.now(),
-      },
-      {
-        headers: {
-          "X-Session-Token": window.localStorage.getItem("pogify:token"),
-          Authorization: "Bearer " + (await user.user.getIdToken()),
-          "Content-Type": "application/json",
+
+  return promiseRetry(async (retry) => {
+    try {
+      let user = await FBAuth.signInAnonymously();
+      console.log("publishUpdate", uri, position, playing, trackWindow);
+      let res = await axios.post(
+        cloudFunctions.postUpdate,
+        {
+          uri,
+          position,
+          playing,
+          track_window: trackWindow,
+          timestamp: Date.now(),
         },
-      }
-    );
-    SessionCount.set(res.data.subscribers);
-  } catch (e) {
-    if (e.response) {
-      if (e.response.status === 401) {
-        // session expired modal or something
-        console.error("sessionExpired");
-        // try to refresh token
-        try {
-          await refreshToken();
-        } catch (e) {
-          throw e;
+        {
+          headers: {
+            "X-Session-Token": window.localStorage.getItem("pogify:token"),
+            Authorization: "Bearer " + (await user.user.getIdToken()),
+            "Content-Type": "application/json",
+          },
         }
-      } else if (e.response.status === 429) {
+      );
+      SessionCount.set(res.data.subscribers);
+    } catch (e) {
+      if (e.response) {
+        if (e.response.status === 401) {
+          // session expired modal or something
+          console.error("sessionExpired");
+          // try to refresh token
+          try {
+            await refreshToken();
+          } catch (e) {
+            retry(e);
+          }
+        } else if (e.response.status === 429) {
+          let retryAfter = e.response.headers["retry-after"] || 1;
+
+          setTimeout(() => {
+            retry(e);
+          }, retryAfter * 1000);
+        }
       }
     }
-    if (retries < 3) {
-      setTimeout(
-        () => publishUpdate(uri, position, playing, trackWindow, retries + 1),
-        100
-      );
-    } else {
-      throw e;
-    }
-  }
+  });
 };

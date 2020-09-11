@@ -270,7 +270,7 @@ export class PlayerStore {
               offset: {
                 uri: uri,
               },
-              position_ms: pos_ms,
+              position_ms: playing ? pos_ms + Date.now() - t0 : pos_ms,
             },
             {
               headers: {
