@@ -18,8 +18,7 @@
   background-color: #ffc43b !important;
   color: #222222 !important;
   margin: auto;
-  padding: 0.7rem 2rem;
-  margin-top: 1rem;
+  padding: 0.7rem 1rem !important;
 }
 
 :global(.theme-dark) .donationButton {
