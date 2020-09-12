@@ -84,6 +84,9 @@
 
 .donations {
   background-color: #ffe8b3;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 :global(.theme-dark) .donations {
