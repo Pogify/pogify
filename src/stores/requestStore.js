@@ -24,6 +24,10 @@ export class RequestStore {
     });
   };
 
+  stopTakingRequests = () => {
+    this.subscription.close();
+  };
+
   addRequest = action((videoId) => {
     if (this.requests[videoId]) {
       this.requests[videoId]++;
@@ -39,7 +43,7 @@ export class RequestStore {
   });
 
   requestsByRecent = computed(() => {
-    return Object.keys(this.requests);
+    return Object.keys(this.requests).reverse();
   });
 
   unsubscribeToRequests = action(() => {
@@ -51,6 +55,6 @@ export class RequestStore {
   });
 
   removeRequest = (item) => {
-    this.requests.delete(item);
+    delete this.requests[item];
   };
 }
