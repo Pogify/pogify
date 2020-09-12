@@ -314,11 +314,7 @@ class ListenerPlayer extends React.Component {
   render() {
     // if loading
     if (this.state.loading) {
-      return (
-        <Layout>
-          <div>Loading...</div>
-        </Layout>
-      );
+      return <div>Loading...</div>;
     }
 
     // // waiting for host view.
@@ -345,46 +341,33 @@ class ListenerPlayer extends React.Component {
     // }
 
     return (
-      <Layout noBackground>
-        <div className={styles.container}>
-          <div className={styles.titleBar}>
-            <h1>Session</h1>
-            <div className={styles.linkWrapper}>
-              <div className={styles.shareExplanations}>
-                Share the URL below to listen with others:
-                <br />
-                <CopyLink
-                  href={window.location.href}
-                  className={styles.shareLink}
-                  title="Click to copy and share to your audience"
-                >
-                  {window.location.href}
-                </CopyLink>
-              </div>
-            </div>
-          </div>
-          <Player isHost={false} warn={!this.state.synced} />
-
-          <div className={styles.infoBar}>
-            <div className={styles.info}>
-              <span className={styles.infoBold}>
-                Please do not close this tab.
-              </span>
+      <div className={styles.container}>
+        <div className={styles.titleBar}>
+          <h1>Session</h1>
+          <div className={styles.linkWrapper}>
+            <div className={styles.shareExplanations}>
+              Share the URL below to listen with others:
               <br />
-              Your playback is controlled by the host. If you play or pause on a
-              different Spotify client, you will be de-synchronised from the
-              host. You will have to refresh to sync again. This is a known
-              problem and we are working on getting it fixed. If you want to
-              pause while staying in sync, please simply mute.
-            </div>
-            <div className={`${styles.donations} ${styles.info}`}>
-              Do you like what we're doing? Help us our with a donation to keep
-              our dev servers running! Even just one dollar will help.
-              <Donations noText />
+              <CopyLink
+                href={window.location.href}
+                className={styles.shareLink}
+                title="Click to copy and share to your audience"
+              >
+                {window.location.href}
+              </CopyLink>
             </div>
           </div>
         </div>
-      </Layout>
+        <Player showControls warn={!this.state.synced} />
+
+        <div className={styles.infoBar}>
+          <div className={`${styles.donations} ${styles.info}`}>
+            Do you like what we're doing? Help us our with a donation to keep
+            our dev servers running! Even just one dollar will help.
+            <Donations noText />
+          </div>
+        </div>
+      </div>
     );
   }
 }

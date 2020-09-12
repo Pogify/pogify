@@ -134,9 +134,9 @@ export const Player = observer((props) => {
       <YouTube
         opts={{
           width: "100%",
-          height: 145,
+          height: "100%",
           playerVars: {
-            controls: 0,
+            controls: props.showControls,
           },
         }}
         onReady={playerStore.onYoutubeReady}

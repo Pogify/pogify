@@ -41,8 +41,7 @@ class HostPlayer extends React.Component {
     // refresh token
     this.refreshInterval = setInterval(
       SessionManager.refreshToken,
-      30 * 60 * 1000,
-      [window.localStorage.getItem("pogify:token")]
+      30 * 60 * 1000
     );
   };
 
@@ -160,69 +159,67 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout noBackground>
-        <div className={styles.container}>
-          <div className={styles.titleBar}>
-            <h1>Session</h1>
-            <div className={styles.linkWrapper}>
-              <div className={styles.shareExplanations}>
-                Share the URL below to listen with others:
-                <br />
-                <CopyLink
-                  href={window.location.href}
-                  className={styles.shareLink}
-                  title="Click to copy and share to your audience"
-                >
-                  {window.location.href}
-                </CopyLink>
-              </div>
-            </div>
-          </div>
-
-          <Player isHost />
-          <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            {Buttons}
-            {this.state.tab === "playlists" && <PlaylistList />}
-            {this.state.tab === "queueItems" && (
-              <pre style={{ textAlign: "left" }}>
-                {JSON.stringify(
-                  queueStore.queue.map((e) => {
-                    return queueStore.currentVideo.snippet.title ===
-                      e.snippet.title
-                      ? "-> " + e.snippet.title
-                      : e.snippet.title;
-                  }),
-                  undefined,
-                  2
-                )}
-              </pre>
-            )}
-            {this.state.tab === "current" && (
-              <pre style={{ textAlign: "left" }}>
-                {JSON.stringify(queueStore.current.snippet.title, undefined, 2)}
-              </pre>
-            )}
-            <div>
-              <button onClick={() => playerStore.previous()}>Previous</button>
-              <button onClick={() => playerStore.next()}>Next</button>
-            </div>
+      <div className={styles.container}>
+        <div className={styles.titleBar}>
+          <h1>Session</h1>
+          <div className={styles.linkWrapper}>
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
               <br />
-              You can continue using Spotify as you normally would. The music is
-              playing through this browser tab, you can open this tab in a new
-              window to exclude it from OBS.
+              <CopyLink
+                href={window.location.href}
+                className={styles.shareLink}
+                title="Click to copy and share to your audience"
+              >
+                {window.location.href}
+              </CopyLink>
             </div>
-            <div className={`${styles.donations} ${styles.info}`}>
-              Do you like what we're doing? Help us our with a donation to keep
-              our dev servers running! Even just one dollar will help.
-              <Donations noText />
-            </div>
-            <Donations large />
           </div>
         </div>
-      </Layout>
+
+        <Player isHost />
+        <div className={`${styles.textWrapper} textAlignCenter`}>
+          <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
+          {Buttons}
+          {this.state.tab === "playlists" && <PlaylistList />}
+          {this.state.tab === "queueItems" && (
+            <pre style={{ textAlign: "left" }}>
+              {JSON.stringify(
+                queueStore.queue.map((e) => {
+                  return queueStore.currentVideo.snippet.title ===
+                    e.snippet.title
+                    ? "-> " + e.snippet.title
+                    : e.snippet.title;
+                }),
+                undefined,
+                2
+              )}
+            </pre>
+          )}
+          {this.state.tab === "current" && (
+            <pre style={{ textAlign: "left" }}>
+              {JSON.stringify(queueStore.current.snippet.title, undefined, 2)}
+            </pre>
+          )}
+          <div>
+            <button onClick={() => playerStore.previous()}>Previous</button>
+            <button onClick={() => playerStore.next()}>Next</button>
+          </div>
+          <div className={styles.shareExplanations}>
+            Share the URL below to listen with others:
+            <br />
+            You can continue using Spotify as you normally would. The music is
+            playing through this browser tab, you can open this tab in a new
+            window to exclude it from OBS.
+          </div>
+          <div className={`${styles.donations} ${styles.info}`}>
+            Do you like what we're doing? Help us our with a donation to keep
+            our dev servers running! Even just one dollar will help.
+            <Donations noText />
+          </div>
+          <Donations large />
+        </div>
+      </div>
     );
   }
 }
