@@ -160,8 +160,25 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout>
-        <div className="flexContainer">
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
+            </div>
+          </div>
+
           <Player isHost />
           <div className={`${styles.textWrapper} textAlignCenter`}>
             <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
@@ -193,13 +210,14 @@ class HostPlayer extends React.Component {
             <div className={styles.shareExplanations}>
               Share the URL below to listen with others:
               <br />
-              <CopyLink
-                href={window.location.href}
-                className={styles.shareLink}
-                title="Click to copy and share to your audience"
-              >
-                {window.location.href}
-              </CopyLink>
+              You can continue using Spotify as you normally would. The music is
+              playing through this browser tab, you can open this tab in a new
+              window to exclude it from OBS.
+            </div>
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <Donations noText />
             </div>
             <Donations large />
           </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
@@ -15,12 +16,17 @@ import YouTube from "react-youtube";
 import { Progress } from "semantic-ui-react";
 
 import NewTabLink from "../utils/NewTabLink";
+import PoweredBySpotify from "../utils/PoweredBySpotify";
 
 import styles from "./index.module.css";
 
 // Allow MobX to optimize data that does not change regularly
 const TrackMetadata = observer(() => {
+  if (!playerStore.data.track_window) {
+    return null;
+  }
   const trackData = playerStore.data.track_window.current_track;
+
   return (
     <div className={styles.metadataWrapper}>
       <div className={styles.albumArt}>
@@ -55,6 +61,13 @@ const TrackMetadata = observer(() => {
             {index !== trackData.artists.length - 1 && " / "}
           </React.Fragment>
         ))}
+        •{" "}
+        <NewTabLink
+          href={trackData.album.uri}
+          className={`${styles.spotifyLink} ${styles.album}`}
+        >
+          {trackData.album.name}
+        </NewTabLink>
       </div>
     </div>
   );
@@ -171,6 +184,12 @@ export const Player = observer((props) => {
       {props.children}
     </div>
   );
+  // return (
+  //   <div className={styles.player}>
+  //     <TrackMetadata />
+  //     {props.children}
+  //   </div>
+  // );
 });
 
 const CustomSlider = (props) => (

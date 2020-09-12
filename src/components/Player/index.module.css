@@ -1,4 +1,4 @@
-.player {
+/* .player {
   width: 300px;
   text-align: center;
   border-radius: 10px;
@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
+} */
 
 .metadataWrapper {
   margin-bottom: 2.5em;
@@ -14,6 +14,8 @@
 
 .playButtonWrapper {
   cursor: pointer;
+  font-size: 2rem;
+  line-height: 80px;
 }
 
 .spotifyLink {
@@ -25,13 +27,6 @@
 
 .spotifyLink:hover {
   text-decoration: underline;
-}
-
-.albumArt {
-  height: 300px;
-  width: 300px;
-  overflow: hidden;
-  margin: 0 auto;
 }
 
 .titleContainer {
@@ -46,7 +41,6 @@
   font-style: italic;
   font-weight: 600;
   margin-bottom: 0.6em;
-  display: block;
 }
 
 /* .artist:not(:last-child)::after {
@@ -64,7 +58,7 @@
   display: flex;
   justify-content: center;
   margin: 10px;
-  width: 100%;
+  width: 70%;
   align-items: center;
 }
 
@@ -72,7 +66,7 @@
   display: flex;
   justify-content: center;
   margin: 10px;
-  width: 70%;
+  width: 30%;
   align-items: center;
 }
 
@@ -80,11 +74,7 @@
   cursor: pointer;
 }
 
-
-
-
 /* Progress bar */
-
 
 .progressBarContainer {
   width: 100%;
@@ -93,7 +83,7 @@
   margin: 0px 4px;
 }
 
-.progressBarContainer input[type='range'] {
+.progressBarContainer input[type="range"] {
   background-color: transparent;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -105,17 +95,17 @@
   z-index: 1;
 }
 
-.progressBarContainer input[type='range']:focus {
+.progressBarContainer input[type="range"]:focus {
   outline: none;
 }
 
-.progressBarContainer input[type='range']::-webkit-slider-runnable-track {
+.progressBarContainer input[type="range"]::-webkit-slider-runnable-track {
   cursor: pointer;
   background-color: transparent;
   color: transparent;
 }
 
-.progressBarContainer input[type='range']::-webkit-slider-thumb {
+.progressBarContainer input[type="range"]::-webkit-slider-thumb {
   height: 16px;
   width: 16px;
   background-color: rgba(0, 0, 0, 0);
@@ -125,7 +115,7 @@
   -webkit-appearance: none;
 }
 
-.progressBarContainer input[type='range']::-moz-range-thumb {
+.progressBarContainer input[type="range"]::-moz-range-thumb {
   height: 16px;
   width: 16px;
   background-color: rgba(0, 0, 0, 0);
@@ -135,15 +125,17 @@
   -webkit-appearance: none;
 }
 
-.progressBarContainer:not(.canChange) input[type='range']::-webkit-slider-thumb {
+.progressBarContainer:not(.canChange)
+  input[type="range"]::-webkit-slider-thumb {
   cursor: default;
 }
 
-.progressBarContainer:not(.canChange) input[type='range']::-moz-range-thumb {
+.progressBarContainer:not(.canChange) input[type="range"]::-moz-range-thumb {
   cursor: default;
 }
 
-.progressBarContainer:not(.canChange) input[type='range']::-webkit-slider-runnable-track {
+.progressBarContainer:not(.canChange)
+  input[type="range"]::-webkit-slider-runnable-track {
   cursor: default;
 }
 
@@ -152,11 +144,21 @@
   min-width: unset;
   width: 100%;
   position: relative;
-  background-color: #72a1e5 !important;
+  background-color: #72a1e5;
+}
+
+:global(.theme-dark) .progressBarContainer :global(.ui.small.progress .bar) {
+  background-color: #c7d5e9;
 }
 
 .progressBarContainer :global(.ui.progress):last-child {
   margin: 0.25em 0.7em 0.25em 0.7em;
+}
+
+.progressBar {
+}
+:global(.theme-dark) .progressBar {
+  background-color: #4e4e4e !important;
 }
 
 .progressBar.canChange :global(.bar)::before {
@@ -177,4 +179,141 @@
   min-width: unset;
   width: 100%;
   background-color: #fbbd08;
+}
+
+.textWrapper {
+  width: 400px;
+  padding: 30px;
+}
+
+.shareExplanations {
+  margin-top: 40px;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  width: 840px;
+  flex-direction: column;
+}
+
+.container > div {
+  border-radius: 16px;
+}
+
+.titleBar {
+  color: white;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.player {
+  margin-top: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.albumArt {
+  height: 120px;
+  width: 120px;
+  margin-left: 25px;
+  z-index: 1;
+  box-shadow: 0px 2px 16px 2px rgba(0, 0, 0, 0.2);
+}
+
+.songInfo {
+  margin-left: 20px;
+  line-height: 1.6rem;
+  height: 100%;
+}
+
+.listenerInfo {
+  margin-right: 50px;
+  margin-left: auto;
+  text-align: right;
+}
+
+.infoBold {
+  font-weight: 900;
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.infoBar {
+  width: 100%;
+  height: 150px;
+  margin-top: 45px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info {
+  width: 340px;
+  padding: 0 35px;
+  height: 150px;
+  border-radius: 16px;
+  box-shadow: -8px -8px 30px 2px rgba(255, 255, 255, 0.3),
+    8px 8px 30px 2px rgba(0, 0, 0, 0.3);
+  text-align: justify;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  transition: background-color 200ms;
+}
+
+.playerInfoBar {
+  display: flex;
+  width: 100%;
+  height: 60px;
+  color: white;
+}
+
+.donations {
+  background-color: #ffe8b3;
+}
+
+.playerTextBar {
+  height: 58px;
+}
+
+.playerBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-left: 165px;
+  background-color: white;
+  width: calc(100% - 165px);
+  height: 80px;
+  border-radius: 16px;
+  box-shadow: -8px -8px 30px 2px rgba(255, 255, 255, 0.3),
+    8px 8px 30px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global(.theme-dark) .playerBar {
+  background-color: #222222;
+}
+
+.titleBar > h1 {
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.linkWrapper {
+  font-size: 18px;
+}
+
+.shareLink {
+  color: white;
+}
+.shareLink:visited {
+  color: white;
+}
+
+.connectSpotify {
+  margin-right: 165px;
+  line-height: 80px;
 }
