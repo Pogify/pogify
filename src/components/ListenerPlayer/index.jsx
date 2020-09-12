@@ -419,7 +419,9 @@ class ListenerPlayer extends React.Component {
             <div className={`${styles.donations} ${styles.info}`}>
               Do you like what we're doing? Help us our with a donation to keep
               our dev servers running! Even just one dollar will help.
-              <Donations noText />
+              <div>
+                <Donations noText />
+              </div>
             </div>
           </div>
         </div>
