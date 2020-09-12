@@ -17,9 +17,6 @@ function Layout(props) {
   if (darkMode) {
     contentClass += ` ${styles.darkContent}`;
   }
-  if (props.noBackground) {
-    contentClass += ` ${styles.noBackground}`;
-  }
 
   return (
     <div className={styles.layout}>

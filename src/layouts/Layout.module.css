@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap");
 
 .layout {
   min-height: 100%;
@@ -16,15 +15,11 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto",
-    "Open Sans",
-    sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
 }
 
 p {
-  font-family: "Roboto",
-    "Open Sans",
-    sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
 }
 
 .header {
@@ -68,21 +63,18 @@ p {
 }
 
 .content {
+  width: 80%;
   transition: background-color 0.5s, color 0.5s;
-  background-color: #FFFFFF;
   color: #222222;
+  /* background-color: #FFFFFF;
   padding: 60px 80px;
   border-radius: 16px;
   box-shadow: -8px -8px 30px 2px rgba(255, 255, 255, 0.3), 8px 8px 30px 2px rgba(0, 0, 0, 0.3);
   max-width: 80%;
-  max-height: 80%;
+  max-height: 80%; */
 }
 
-.darkContent:not(.noBackground) {
-  background-color: #222222;
-}
-
-.darkContent :not(.noTheme) {
+:global(.theme-dark) .content {
   color: white;
 }
 
@@ -111,6 +103,11 @@ p {
   box-shadow: 0 3px 7px 1pt rgba(0, 0, 0, 0.24);
 }
 
+:global(.theme-dark) .content button {
+  color: white;
+  background-color: #222222;
+}
+
 .footer {
   display: flex;
   flex-direction: column;
@@ -136,13 +133,9 @@ p {
   text-decoration: none;
 }
 
-.noBackground {
-  background: none;
-  box-shadow: none;
-}
-
 .themeSwitchContainer {
-  position: relative; width: 60px;
+  position: relative;
+  width: 60px;
 }
 
 .themeSwitchCheckbox {
@@ -165,7 +158,8 @@ p {
   transition: margin 0.4s ease-in 0s;
 }
 
-.themeSwitchInner:before, .themeSwitchInner:after {
+.themeSwitchInner:before,
+.themeSwitchInner:after {
   display: block;
   float: left;
   width: 50%;
@@ -174,15 +168,16 @@ p {
   line-height: 20px;
   font-size: 14px;
   color: white;
-  font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+  font-family: Trebuchet, Arial, sans-serif;
+  font-weight: bold;
   box-sizing: border-box;
 }
 
 .themeSwitchInner:before {
   content: "";
   padding-left: 10px;
-  background-color: #FFFFFF;
-  color: #FFFFFF;
+  background-color: #ffffff;
+  color: #ffffff;
 }
 
 .themeSwitchInner:after {
@@ -197,13 +192,13 @@ p {
   display: block;
   width: 30px;
   margin: -5px;
-  background: #3C77CD;
+  background: #3c77cd;
   position: absolute;
   top: 0;
   bottom: 0;
   right: 36px;
   border-radius: 20px;
-  transition: all 0.4s ease-in-out 0s; 
+  transition: all 0.4s ease-in-out 0s;
 }
 
 .themeSwitchCheckbox:checked + .themeSwitchLabel .themeSwitchInner {
@@ -211,7 +206,7 @@ p {
 }
 
 .themeSwitchCheckbox:checked + .themeSwitchLabel .themeSwitch {
-  right: 0px; 
+  right: 0px;
 }
 
 .themeSwitchIconLight {
