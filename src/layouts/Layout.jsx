@@ -77,8 +77,8 @@ function Layout(props) {
           </a>
         </div>
         <p>
-          <a href="https://www.spotify.com">Spotify</a> is copyright Spotify AB
-          and is not affiliated with Pogify
+          <a href="https://www.youtube.com">Youtube</a> is copyright Google Inc.
+          and is not affiliated with Pogify.
         </p>
       </footer>
     </div>
