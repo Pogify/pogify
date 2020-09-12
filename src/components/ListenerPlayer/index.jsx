@@ -5,6 +5,7 @@ import { playerStore, modalStore } from "../../stores";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
+import Queue from "../Queue";
 import WarningModal from "../../modals/WarningModal";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
@@ -29,6 +30,7 @@ class ListenerPlayer extends React.Component {
     hostConnected: false,
     hostPlaying: false,
     hostPosition: 0,
+    hostQueue: [],
     // governs whether or not the player should play when host presses play.
     hostPausedWhileListenerListening: true,
     // governs whether or not players should start playing on connect
@@ -145,7 +147,9 @@ class ListenerPlayer extends React.Component {
     // message Handler
     this.eventListener.onmessage = async (event) => {
       console.log(event.data);
-      let { timestamp, videoId, position, playing } = JSON.parse(event.data);
+      let { timestamp, videoId, position, playing, queue } = JSON.parse(
+        event.data
+      );
       // if message timestamp is less than previously received timestamp it is stale. don't act on it
       if (this.state.lastTimestamp > timestamp) return;
 
@@ -180,6 +184,7 @@ class ListenerPlayer extends React.Component {
           hostVideoId: videoId,
           hostPosition: calcPos,
           updateTimestamp: Date.now(),
+          hostQueue: queue,
           hostPlaying: playing,
           firstPlay: playing || this.state.firstPlay,
           hostConnected: true,
@@ -359,8 +364,11 @@ class ListenerPlayer extends React.Component {
           </div>
         </div>
         <Player showControls warn={!this.state.synced} />
-
         <div className={styles.infoBar}>
+          <Queue
+            items={this.state.hostQueue}
+            currentId={this.state.hostVideoId}
+          />
           <div className={`${styles.donations} ${styles.info}`}>
             Do you like what we're doing? Help us our with a donation to keep
             our dev servers running! Even just one dollar will help.
