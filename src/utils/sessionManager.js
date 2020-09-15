@@ -82,7 +82,11 @@ export const refreshToken = () => {
       );
       return res.data;
     } catch (error) {
-      retry(error);
+      if (error.response && error.response.status === 400) {
+        throw error;
+      } else {
+        retry(error);
+      }
       // TODO: error handling
       //     let { code: errorCode, message: errorMessage } = error;
 
