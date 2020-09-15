@@ -1,9 +1,7 @@
 # Pogify
 
-<!-- FIXME: change to https when we don't need to redirect -->
-<!-- FIXME: change to badge monitor link when proper host -->
+[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)](https://www.pogify.net)
 
-[![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fpogify.herokuapp.com)](https://www.pogify.net)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
 [![Discord](https://img.shields.io/discord/744265206816833617.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bU6E9Xj)
 
@@ -90,7 +88,7 @@ Pogify uses Google Firebase's Authentication service to use its anonymous sign i
 
 ## Known Issues / Limitations
 
-This project is still in alpha and as such, there are still lots of bugs.
+This project is still in beta and as such, there are still lots of bugs.
 
 If you have an issue that isn't listed below or does not have an open issue, please help us by [opening a new one](https://github.com/Pogify/pogify/issues/new/choose).
 
