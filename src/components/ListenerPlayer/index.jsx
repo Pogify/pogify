@@ -410,11 +410,10 @@ class ListenerPlayer extends React.Component {
                 Please do not close this tab.
               </span>
               <br />
-              Your playback is controlled by the host. If you play or pause on a
-              different Spotify client, you will be de-synchronised from the
-              host. You will have to refresh to sync again. This is a known
-              problem and we are working on getting it fixed. If you want to
-              pause while staying in sync, please simply mute.
+              Your playback is controlled by the host. If you control playback
+              on a different Spotify client, you will be resynchronized with the
+              host automatically. If you want to pause while staying in sync,
+              please simply mute.
             </div>
             <div className={`${styles.donations} ${styles.info}`}>
               Do you like what we're doing? Help us our with a donation to keep
