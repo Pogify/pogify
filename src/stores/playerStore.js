@@ -550,8 +550,8 @@ export class PlayerStore {
       ) {
         modalStore.queue(
           <WarningModal
-            title="Premium required to host a Pogify Session"
-            content="It seems that you don't have Spotify Premium. You need premium to host a Pogify Session. This is a limitation of Spotify."
+            title="Premium required to use Pogify"
+            content="It seems that you don't have Spotify Premium. You need premium to use Pogify. This is a limitation of Spotify."
           />
         );
       }
