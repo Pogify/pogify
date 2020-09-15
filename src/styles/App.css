@@ -1,5 +1,12 @@
 body {
   background: hsla(215, 69%, 67%, 1);
-  background: linear-gradient(180deg, hsla(215, 69%, 67%, 1) 0%, hsla(253, 65%, 71%, 1) 100%);
+  background: linear-gradient(117deg, #9883e5 0%, #7f53ac 99.49%);
+  background-attachment: fixed;
   color: white;
+}
+
+.theme-dark {
+  background: linear-gradient(117deg, #5b43cc 0%, #401c76 99.49%);
+  background-blend-mode: soft-light, normal;
+  background-attachment: fixed;
 }

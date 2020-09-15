@@ -26,7 +26,7 @@ function App() {
         <Route path="/session/:id" component={Room} />
         <Route path="/session" component={ConnectToSession} exact />
         <Route path="/privacy" component={Privacy} />
-        <Route path="/tou" component={Terms} />
+        <Route path="/tos" component={Terms} />
         <Route path="/" component={FourOhFour} />
       </Switch>
       <ModalSystem />

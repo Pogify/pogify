@@ -10,7 +10,6 @@ import debounce from "lodash/debounce";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -67,11 +66,21 @@ class HostPlayer extends React.Component {
         diff: playerStore.diff,
       }),
       debounce(({ uri, playing }) => {
-        SessionManager.publishUpdate(uri, playerStore.position, playing);
+        SessionManager.publishUpdate(
+          uri,
+          playerStore.position,
+          playing,
+          playerStore.track_window
+        );
       }, 400),
       {
         equals: (a, b) => {
-          if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
+          if (
+            a.uri !== b.uri ||
+            // if document is hidden setInterval gets throttled to once per sec. raise difference threshold in that case
+            b.diff > (document.hidden ? 2000 : 1000) ||
+            a.playing !== b.playing
+          ) {
             return false;
           }
           return true;
@@ -81,7 +90,12 @@ class HostPlayer extends React.Component {
 
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
-      SessionManager.publishUpdate("", playerStore.position.value, false);
+      SessionManager.publishUpdate(
+        "",
+        playerStore.position.value,
+        false,
+        playerStore.track_window
+      );
     };
     this.setState({ loading: false });
   };
@@ -123,7 +137,12 @@ class HostPlayer extends React.Component {
     if (playerStore.player) {
       // publish unload update when unmounting player
       if (playerStore.position !== undefined) {
-        await SessionManager.publishUpdate("", playerStore.position, false);
+        await SessionManager.publishUpdate(
+          "",
+          playerStore.position,
+          false,
+          playerStore.track_window
+        );
       }
       playerStore.disconnectPlayer();
     }
@@ -186,31 +205,42 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout>
-        <div className="flexContainer">
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session: {this.props.sessionId}</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
+            </div>
+          </div>
+
           <Player isHost />
-          <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <p className="textAlignLeft">
+
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
               You can continue using Spotify as you normally would. The music is
               playing through this browser tab, you can open this tab in a new
               window to exclude it from OBS.
-              <br></br>
-              <b>Please do not close this tab.</b>
-            </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink
-                href={window.location.href}
-                className={styles.shareLink}
-                title="Click to copy and share to your audience"
-              >
-                {window.location.href}
-              </CopyLink>
             </div>
-            <PoweredBySpotify />
-            <Donations large />
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <Donations noText />
+            </div>
           </div>
         </div>
       </Layout>
