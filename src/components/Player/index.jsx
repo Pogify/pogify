@@ -138,9 +138,11 @@ export const Player = observer((props) => {
         {!device_connected && (
           <div className={styles.connectSpotify}>
             <button
-              onClick={() => playerStore.connectToPlayer(playerStore.device_id)}
+              onClick={() =>
+                playerStore.connectToPlayer(playerStore.device_id, true)
+              }
             >
-              Connect Spotify
+              Click to connect Spotify
             </button>
           </div>
         )}

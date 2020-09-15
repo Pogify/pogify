@@ -517,7 +517,7 @@ export class PlayerStore {
     });
   });
 
-  connectToPlayer = async (device_id) => {
+  connectToPlayer = async (device_id, play = false) => {
     // get current access token
     // TODO: error handling
     let access_token;
@@ -532,7 +532,7 @@ export class PlayerStore {
         `https://api.spotify.com/v1/me/player`,
         {
           device_ids: [device_id],
-          play: false,
+          play: play,
         },
         {
           headers: {
