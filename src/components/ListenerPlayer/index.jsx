@@ -6,24 +6,27 @@ import { Layout } from "../../layouts";
 
 import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
 import { showReportDialog } from "@sentry/react";
+import { reaction } from "mobx";
 
 /**
  * ListenerPlayer handles logic for listeners
  */
 class ListenerPlayer extends React.Component {
   eventListenerRetry = 0;
+  syncing = false;
   state = {
     device_id: "",
     loading: false,
     lastTimestamp: 0,
+    updateTimestamp: 0,
     subConnected: false,
     hostUri: "",
+    hostTrackWindow: [],
     hostConnected: false,
     hostPlaying: false,
     hostPosition: 0,
@@ -34,6 +37,8 @@ class ListenerPlayer extends React.Component {
     synced: true,
     parked: false,
     changeSongCallback: null,
+    // should always maintain sync toggle.
+    strict: true,
   };
 
   /**
@@ -44,79 +49,91 @@ class ListenerPlayer extends React.Component {
     this.setEventListener();
 
     // synchronization checker
-    playerStore.player.on("player_state_changed", (data) => {
-      // set synced to false
-      if (!data) {
-        return this.setState({
-          synced: false,
-        });
+    this.syncCheckDisposer = reaction(
+      // only listen for these changes
+      () => ({
+        uri: playerStore.uri,
+        diff: playerStore.diff,
+        playing: playerStore.playing,
+      }),
+      // if listener player changed compare to host player
+      ({ uri, playing }) => {
+        if (this.syncing) {
+          console.log("sync check blocked...");
+          return;
+        }
+        console.log("checking sync");
+        const {
+          hostUri,
+          hostPosition,
+          hostPlaying,
+          hostTrackWindow,
+          updateTimestamp,
+        } = this.state;
+        let calcPos = hostPlaying
+          ? hostPosition + Date.now() - updateTimestamp
+          : hostPosition;
+        if (
+          hostUri !== uri ||
+          Math.abs(calcPos - playerStore.position) > 1000 ||
+          hostPlaying !== playing
+        ) {
+          console.log("not synced");
+          this.setState(
+            {
+              synced: false,
+            },
+            async () => {
+              let calcPos = hostPlaying
+                ? hostPosition + Date.now() - updateTimestamp
+                : hostPosition;
+              // only update if player is in strict mode.
+              // only update if host is connected
+              // don't try and sync if host position goes past duration of the track
+              if (
+                this.state.hostConnected &&
+                this.state.strict &&
+                calcPos + 1000 < playerStore.data.duration
+              ) {
+                await this.syncListener(
+                  hostUri,
+                  calcPos,
+                  hostPlaying,
+                  hostTrackWindow
+                );
+              }
+            }
+          );
+        } else {
+          console.log("synced");
+          this.setState({
+            synced: true,
+          });
+        }
+      },
+      {
+        // only react if the listener player changed
+        equals: (a, b) => {
+          if (a.uri !== b.uri || b.diff > 1000 || a.playing !== b.playing) {
+            return false;
+          }
+          return true;
+        },
       }
-
-      console.log("Spotify sent an update! (hoorray)", data);
-
-      const {
-        hostPosition,
-        hostUri,
-        hostPlaying,
-        hostConnected,
-        updateTimestamp,
-      } = this.state;
-
-      // don't update sync state if player parks.
-      // when player reaches end of track it pauses. This causes a player_state_changed event and calls this handler which marks player as unsynced.
-      // if the player reaches end of track and stops playing but host is still playing then skip sync update.
-      // set parked flag
-      if (data.position > data.duration - 500) {
-        // console.log("parked");
-        return this.setState({
-          parked: true,
-        });
-      } else if (this.state.parked && data.position === 0 && data.paused) {
-        // console.log("still parked");
-        return;
-      }
-
-      this.setState({
-        parked: false,
-      });
-
-      // calculated position based on host timestamp, playing state and elapsed time.
-      let calcPos = hostPlaying
-        ? hostPosition + Date.now() - updateTimestamp
-        : hostPosition;
-
-      if (
-        hostConnected &&
-        (hostUri !== data.track_window.current_track.uri ||
-          hostPlaying !== !data.paused ||
-          Math.abs(calcPos - data.position) > 2000)
-      ) {
-        // console.log("not synced");
-        this.setState(
-          {
-            synced: false,
-          },
-          // () => this.syncListener(hostUri, calcPos, hostPlaying)
-        );
-      } else {
-        // console.log("synced");
-        this.setState({
-          synced: true,
-        });
-      }
-      // playerStore.resyncPosition(data.position)
-      if (typeof this.state.changeSongCallback === "function") {
-        console.log("Executing changed song callback");
-        this.state.changeSongCallback();
-      }
-      this.setState({ changeSongCallback: null });
-    });
+    );
   };
 
   setEventListener = () => {
-    this.eventListener = new EventSource(
-      process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
-    );
+    if ("EventSource" in window) {
+      this.eventListener = new EventSource(
+        process.env.REACT_APP_SUB + "/sub/" + this.props.sessionId + ".b1"
+      );
+    } else {
+      // TODO: replace to nginx endpoint/ env var
+      this.eventListener = new WebSocket(
+        "ws://localhost/sub/" + this.props.sessionId
+      );
+    }
 
     // update state on open
     this.eventListener.onopen = () => {
@@ -129,7 +146,13 @@ class ListenerPlayer extends React.Component {
     // message Handler
     this.eventListener.onmessage = async (event) => {
       console.log(event.data);
-      let { timestamp, uri, position, playing } = JSON.parse(event.data);
+      let {
+        timestamp,
+        uri,
+        position,
+        playing,
+        track_window: trackWindow,
+      } = JSON.parse(event.data);
       // if message timestamp is less than previously received timestamp it is stale. don't act on it
       if (this.state.lastTimestamp > timestamp) return;
 
@@ -160,6 +183,7 @@ class ListenerPlayer extends React.Component {
         {
           lastTimestamp: timestamp,
           hostUri: uri,
+          hostTrackWindow: trackWindow,
           hostPosition: calcPos,
           updateTimestamp: Date.now(),
           hostPlaying: playing,
@@ -168,7 +192,7 @@ class ListenerPlayer extends React.Component {
         },
         async () => {
           // must call in callback else causes race conditions
-          await this.syncListener(uri, calcPos, playing);
+          await this.syncListener(uri, calcPos, playing, trackWindow);
         }
       );
     };
@@ -228,67 +252,52 @@ class ListenerPlayer extends React.Component {
    * @param {number} position position in milliseconds
    * @param {boolean} playing playing state
    */
-  async syncListener(uri, position, playing) {
+  async syncListener(uri, position, playing, trackWindow) {
+    console.log("<<<< start sync");
+    // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
+    // so set flag here until play/pause/newTrack is all encapsulated in an action.
+    this.syncing = true;
+    console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
-      await playerStore.newTrack(uri, position);
-      console.log(playing, position, playerStore.position.value);
-      // defer setting play/pause till after update
-      this.setState({
-        changeSongCallback: () => {
-          if (
-            playing &&
-            position > playerStore.position &&
-            playerStore.position > 0
-          ) {
-            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-            playerStore.resume(this.state.parked);
-          } else if (!playing) {
-            // if host pauses, pause
-            playerStore.pause(this.parked);
-          }
-        },
-      });
+      console.log(uri, "!==", playerStore.uri);
+      let indexOf = playerStore.track_window.indexOf(uri);
+
+      if (indexOf === -1) {
+        console.log("uri not in track window, fetching");
+        await playerStore.newTrack(uri, position, playing, trackWindow);
+      } else {
+        let offset = indexOf - playerStore.trackOffset;
+        if (offset !== 1) {
+          console.log(
+            "uri is in local track window but not next, skipping: ",
+            offset
+          );
+        } else {
+          console.log("uri is next in local track window, continuing");
+        }
+        await playerStore.skipTrack(offset);
+      }
     } else {
-      await playerStore.seek(position);
-      // defer setting play/pause till after update
-      this.setState({
-        changeSongCallback: () => {
-          if (playing) {
-            // if host plays and listener was listening when host paused, then resume and seek. if force then play on force.
-            playerStore.resume(this.state.parked);
-          } else if (!playing) {
-            // if host pauses, pause
-            playerStore.pause(this.state.parked);
-          }
-        },
-      });
+      playerStore.seek(position);
+      if (playing) {
+        await playerStore.resume();
+      } else {
+        console.log("in");
+        await playerStore.pause();
+        console.log("out");
+      }
     }
-    this.setState({
-      synced: true,
-    });
+    this.setState(
+      {
+        synced: true,
+      },
+      () => {
+        console.log(">>>> end sync");
+        this.syncing = false;
+      }
+    );
   }
 
-  // syncOnClick = () => {
-  //   const { hostUri, hostPosition, hostPlaying, updateTimestamp } = this.state;
-  //   const calcPos = hostPlaying
-  //     ? hostPosition + Date.now() - updateTimestamp
-  //     : hostPosition;
-  //   this.syncListener(hostUri, calcPos, hostPlaying, true);
-  // };
-
-  componentDidMount() {
-    // autorun to enforce initial state.
-    // will continuously try to pause if its not supposed to play
-    // this.forceUpdateAutorunDisposer = autorun((reaction) => {
-    //   const { firstPlay } = this.state;
-    //   if (playerStore.playing && firstPlay) {
-    //     console.log("dispose");
-    //     reaction.dispose();
-    //   } else if (playerStore.playing && !firstPlay) {
-    //     playerStore.pause();
-    //   }
-    // });
-  }
   componentWillUnmount() {
     // close connection to sub server
     if (this.eventListener) {
@@ -298,8 +307,10 @@ class ListenerPlayer extends React.Component {
     if (playerStore.player) {
       playerStore.player.disconnect();
     }
-    // dispose auto run
-    // this.forceUpdateAutorunDisposer();
+    // dispose sync check
+    if (typeof this.syncCheckDisposer === "function") {
+      this.syncCheckDisposer();
+    }
   }
 
   render() {
@@ -373,41 +384,44 @@ class ListenerPlayer extends React.Component {
     }
 
     return (
-      <Layout>
-        <div className="flexContainer">
-          <Player isHost={false} warn={!this.state.synced}>
-            {/* <div>
-              {!this.state.hostPlaying && this.state.synced && "Paused by host"}
-              {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
-              {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
-              {!this.state.synced && (
-                <div className={styles.syncButton} onClick={this.syncOnClick}>
-                  Sync with host &nbsp;
-                  <FontAwesomeIcon icon={faSync} />
-                </div>
-              )}
-            </div> */}
-          </Player>
-
-          <div className={`textAlignCenter ${styles.textWrapper}`}>
-            <h2>Hosting to {this.state.connections} listeners.</h2>
-            <p className="textAlignLeft">
-              You are listening to session: {this.props.sessionId}. Your
-              playback is controlled by the host. Pressing pause will pause
-              playback locally only. On resume, playback will be resynchronised
-              with the host. Controlling Spotify will not work as long as you
-              are connected to "Pogify Listener". The music is playing through
-              the browser, so <b> please do not close this tab.</b>
-            </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink href={window.location.href}>
-                {window.location.href}
-              </CopyLink>
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session: {this.props.sessionId}</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
             </div>
-            <PoweredBySpotify />
-            <Donations />
+          </div>
+          <Player isHost={false} warn={!this.state.synced} />
+
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
+              Your playback is controlled by the host. If you control playback
+              on a different Spotify client, you will be resynchronized with the
+              host automatically. If you want to pause while staying in sync,
+              please simply mute.
+            </div>
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <div>
+                <Donations noText />
+              </div>
+            </div>
           </div>
         </div>
       </Layout>

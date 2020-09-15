@@ -19,25 +19,39 @@ export class Home extends React.Component {
           <title>Pogify</title>
         </Helmet>
         <div className={styles.pogifyLogoWrapper}>
-          <img alt="" className={styles.pogifyLogoImage} src="/logo192.png"></img>
+          <img
+            alt=""
+            className={styles.pogifyLogoImage}
+            src="/logo192.png"
+          ></img>
           <h1 className={styles.pogifyLogoText}>POGIFY</h1>
         </div>
-        <p className={styles.pogifyCatchline}>Listen to music with your live audience without getting DMCA-striked!</p>
+        <p className={styles.pogifyCatchline}>
+          Listen to music with your live audience without getting DMCA-striked!
+        </p>
         <div className={styles.actionWrapper}>
-          <Link to="/session">
-            <button>
-              Join a Session
-            </button>
-          </Link>
-          <Link to="/create">
-            <button>
-              Start a session
-            </button>
+        {!(/Edge\/\d./i.test(navigator.userAgent)) && (
+            <Link to="/session" style={{textDecoration: "none"}}>
+              <div className={`${styles.actionButton} ${styles.joinButton}`}>
+                <div className={styles.actionIcon}>
+                  <img src="headphones.svg" alt="" />
+                </div>
+                <span className={styles.actionText}>Join a Session</span>
+              </div>
+            </Link>
+          )}
+          <Link to="/create" style={{textDecoration: "none"}}>
+            <div className={`${styles.actionButton} ${styles.hostButton}`}>
+              <div className={styles.actionIcon}>
+                <img src="play.svg" alt="" />
+              </div>
+              <span className={styles.actionText}>Host a session</span>
+            </div>
           </Link>
         </div>
-        <div className={styles.donationsWrapper}>
-          <p style={{"maxWidth": "55%"}}>Do you like what we're doing? Help us out with a donation to keep our dev servers running! Even just one dollar will help.</p>
-          <div style={{"width": "40%"}}><Donations /></div>
+        <div className={`${styles.donations}`}>
+          <p>Do you like what we're doing? Help us out to keep our servers running! Even just one dollar will help.</p>
+          <Donations noText buttonStyle={{padding: "1rem"}}/>
         </div>
 
       </Layout>

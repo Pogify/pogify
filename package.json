@@ -28,6 +28,7 @@
     "nanoid": "^3.1.12",
     "promise-retry": "^2.0.1",
     "react": "^16.13.1",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^5.2.0",
@@ -54,12 +55,14 @@
     "production": [
       ">0.2%",
       "not dead",
+      "edge >= 16",
       "not op_mini all"
     ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 safari version",
+      "edge >= 16"
     ]
   }
 }

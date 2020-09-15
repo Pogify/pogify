@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
+import { reaction } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
@@ -9,7 +10,6 @@ import debounce from "lodash/debounce";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -58,61 +58,75 @@ class HostPlayer extends React.Component {
         console.error(err);
       }
     });
-    playerStore.player.on("player_state_changed", this.handleData.bind(this));
+
+    this.updateReactionDisposer = reaction(
+      (r) => ({
+        uri: playerStore.uri,
+        playing: playerStore.playing,
+        diff: playerStore.diff,
+      }),
+      debounce(({ uri, playing }) => {
+        SessionManager.publishUpdate(
+          uri,
+          playerStore.position,
+          playing,
+          playerStore.track_window
+        );
+      }, 400),
+      {
+        equals: (a, b) => {
+          if (
+            a.uri !== b.uri ||
+            // if document is hidden setInterval gets throttled to once per sec. raise difference threshold in that case
+            b.diff > (document.hidden ? 2000 : 1000) ||
+            a.playing !== b.playing
+          ) {
+            return false;
+          }
+          return true;
+        },
+      }
+    );
+
     window.onbeforeunload = () => {
       // publish empty string uri on disconnect. Empty string uri means host disconnected
-      SessionManager.publishUpdate("", playerStore.position.value, false);
+      SessionManager.publishUpdate(
+        "",
+        playerStore.position.value,
+        false,
+        playerStore.track_window
+      );
     };
     this.setState({ loading: false });
   };
 
-  handleData = debounce((data) => {
-    // debounce incoming data.
-    let uri, position, playing;
-    if (data) {
-      uri = data.track_window.current_track.uri;
-      position = data.position;
-      playing = !data.paused;
-      // check that uri or playing changed
-      if (this.lastUpdate.uri !== uri || this.lastUpdate.playing !== playing) {
-        SessionManager.publishUpdate(uri, position, playing);
+  handleData = debounce(
+    (data) => {
+      // debounce incoming data.
+      let uri, position, playing;
+      if (data) {
+        uri = playerStore.uri;
+        position = data.position;
+        playing = !data.paused;
+        // check that uri or playing changed
       } else {
-        // if uri and playing didn't change then,
-        // check that difference is beyond threshold to update
-        // changes smaller than 1000 are considered stutters and changes greater than 1000 are considered seeks
-        console.log(
-          Math.abs(
-            position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
-          ),
-          position,
-          this.lastUpdate.position,
-          Date.now() - this.lastUpdate.time
-        );
-        if (
-          Math.abs(
-            position -
-            (this.lastUpdate.position + (Date.now() - this.lastUpdate.time))
-          ) > 1000
-        ) {
-          SessionManager.publishUpdate(uri, position, playing);
-        }
+        uri = "";
+        position = playerStore.position;
+        playing = false;
       }
-    } else {
-      uri = "";
-      position = playerStore.position;
-      playing = false;
       SessionManager.publishUpdate(uri, position, playing);
-    }
-    this.lastUpdate = {
-      uri,
-      playing,
-      position,
-      time: Date.now(),
-    };
-    // it seems 400 is about a good sweet spot for debounce.
-    // Hesitant to raise it anymore because it would increase latency to listener
-  }, 400, { leading: true });
+      this.lastUpdate = {
+        uri,
+        playing,
+        position,
+        time: Date.now(),
+      };
+      // it seems 400 is about a good sweet spot for debounce.
+      // Hesitant to raise it anymore because it would increase latency to listener
+    },
+    400,
+    { leading: true }
+  );
 
   componentDidMount() {
     // set the token refresh interval
@@ -122,11 +136,21 @@ class HostPlayer extends React.Component {
   async componentWillUnmount() {
     if (playerStore.player) {
       // publish unload update when unmounting player
-      await SessionManager.publishUpdate("", playerStore.position, false);
+      if (playerStore.position !== undefined) {
+        await SessionManager.publishUpdate(
+          "",
+          playerStore.position,
+          false,
+          playerStore.track_window
+        );
+      }
       playerStore.disconnectPlayer();
     }
     // remove onbeforeunload handler
     window.onbeforeunload = null;
+    if (typeof this.updateReactionDisposer === "function") {
+      this.updateReactionDisposer();
+    }
     // clear refresh interval
     clearInterval(this.refreshInterval);
   }
@@ -181,31 +205,42 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout>
-        <div className="flexContainer">
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session: {this.props.sessionId}</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
+            </div>
+          </div>
+
           <Player isHost />
-          <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <p className="textAlignLeft">
+
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
               You can continue using Spotify as you normally would. The music is
               playing through this browser tab, you can open this tab in a new
               window to exclude it from OBS.
-              <br></br>
-              <b>Please do not close this tab.</b>
-            </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink
-                href={window.location.href}
-                className={styles.shareLink}
-                title="Click to copy and share to your audience"
-              >
-                {window.location.href}
-              </CopyLink>
             </div>
-            <PoweredBySpotify />
-            <Donations />
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <Donations noText />
+            </div>
           </div>
         </div>
       </Layout>

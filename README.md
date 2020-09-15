@@ -1,6 +1,7 @@
 # Pogify
 
 [![Website www.pogify.net](https://img.shields.io/website?url=https%3A%2F%2Fwww.pogify.net)](https://www.pogify.net)
+
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PMHPX79UJJVTA&item_name=Pogify&currency_code=USD&source=url)
 [![Discord](https://img.shields.io/discord/744265206816833617.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bU6E9Xj)
 
@@ -91,7 +92,8 @@ This project is still in beta and as such, there are still lots of bugs.
 
 If you have an issue that isn't listed below or does not have an open issue, please help us by [opening a new one](https://github.com/Pogify/pogify/issues/new/choose).
 
-Currently the project is deployed on a free tier heroku dyno. Thus, we cannot use SSL with a custom domain. Thus, www.pogify.net redirects to the non-custom pogify.herokuapp.com for the moment.
+### Streamers are unable to separate audio from Pogify and their browser
+- Streamers must open the site in a different browser from their usual one if they wish to stream their browser. This is due to a limitation in how sound is handled in Windows -- audio can be controlled per program, but not per window. We are currently working on an official Windows client, but in the meantime, please feel free to begin streaming using a separate browser!
 
 ### Note: Pogify does **NOT** work on Safari, or Mobile Browsers
 
@@ -101,20 +103,20 @@ Currently the project is deployed on a free tier heroku dyno. Thus, we cannot us
 
 ### Major Issues
 
-2. Listener player may cut out a couple seconds to the end of a track.
+1. Listener player may cut out a couple seconds to the end of a track.
    - diagnosis: because of latency and things of this nature, host may send a new track update before the end of the listener's current track.
    - short-term solution: if the update is for the next track (ie position = 0) have player wait till end of track _or_ add as next song in queue for continuous playback.
    - long-term solution: listener player's queue should be synchronized with host's. If host updates with the start of the next track, listener should just continue.
-3. 'Join Session' / 'Start session' buttons sometimes do not work
-4. Incomplete error handling
-5. Leftover console.logs
-6. No nav bar or alternative
-7. Sessions may timeout even if its active.
-8. Excessive skipping forward or backwards will break listener.
+2. 'Join Session' / 'Start session' buttons sometimes do not work
+3. Incomplete error handling
+4. Leftover console.logs
+5. No nav bar or alternative
+6. Sessions may timeout even if its active.
+7. Excessive skipping forward or backwards will break listener.
    - diagnosis: repeated skips aren't captured by debouncer, probably because updates take longer than 300 to fire thus every skip is sent to the listener.
    - solution:
-9. ~~there are no tests.~~ there are two tests.
-10. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
+8. ~~there are no tests.~~ there are two tests.
+9. Pogify can't recognize seeks to 0 ~~sometimes~~ most of the time.
     - diagnosis: Spotify doesn't fire a state change event when seeking to 0 if already seeked to 0 once, so Pogify misses it.
     - solution: poll for spotify data periodically (ie once a second) using player.getCurrentState()
 
