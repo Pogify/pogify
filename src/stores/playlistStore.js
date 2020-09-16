@@ -105,7 +105,7 @@ export class PlaylistStore {
 
   getUserPlaylists = action(async () => {
     const playlists = await window.gapi.client.youtube.playlists.list({
-      part: "snippet",
+      part: "snippet,contentDetails",
       mine: "true",
       maxResults: "50",
     });

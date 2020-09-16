@@ -117,7 +117,7 @@ export const PlayerControls = observer((props) => {
       <div className={styles.navDiv}>
         {props.isHost && (
           <>
-            <div>
+            <div style={{ cursor: "pointer" }} onClick={playerStore.previous}>
               <FAI icon={faStepBackward} />
             </div>
             <div
@@ -133,7 +133,7 @@ export const PlayerControls = observer((props) => {
           </>
         )}
         <div style={{ flexGrow: 1 }} />
-        <div className={styles.nextVideoDiv}>
+        <div className={styles.nextVideoDiv} onClick={playerStore.next}>
           {nextVideo && (
             <>
               {props.isHost && (

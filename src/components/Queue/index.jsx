@@ -8,7 +8,7 @@ export default function Queue(props) {
         <h3>Queue</h3>
       </div>
       {props.items.map((item, i) => {
-        if (item.resourceId.videoId === props.currentId) {
+        if (item.id === props.currentId) {
           return <QueueItem current {...item} />;
         }
         return <QueueItem {...item} />;

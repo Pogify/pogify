@@ -14,6 +14,9 @@ import Player from "../Player";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
+import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
+import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./index.module.css";
 
 /**
@@ -137,14 +140,20 @@ class HostPlayer extends React.Component {
   render() {
     const Buttons = (
       <div>
+        <button>
+          <FAI icon={faPlus} />
+        </button>
+        <button onClick={() => this.setState({ tab: "queueItems" })}>
+          Queue
+        </button>
         <button onClick={() => this.setState({ tab: "playlists" })}>
           Playlists
         </button>
-        <button onClick={() => this.setState({ tab: "queueItems" })}>
-          queueItems
-        </button>
         <button onClick={() => this.setState({ tab: "current" })}>
           now Playing
+        </button>
+        <button>
+          <FAI icon={faSearch} />
         </button>
       </div>
     );
@@ -178,16 +187,14 @@ class HostPlayer extends React.Component {
         </div>
 
         <Player isHost />
-        <div className={`${styles.textWrapper} textAlignCenter`}>
-          <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
+        <div>
           {Buttons}
           {this.state.tab === "playlists" && <PlaylistList />}
           {this.state.tab === "queueItems" && (
             <pre style={{ textAlign: "left" }}>
               {JSON.stringify(
-                queueStore.queue.map((e) => {
-                  return queueStore.currentVideo.snippet.title ===
-                    e.snippet.title
+                queueStore.queue.map((e, i) => {
+                  return queueStore.currentIndex === i
                     ? "-> " + e.snippet.title
                     : e.snippet.title;
                 }),
@@ -201,10 +208,7 @@ class HostPlayer extends React.Component {
               {JSON.stringify(queueStore.current.snippet.title, undefined, 2)}
             </pre>
           )}
-          <div>
-            <button onClick={() => playerStore.previous()}>Previous</button>
-            <button onClick={() => playerStore.next()}>Next</button>
-          </div>
+
           <div className={styles.shareExplanations}>
             Share the URL below to listen with others:
             <br />
@@ -257,25 +261,59 @@ class _PlaylistList extends React.Component {
           />
           <button type="submit">Load Video</button>
         </form>
-        <div style={{ height: 300, overflow: "auto" }}>
-          <div>
-            {playlistStore.playlists.map((item) => {
-              return (
-                <div
-                  key={item.Id}
-                  onClick={(e) => {
-                    playlistStore.addPlaylistToQueue(item.id);
-                  }}
-                >
-                  <img src={item.snippet.thumbnails.default.url} alt="" />
-                  {item.snippet.title}
-                </div>
-              );
-            })}
-          </div>
+        <div
+          style={{
+            height: 300,
+            overflow: "auto",
+            display: "flex",
+            flexFlow: "row wrap",
+          }}
+        >
+          {playlistStore.playlists.map((item) => {
+            return (
+              <PlaylistCard
+                key={item.id}
+                imgUrl={item.snippet.thumbnails.medium.url}
+                title={item.snippet.title}
+                channel={item.snippet.channelTitle}
+                length={item.contentDetails.itemCount}
+                id={item.id}
+              />
+            );
+          })}
         </div>
       </div>
     );
   }
 }
 const PlaylistList = observer(_PlaylistList);
+
+const PlaylistCard = (props) => {
+  return (
+    <div
+      onClick={(e) => {
+        playlistStore.addPlaylistToQueue(props.id);
+      }}
+      style={{ cursor: "pointer", width: 180, margin: 10 }}
+    >
+      <div
+        style={{
+          marginBlock: 5,
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <img
+          src={props.imgUrl}
+          alt={`thumbnail for ${props.title}`}
+          width="180px"
+        />
+      </div>
+      <div>{props.title}</div>
+      <div>
+        {props.channel} - {props.length} videos
+      </div>
+    </div>
+  );
+};

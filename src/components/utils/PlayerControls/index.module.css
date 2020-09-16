@@ -154,6 +154,8 @@
   border-style: solid;
   padding: 5px;
   background: white;
+  cursor: pointer;
+  height: 72px;
 }
 
 :global(.theme-dark) .nextVideoDiv {
