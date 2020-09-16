@@ -94,11 +94,7 @@ export class PlayerStore {
     console.log(this.videoId);
     if (this.videoId === null) {
       if (queueStore.currentVideo) {
-        this.newVideo(
-          queueStore.currentVideo.snippet.resourceId.videoId,
-          0,
-          true
-        );
+        this.newVideo(queueStore.currentVideo.id, 0, true);
       }
     } else {
       this.player.playVideo();
@@ -140,22 +136,14 @@ export class PlayerStore {
   };
 
   next = () => {
-    this.newVideo(
-      queueStore.nextVideo().snippet.resourceId.videoId,
-      undefined,
-      true
-    );
+    this.newVideo(queueStore.nextVideo().id, undefined, true);
   };
 
   previous = () => {
-    this.newVideo(
-      queueStore.previousVideo().snippet.resourceId.videoId,
-      undefined,
-      true
-    );
+    this.newVideo(queueStore.previousVideo().id, undefined, true);
   };
 
   cueQueue = () => {
-    this.newVideo(queueStore.currentVideo.snippet.resourceId.videoId, 0, false);
+    this.newVideo(queueStore.currentVideo.id, 0, false);
   };
 }

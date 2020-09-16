@@ -2,7 +2,6 @@
   display: flex;
   justify-content: center;
   margin: 10px;
-  width: 70%;
   align-items: center;
 }
 
@@ -10,12 +9,16 @@
   display: flex;
   justify-content: center;
   margin: 10px;
-  width: 30%;
+  width: 200px;
   align-items: center;
 }
 
 .muteButton {
   cursor: pointer;
+}
+
+.videoTitleDiv {
+  flex-grow: 1;
 }
 
 /* Progress bar */
@@ -129,4 +132,35 @@
   cursor: pointer;
   font-size: 2rem;
   line-height: 80px;
+}
+
+.navDiv {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+}
+
+.navDiv > * {
+  margin: 0 5px;
+}
+
+.nextVideoDiv {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  padding: 5px;
+  background: white;
+}
+
+:global(.theme-dark) .nextVideoDiv {
+  background: #202020;
+  border-color: white;
+}
+
+.nextVideoDiv > div {
+  margin: 0 5px;
 }

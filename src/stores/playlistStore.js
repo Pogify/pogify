@@ -10,6 +10,7 @@ export class PlaylistStore {
       playlists: [],
       playlistsNextPageToken: "",
       playlistCache: {},
+      videosCache: {},
     });
 
     this.playlistGetterOnSigninAutorunDisposer = autorun((r) => {
@@ -37,10 +38,18 @@ export class PlaylistStore {
     let playlistItemsRes = await window.gapi.client.youtube.playlistItems.list({
       playlistId,
       maxResults: 50,
-      part: "snippet",
+      part: "contentDetails",
     });
+
+    let videosRes = await window.gapi.client.youtube.videos.list({
+      id: playlistItemsRes.result.items.map(
+        (item) => item.contentDetails.videoId
+      ),
+      part: ["snippet", "statistics"],
+    });
+    console.log(videosRes);
     this.playlistCache[playlistId] = {
-      items: playlistItemsRes.result.items,
+      items: videosRes.result.items,
       nextPageToken: playlistItemsRes.result.nextPageToken,
     };
     return this.playlistCache[playlistId];
@@ -59,10 +68,16 @@ export class PlaylistStore {
     let playlistItemsRes = await window.gapi.client.youtube.playlistItems.list({
       playlistId,
       maxResults: 50,
-      part: "snippet",
+      part: "contentDetails",
       pageToken: this.playlistCache[playlistId].nextPageToken,
     });
-    runInAction(() => {
+    runInAction(async () => {
+      let videosRes = await window.gapi.client.youtube.videos.list({
+        id: playlistItemsRes.result.items.map(
+          (item) => item.contentDetails.videoId
+        ),
+      });
+
       this.playlistCache[playlistId].items = this.playlistCache[
         playlistId
       ].items.concat(playlistItemsRes.result.items);

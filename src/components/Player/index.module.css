@@ -59,13 +59,9 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
-  width: 840px;
+  align-items: center;
+  width: 80%;
   flex-direction: column;
-}
-
-.container > div {
-  border-radius: 16px;
 }
 
 .titleBar {
@@ -76,15 +72,27 @@
   align-items: center;
 }
 
+/*  */
 .player {
-  height: 400px;
 }
 
 .playerDiv {
   margin-top: 40px;
-  width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.controlsDiv {
+  width: 600px;
+  padding: 10px 40px;
+}
+
+.videoDetailsDiv {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
 }
 
 .albumArt {

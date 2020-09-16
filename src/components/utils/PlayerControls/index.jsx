@@ -1,7 +1,7 @@
 import React from "react";
 
-import { playerStore } from "../../../stores";
-import { secondsToTimeFormat } from "../../../utils/formatters";
+import { playerStore, queueStore } from "../../../stores";
+import { secondsToTimeFormat, numFormatter } from "../../../utils/formatters";
 
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +9,8 @@ import {
   faPause,
   faVolumeUp,
   faVolumeMute,
+  faStepForward,
+  faStepBackward,
 } from "@fortawesome/free-solid-svg-icons";
 import { Progress } from "semantic-ui-react";
 
@@ -67,8 +69,37 @@ export const PlayerControls = observer((props) => {
     console.log("mouseUp");
     playerStore.seeking = false;
   };
+
+  const currentVideo = queueStore.currentVideo;
+  const nextVideo = queueStore.queue[queueStore.currentIndex + 1];
+
   return (
     <div>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div className={styles.videoTitleDiv}>
+          {currentVideo && (
+            <>
+              <h2 style={{ marginTop: 0 }}>{currentVideo.snippet.title}</h2>
+              <div>{currentVideo.snippet.channelTitle}</div>
+            </>
+          )}
+        </div>
+        <div className={styles.volumeContainer}>
+          <FAI
+            icon={faVolumeMute}
+            className={styles.muteButton}
+            onClick={playerStore.setMute}
+          />
+          <CustomSlider
+            value={input(parseFloat(playerStore.volume))}
+            onChange={setVolume}
+            min={-1}
+            max={1}
+            step={0.01}
+            canChange
+          />
+        </div>
+      </div>
       <div className={styles.seekContainer}>
         {secondsToTimeFormat(playerStore.position)}
         <CustomSlider
@@ -83,30 +114,48 @@ export const PlayerControls = observer((props) => {
         />
         {secondsToTimeFormat(playerStore.duration)}
       </div>
-      <div className={styles.volumeContainer}>
-        <FAI
-          icon={faVolumeMute}
-          className={styles.muteButton}
-          onClick={playerStore.setMute}
-        />
-        <CustomSlider
-          value={input(parseFloat(playerStore.volume))}
-          onChange={setVolume}
-          min={-1}
-          max={1}
-          step={0.01}
-          canChange
-        />
-        <FAI icon={faVolumeUp} />
-      </div>
-      {props.isHost && (
-        <div
-          className={styles.playButtonWrapper}
-          onClick={playerStore.togglePlay}
-        >
-          {playerStore.playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+      <div className={styles.navDiv}>
+        {props.isHost && (
+          <>
+            <div>
+              <FAI icon={faStepBackward} />
+            </div>
+            <div
+              className={styles.playButtonWrapper}
+              onClick={playerStore.togglePlay}
+            >
+              {playerStore.playing ? (
+                <FAI icon={faPause} />
+              ) : (
+                <FAI icon={faPlay} />
+              )}
+            </div>
+          </>
+        )}
+        <div style={{ flexGrow: 1 }} />
+        <div className={styles.nextVideoDiv}>
+          {nextVideo && (
+            <>
+              {props.isHost && (
+                <div>
+                  <FAI icon={faStepForward} />
+                </div>
+              )}
+              <img
+                src={nextVideo.snippet.thumbnails.default.url}
+                alt={`thumbnail for next video: ${nextVideo.snippet.title}`}
+                height="70px"
+                // width="100%"
+              />
+              <div style={{ lineHeight: "1.5rem" }}>
+                <div>{nextVideo.snippet.title}</div>
+                <div>{nextVideo.snippet.channelTitle}</div>
+                <div>{numFormatter(nextVideo.statistics.viewCount)} views</div>
+              </div>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 });

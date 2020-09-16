@@ -182,7 +182,7 @@ export const publishUpdate = (videoId, position, playing, queue) => {
 };
 
 export const makeRequest = (provider, token, request, session) => {
-  const rx = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+  const rx = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/;
   const match = request.match(rx);
   if (!match) return Promise.reject(new Error("invalid request"));
 

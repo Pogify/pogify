@@ -9,21 +9,15 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
-  width: 840px;
+  width: 100%;
   flex-direction: column;
-}
-
-.container > div {
-  border-radius: 16px;
 }
 
 .titleBar {
   color: white;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-
+  justify-content: space-around;
   align-items: center;
 }
 

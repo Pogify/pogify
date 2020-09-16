@@ -1,7 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react";
 import * as SessionManager from "../../utils/sessionManager";
-import { playerStore } from "../../stores";
+import { numFormatter } from "../../utils/formatters";
+import { playerStore, queueStore } from "../../stores";
 
 import "semantic-ui-css/components/progress.min.css";
 import YouTube from "react-youtube";
@@ -69,13 +70,12 @@ const TrackMetadata = observer(() => {
  * Player component
  */
 export const Player = observer((props) => {
+  if (!queueStore.currentVideo) return null;
   return (
     <div className={styles.playerDiv}>
       <YouTube
         className={styles.player}
         opts={{
-          // width: "100%",
-          // height: "100%",
           playerVars: {
             controls: props.showControls,
           },
@@ -84,7 +84,29 @@ export const Player = observer((props) => {
         onStateChange={playerStore.handleEvents}
       />
       {/* <TrackMetadata /> */}
-      <PlayerControls isHost={props.isHost} />
+      <div className={styles.controlsDiv}>
+        <PlayerControls isHost={props.isHost} />
+        <div className={styles.videoDetailsDiv}>
+          <div>
+            <div>
+              {numFormatter(queueStore.currentVideo.statistics.viewCount)} views
+            </div>
+            <div>
+              {new Date(
+                queueStore.currentVideo.snippet.publishedAt
+              ).toDateString()}
+            </div>
+            <div>
+              {queueStore.currentVideo.snippet.description.substr(0, 100)} ...
+            </div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div>{SessionManager.SessionCount.get()}</div>
+            <div>listeners</div>
+            <div>more &gt;</div>
+          </div>
+        </div>
+      </div>
       {props.children}
     </div>
   );
