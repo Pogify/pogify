@@ -14,9 +14,9 @@
   background: #202020;
 }
 
-/* .card:focus {
-  margin-bottom:;
-} */
+.card:focus {
+  margin-bottom: 500px;
+}
 
 .thumbnail {
   margin-block: 5px;
