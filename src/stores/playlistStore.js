@@ -21,9 +21,9 @@ export class PlaylistStore {
     });
   }
 
-  addPlaylistToQueue = async (playlistId) => {
+  addPlaylistToQueue = async (playlistId, play = false) => {
     let playlistItems = await this.getPlaylistItems(playlistId);
-    queueStore.addMultipleToQueue(playlistItems.items);
+    queueStore.addMultipleToQueue(playlistItems.items, play);
   };
 
   getPlaylistItems = async (playlistId, force) => {

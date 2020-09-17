@@ -91,7 +91,7 @@ export const PlayerControls = observer((props) => {
             onClick={playerStore.setMute}
           />
           <CustomSlider
-            value={input(parseFloat(playerStore.volume))}
+            value={input(parseFloat(playerStore.volume)) || 0}
             onChange={setVolume}
             min={-1}
             max={1}

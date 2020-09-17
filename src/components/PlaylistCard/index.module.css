@@ -1,0 +1,90 @@
+.card {
+  width: 180px;
+  padding: 10px;
+  margin: 10px;
+  height: 100%;
+  background: white;
+  /* position: relative; */
+  border-radius: 10px;
+
+  transition: margin-bottom 400ms;
+}
+
+:global(.theme-dark) .card {
+  background: #202020;
+}
+
+/* .card:focus {
+  margin-bottom:;
+} */
+
+.thumbnail {
+  margin-block: 5px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.queueControl {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 40px;
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  transition: opacity 150ms;
+}
+
+.queueControl:hover {
+  opacity: 1;
+}
+
+.queueControl > div {
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+  outline: none;
+}
+
+.queueControl > div::after {
+  content: attr(data-hover);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  display: none;
+  transition: opacity 200ms;
+
+  font-size: 1rem;
+  white-space: nowrap;
+
+  background: black;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.queueControl > div:hover::after {
+  opacity: 1;
+  display: unset;
+}
+
+.playlistItems {
+  background: white;
+  position: absolute;
+  margin: 20px;
+  padding: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:global(.theme-dark) .playlistItems {
+  background: #202020;
+}

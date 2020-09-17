@@ -18,6 +18,7 @@ import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./index.module.css";
+import { PlaylistCard } from "../PlaylistCard";
 
 /**
  * HostPlayer handles logic for Pogify Host
@@ -57,7 +58,12 @@ class HostPlayer extends React.Component {
     });
 
     this.nextTrackDisposer = autorun(() => {
-      if (playerStore.ended) {
+      if (
+        playerStore.ended ||
+        playerStore.error === 150 ||
+        playerStore.error === 101 ||
+        playerStore.error === 100
+      ) {
         let nextVideo = queueStore.nextVideo();
         if (nextVideo) {
           playerStore.newVideo(nextVideo.id, 0, true);
@@ -98,7 +104,8 @@ class HostPlayer extends React.Component {
             playerStore.ended ||
             playerStore.unstarted ||
             playerStore.buffering ||
-            playerStore.seeking
+            playerStore.seeking ||
+            playerStore.error
           );
         },
       }
@@ -187,7 +194,7 @@ class HostPlayer extends React.Component {
         </div>
 
         <Player isHost />
-        <div>
+        <div style={{ maxWidth: 1320 }}>
           {Buttons}
           {this.state.tab === "playlists" && <PlaylistList />}
           {this.state.tab === "queueItems" && (
@@ -205,7 +212,11 @@ class HostPlayer extends React.Component {
           )}
           {this.state.tab === "current" && (
             <pre style={{ textAlign: "left" }}>
-              {JSON.stringify(queueStore.current.snippet.title, undefined, 2)}
+              {JSON.stringify(
+                queueStore.currentVideo.snippet.title,
+                undefined,
+                2
+              )}
             </pre>
           )}
 
@@ -263,10 +274,11 @@ class _PlaylistList extends React.Component {
         </form>
         <div
           style={{
-            height: 300,
             overflow: "auto",
             display: "flex",
             flexFlow: "row wrap",
+            position: "relative",
+            justifyContent: "center",
           }}
         >
           {playlistStore.playlists.map((item) => {
@@ -287,33 +299,3 @@ class _PlaylistList extends React.Component {
   }
 }
 const PlaylistList = observer(_PlaylistList);
-
-const PlaylistCard = (props) => {
-  return (
-    <div
-      onClick={(e) => {
-        playlistStore.addPlaylistToQueue(props.id);
-      }}
-      style={{ cursor: "pointer", width: 180, margin: 10 }}
-    >
-      <div
-        style={{
-          marginBlock: 5,
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <img
-          src={props.imgUrl}
-          alt={`thumbnail for ${props.title}`}
-          width="180px"
-        />
-      </div>
-      <div>{props.title}</div>
-      <div>
-        {props.channel} - {props.length} videos
-      </div>
-    </div>
-  );
-};

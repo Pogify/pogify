@@ -18,12 +18,13 @@ export class PlayerStore {
       ended: false,
       buffering: true,
       cued: false,
+      error: null,
       p0: 0,
       t0: Date.now(),
       t1: Date.now(),
       duration: 0,
       seeking: false,
-      volume: window.localStorage.getItem("pogify:volume"),
+      volume: window.localStorage.getItem("pogify:volume") || 0.2,
     });
 
     setInterval(
@@ -43,7 +44,7 @@ export class PlayerStore {
   });
 
   onYoutubeReady = action(({ target }) => {
-    console.log("a");
+    console.log("yt ready");
     this.youTubeReady = true;
     target.setVolume(this.volume * 100);
 
@@ -58,6 +59,7 @@ export class PlayerStore {
 
   handleEvents = action(({ target, data, initialVol }) => {
     console.log(data);
+    this.error = null;
     this.player = target;
 
     this.playing = data === 1;
@@ -65,7 +67,7 @@ export class PlayerStore {
     this.ended = data === 0;
     this.buffering = data === 3;
     this.videoCued = data === 5;
-    this.duration = target.getDuration();
+    this.duration = target.getDuration() || 0;
 
     let videoUrl = target.getVideoUrl();
 
@@ -79,6 +81,35 @@ export class PlayerStore {
 
     this.volume = initialVol || target.getVolume() / 100;
     window.player = target;
+  });
+
+  handleErrors = action(({ target, data }) => {
+    this.playing = false;
+    this.unstarted = false;
+    this.buffering = false;
+    this.videoCued = false;
+    this.duration = target.getDuration();
+    this.error = data;
+
+    switch (data) {
+      case 2:
+        console.error("yt error: 2");
+        break;
+      case 5:
+        console.error("yt error: 5");
+        break;
+      case 100:
+        console.error("yt error: 100");
+        break;
+      case 101:
+        console.error("yt error: 101");
+        break;
+      case 150:
+        console.error("yt error: 105");
+        break;
+      default:
+        console.error(new Error("unknown yt iframe error"));
+    }
   });
 
   togglePlay = () => {
@@ -144,6 +175,7 @@ export class PlayerStore {
   };
 
   cueQueue = () => {
+    this.videoId = null;
     this.newVideo(queueStore.currentVideo.id, 0, false);
   };
 }

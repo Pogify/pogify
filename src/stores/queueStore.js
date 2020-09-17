@@ -26,11 +26,11 @@ export class QueueStore {
     this.queue.splice(1, 0, item);
   });
 
-  addMultipleToQueue = action((items) => {
+  addMultipleToQueue = action((items, play = false) => {
     // add to queue
     this.queue = this.queue.concat(items);
     // if nothing queued then cue video.
-    if (playerStore.videoId === null) {
+    if (playerStore.videoId === null || play) {
       playerStore.cueQueue();
     }
   });

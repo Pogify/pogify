@@ -70,52 +70,64 @@ const TrackMetadata = observer(() => {
  * Player component
  */
 export const Player = observer((props) => {
-  if (!queueStore.currentVideo) return null;
   return (
-    <div className={styles.playerDiv}>
-      <YouTube
-        className={styles.player}
-        opts={{
-          playerVars: {
-            controls: props.showControls,
-          },
-        }}
-        onReady={playerStore.onYoutubeReady}
-        onStateChange={playerStore.handleEvents}
-      />
-      {/* <TrackMetadata /> */}
-      <div className={styles.controlsDiv}>
-        <PlayerControls isHost={props.isHost} />
-        <div className={styles.videoDetailsDiv}>
-          <div>
+    <>
+      <div style={{ display: Boolean(queueStore.currentVideo) ? "none" : "" }}>
+        Init message
+      </div>
+      <div
+        className={styles.playerDiv}
+        style={{ display: Boolean(queueStore.currentVideo) ? "" : "none" }}
+      >
+        <YouTube
+          className={styles.player}
+          opts={{
+            playerVars: {
+              controls: props.showControls,
+            },
+          }}
+          onReady={playerStore.onYoutubeReady}
+          onStateChange={playerStore.handleEvents}
+          onError={playerStore.handleErrors}
+        />
+        {/* <TrackMetadata /> */}
+        <div className={styles.controlsDiv}>
+          <PlayerControls isHost={props.isHost} />
+          <div className={styles.videoDetailsDiv}>
             <div>
-              {numFormatter(queueStore.currentVideo.statistics.viewCount)} views
+              <div>
+                {queueStore.currentVideo &&
+                  numFormatter(
+                    queueStore.currentVideo.statistics.viewCount
+                  )}{" "}
+                views
+              </div>
+              <div>
+                {queueStore.currentVideo &&
+                  new Date(
+                    queueStore.currentVideo.snippet.publishedAt
+                  ).toDateString()}
+              </div>
+              <div>
+                {queueStore.currentVideo &&
+                  queueStore.currentVideo.snippet.description.substr(
+                    0,
+                    100
+                  )}{" "}
+                ...
+              </div>
             </div>
-            <div>
-              {new Date(
-                queueStore.currentVideo.snippet.publishedAt
-              ).toDateString()}
+            <div style={{ textAlign: "right" }}>
+              <div>{SessionManager.SessionCount.get()}</div>
+              <div>listeners</div>
+              <div>more &gt;</div>
             </div>
-            <div>
-              {queueStore.currentVideo.snippet.description.substr(0, 100)} ...
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div>{SessionManager.SessionCount.get()}</div>
-            <div>listeners</div>
-            <div>more &gt;</div>
           </div>
         </div>
+        {props.children}
       </div>
-      {props.children}
-    </div>
+    </>
   );
-  // return (
-  //   <div className={styles.player}>
-  //     <TrackMetadata />
-  //     {props.children}
-  //   </div>
-  // );
 });
 
 export default Player;
