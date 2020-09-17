@@ -41,7 +41,7 @@ class ListenerPlayer extends React.Component {
     strict: true,
     hasSpotifyWindow: false,
     hasStandaloneSpotifyWindow: false,
-    spotifyFree: false
+    spotifyFree: false,
   };
 
   /**
@@ -271,7 +271,6 @@ class ListenerPlayer extends React.Component {
     if (uri !== playerStore.uri) {
       await playerStore.pause();
       console.log(uri, "!==", playerStore.uri);
-      let indexOf = playerStore.track_window.indexOf(uri);
 
       this.spotifyWindow.location =
         "https://open.spotify.com/track/" + uri.split(":")[2];
@@ -385,12 +384,14 @@ class ListenerPlayer extends React.Component {
                 "spotifyWindow"
                 // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
               );
-              window.addEventListener("beforeunload", () => this.spotifyWindow.close());
+              window.addEventListener("beforeunload", () =>
+                this.spotifyWindow.close()
+              );
               this.openInterval = setInterval(() => {
                 if (this.spotifyWindow.closed) {
                   this.setState({
                     hasSpotifyWindow: false,
-                    hasStandaloneSpotifyWindow: false
+                    hasStandaloneSpotifyWindow: false,
                   });
                 }
               }, 1000);
@@ -464,7 +465,6 @@ class ListenerPlayer extends React.Component {
             </div>
           </div>
           <Player isHost={false} warn={!this.state.synced} />
-
 
           <div className={styles.infoBar}>
             <div className={styles.info}>

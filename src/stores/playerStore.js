@@ -258,7 +258,6 @@ export class PlayerStore {
    * @param {number} pos_ms millisecond position
    */
   newTrack = async (uri, pos_ms, playing, track_window) => {
-    let t0 = Date.now();
     return promiseRetry(
       async (retry) => {
         try {
@@ -393,154 +392,156 @@ export class PlayerStore {
    * @param {string} title
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
-  initializePlayer = action((title, connect = true, listenerPlayer = null, ignoreTimeout = false) => {
-    if (!ignoreTimeout) {
-      if (this.initializeWaiting) clearTimeout(this.initializeWaiting);
-      this.initializeWaiting = setTimeout(() => {
-        Sentry.captureMessage("Spotify Initialize timeout");
-        modalStore.queue(
-          <WarningModal
-            key="LongSpotifyWait"
-            title="It seems like its taking a while to connect to Spotify."
-            content="You can keep waiting or refresh and try again"
-          />
-        );
-      }, 15000);
-    }
-    return new Promise(async (resolve, reject) => {
-      // if player is already connected update name and whether its host, then return
-      if (this.player && this.player.setName) {
-        await this.player.setName(title);
-        return resolve();
-      }
-      // if spotify is not ready then wait till ready then call this function
-      if (!window.spotifyReady) {
-        window.onSpotifyWebPlaybackSDKReady = () => {
-          // set global tracker to true
-          window.spotifyReady = true;
-
-          // now call this function
-          this.initializePlayer(title)
-            .then((device_id) => {
-              resolve(device_id);
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        };
-        return;
-      }
-
-      // make spotify playback sdk object
-      let player = new window.Spotify.Player({
-        volume: this.volume,
-        name: title,
-        getOAuthToken: async (callback) => {
-          let token = await this.getOAuthToken();
-          callback(token);
-        },
-      });
-      // authentication_error handler
-      player.on("initialization_error", reject);
-      player.on("authentication_error", ({ message }) => {
-        modalStore.queue(
-          <ErrorModal
-            errorCode="Spotify Authentication Error"
-            errorMessage={`${message}. Refresh and try again.`}
-          />
-        );
-        this.error_type = "authentication_error";
-        this.error_message = message;
-      });
-
-      // TODO: proper error handling
-      player.on("account_error", ({ message }) => {
-        modalStore.queue(
-          <ErrorModal
-            errorCode="Spotify Account Error"
-            errorMessage={`${message} Refresh and try again.`}
-          />
-        );
-        this.error_type = "account_error";
-        this.error_message = message;
-      });
-      player.on("playback_error", ({ message }) => {
-        if (!listenerPlayer.state.hasStandaloneSpotifyWindow) {
-          console.log("Interpreting playback_error as a free account error");
-          clearTimeout(this.initializeWaiting);
+  initializePlayer = action(
+    (title, connect = true, listenerPlayer = null, ignoreTimeout = false) => {
+      if (!ignoreTimeout) {
+        if (this.initializeWaiting) clearTimeout(this.initializeWaiting);
+        this.initializeWaiting = setTimeout(() => {
+          Sentry.captureMessage("Spotify Initialize timeout");
           modalStore.queue(
             <WarningModal
-              title="Spotify Free Account"
-              content={`You are using a Spotify free account. Some playback features (seeking, ad-free music, etc.) will not be available.
-            Additionally, a background Spotify window is required for free users.`}
-              closeModal={() => {
-                listenerPlayer.spotifyWindow.close();
-                window.external.returned = () => {
-                  modalStore.closeModal();
-                  listenerPlayer.connect(true);
-                  listenerPlayer.setState({
-                    hasStandaloneSpotifyWindow: true
-                  });
-                };
-                listenerPlayer.spotifyWindow = window.open(
-                  "/popunder",
-                  "spotifyWindow",
-                  "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
-                );
-                listenerPlayer.setState({
-                  spotifyFree: true
-                });
-              }}
-              buttonMessage="Open Background Window"
+              key="LongSpotifyWait"
+              title="It seems like its taking a while to connect to Spotify."
+              content="You can keep waiting or refresh and try again"
+            />
+          );
+        }, 15000);
+      }
+      return new Promise(async (resolve, reject) => {
+        // if player is already connected update name and whether its host, then return
+        if (this.player && this.player.setName) {
+          await this.player.setName(title);
+          return resolve();
+        }
+        // if spotify is not ready then wait till ready then call this function
+        if (!window.spotifyReady) {
+          window.onSpotifyWebPlaybackSDKReady = () => {
+            // set global tracker to true
+            window.spotifyReady = true;
+
+            // now call this function
+            this.initializePlayer(title)
+              .then((device_id) => {
+                resolve(device_id);
+              })
+              .catch((e) => {
+                reject(e);
+              });
+          };
+          return;
+        }
+
+        // make spotify playback sdk object
+        let player = new window.Spotify.Player({
+          volume: this.volume,
+          name: title,
+          getOAuthToken: async (callback) => {
+            let token = await this.getOAuthToken();
+            callback(token);
+          },
+        });
+        // authentication_error handler
+        player.on("initialization_error", reject);
+        player.on("authentication_error", ({ message }) => {
+          modalStore.queue(
+            <ErrorModal
+              errorCode="Spotify Authentication Error"
+              errorMessage={`${message}. Refresh and try again.`}
             />
           );
           this.error_type = "authentication_error";
           this.error_message = message;
-        }
-      });
-      player.on("not_ready", () => {
-        modalStore.queue(
-          <ErrorModal
-            errorCode="Spotify Not Ready Error"
-            errorMessage="Spotify is not ready. Refresh and try again."
-          />
-        );
-        this.error_type = "not_ready";
-        this.error_message = "Player not Ready";
-      });
+        });
 
-      // ready callback
-      player.on("ready", ({ device_id }) => {
-        // set device id
-        this.device_id = device_id;
-        // clear player object if it already exists
-        this.player = player;
-        // if there is a long wait modal then close it
-        if (
-          modalStore.current &&
-          modalStore.current.key === "LongSpotifyWait"
-        ) {
-          modalStore.closeModal();
-        }
+        // TODO: proper error handling
+        player.on("account_error", ({ message }) => {
+          modalStore.queue(
+            <ErrorModal
+              errorCode="Spotify Account Error"
+              errorMessage={`${message} Refresh and try again.`}
+            />
+          );
+          this.error_type = "account_error";
+          this.error_message = message;
+        });
+        player.on("playback_error", ({ message }) => {
+          if (!listenerPlayer.state.hasStandaloneSpotifyWindow) {
+            console.log("Interpreting playback_error as a free account error");
+            clearTimeout(this.initializeWaiting);
+            modalStore.queue(
+              <WarningModal
+                title="Spotify Free Account"
+                content={`You are using a Spotify free account. Some playback features (seeking, ad-free music, etc.) will not be available.
+            Additionally, a background Spotify window is required for free users.`}
+                closeModal={() => {
+                  listenerPlayer.spotifyWindow.close();
+                  window.external.returned = () => {
+                    modalStore.closeModal();
+                    listenerPlayer.connect(true);
+                    listenerPlayer.setState({
+                      hasStandaloneSpotifyWindow: true,
+                    });
+                  };
+                  listenerPlayer.spotifyWindow = window.open(
+                    "/popunder",
+                    "spotifyWindow",
+                    "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
+                  );
+                  listenerPlayer.setState({
+                    spotifyFree: true,
+                  });
+                }}
+                buttonMessage="Open Background Window"
+              />
+            );
+            this.error_type = "authentication_error";
+            this.error_message = message;
+          }
+        });
+        player.on("not_ready", () => {
+          modalStore.queue(
+            <ErrorModal
+              errorCode="Spotify Not Ready Error"
+              errorMessage="Spotify is not ready. Refresh and try again."
+            />
+          );
+          this.error_type = "not_ready";
+          this.error_message = "Player not Ready";
+        });
 
-        // clear the long wait timeout
-        clearTimeout(this.initializeWaiting);
-        // if connect is true call connect to player
-        if (connect) {
-          resolve(device_id);
-          // this.connectToPlayer(device_id).then(() => {
-          //   resolve();
-          // });
-          // TODO: error handling
-        } else {
-          resolve();
-        }
+        // ready callback
+        player.on("ready", ({ device_id }) => {
+          // set device id
+          this.device_id = device_id;
+          // clear player object if it already exists
+          this.player = player;
+          // if there is a long wait modal then close it
+          if (
+            modalStore.current &&
+            modalStore.current.key === "LongSpotifyWait"
+          ) {
+            modalStore.closeModal();
+          }
+
+          // clear the long wait timeout
+          clearTimeout(this.initializeWaiting);
+          // if connect is true call connect to player
+          if (connect) {
+            resolve(device_id);
+            // this.connectToPlayer(device_id).then(() => {
+            //   resolve();
+            // });
+            // TODO: error handling
+          } else {
+            resolve();
+          }
+        });
+
+        // start connecting player
+        player.connect();
       });
-
-      // start connecting player
-      player.connect();
-    });
-  });
+    }
+  );
 
   connectToPlayer = async (device_id, play = false) => {
     // get current access token
@@ -707,7 +708,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-      }`;
+    }`;
   };
 }
 
@@ -750,7 +751,7 @@ async function pkce_challenge_from_verifier(v) {
 // Text-encoder polyfill
 
 if (typeof window.TextEncoder === "undefined") {
-  window.TextEncoder = function TextEncoder() { };
+  window.TextEncoder = function TextEncoder() {};
   window.TextEncoder.prototype.encode = function encode(str) {
     var Len = str.length,
       resPos = -1;
@@ -761,7 +762,7 @@ if (typeof window.TextEncoder === "undefined") {
       typeof Uint8Array === "undefined"
         ? new Array(Len * 1.5)
         : new Uint8Array(Len * 3);
-    for (var point = 0, nextcode = 0, i = 0; i !== Len;) {
+    for (var point = 0, nextcode = 0, i = 0; i !== Len; ) {
       point = str.charCodeAt(i);
       i += 1;
       if (point >= 0xd800 && point <= 0xdbff) {
