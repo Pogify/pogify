@@ -12,8 +12,10 @@ import NewTabLink from "../components/utils/NewTabLink.jsx";
 function Layout(props) {
   let { theme, toggleTheme } = themeStore;
 
+
   let contentClass = `${styles.content}`;
   const darkMode = theme === "dark";
+
   if (darkMode) {
     contentClass += ` ${styles.darkContent}`;
   }

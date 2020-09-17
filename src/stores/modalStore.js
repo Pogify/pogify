@@ -85,13 +85,13 @@ export class ModalStore {
    * @param {JSX} Modal
    */
   inject = (element) => {
-    if (element.props.closeModal) {
-      console.error("modal has closeModal defined already, will be replaced");
-    }
+    // if (element.props.closeModal) {
+    //   console.error("modal has closeModal defined already, will be replaced");
+    // }
 
     return React.cloneElement(
       element,
-      { closeModal: this.closeModal },
+      { closeModal: element.props.closeModal || this.closeModal },
       element.props.children
     );
   };

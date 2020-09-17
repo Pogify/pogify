@@ -87,11 +87,10 @@ export class PlayerStore {
             if (this.position !== data.position) {
               this.position = data.position;
             }
-            // only update uri if it changed
             let uri = data.track_window.current_track.uri;
-            if (this.uri !== uri) {
-              this.uri = data.track_window.current_track.uri;
-            }
+            // if (this.uri !== uri) {
+            this.uri = uri; // data.track_window.current_track.uri;
+            // }
 
             let track_window = [
               ...data.track_window.previous_tracks.map((e) => e.uri),
@@ -263,23 +262,23 @@ export class PlayerStore {
     return promiseRetry(
       async (retry) => {
         try {
-          await Axios.put(
-            `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
-            {
-              // [uri] for backwards compatibility
-              uris: track_window || [uri],
-              offset: {
-                uri: uri,
-              },
-              position_ms: playing ? pos_ms + Date.now() - t0 : pos_ms,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.access_token}`,
-              },
-            }
-          );
+          // await Axios.put(
+          //   `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+          //   {
+          //     // [uri] for backwards compatibility
+          //     uris: track_window || [uri],
+          //     offset: {
+          //       uri: uri,
+          //     },
+          //     position_ms: playing ? pos_ms + Date.now() - t0 : pos_ms,
+          //   },
+          //   {
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //       Authorization: `Bearer ${this.access_token}`,
+          //     },
+          //   }
+          // );
           await this.updateState();
           return new Promise((resolve, reject) => {
             autorun(async (r) => {
@@ -318,7 +317,7 @@ export class PlayerStore {
                 switch (reason) {
                   case "RATE_LIMITED":
                     modalStore.queue(
-                      <WarningModal title="Spotify API has rate limited Pogify. Performance may be effected." />,
+                      <WarningModal title="Spotify API has rate limited Pogify. Performance may be affected." />,
                       2000
                     );
                     return;
@@ -394,18 +393,20 @@ export class PlayerStore {
    * @param {string} title
    * @param {boolean} connect optional. Whether or not to connect spotify to pogify device
    */
-  initializePlayer = action((title, connect = true) => {
-    if (this.initializeWaiting) clearTimeout(this.initializeWaiting);
-    this.initializeWaiting = setTimeout(() => {
-      Sentry.captureMessage("Spotify Initialize timeout");
-      modalStore.queue(
-        <WarningModal
-          key="LongSpotifyWait"
-          title="It seems like its taking a while to connect to Spotify."
-          content="You can keep waiting or refresh and try again"
-        />
-      );
-    }, 15000);
+  initializePlayer = action((title, connect = true, listenerPlayer = null, ignoreTimeout = false) => {
+    if (!ignoreTimeout) {
+      if (this.initializeWaiting) clearTimeout(this.initializeWaiting);
+      this.initializeWaiting = setTimeout(() => {
+        Sentry.captureMessage("Spotify Initialize timeout");
+        modalStore.queue(
+          <WarningModal
+            key="LongSpotifyWait"
+            title="It seems like its taking a while to connect to Spotify."
+            content="You can keep waiting or refresh and try again"
+          />
+        );
+      }, 15000);
+    }
     return new Promise(async (resolve, reject) => {
       // if player is already connected update name and whether its host, then return
       if (this.player && this.player.setName) {
@@ -464,14 +465,38 @@ export class PlayerStore {
         this.error_message = message;
       });
       player.on("playback_error", ({ message }) => {
-        modalStore.queue(
-          <ErrorModal
-            errorCode="Spotify Playback Error"
-            errorMessage={`${message} Refresh and try again.`}
-          />
-        );
-        this.error_type = "authentication_error";
-        this.error_message = message;
+        if (!listenerPlayer.state.hasStandaloneSpotifyWindow) {
+          console.log("Interpreting playback_error as a free account error");
+          clearTimeout(this.initializeWaiting);
+          modalStore.queue(
+            <WarningModal
+              title="Spotify Free Account"
+              content={`You are using a Spotify free account. Some playback features (seeking, ad-free music, etc.) will not be available.
+            Additionally, a background Spotify window is required for free users.`}
+              closeModal={() => {
+                listenerPlayer.spotifyWindow.close();
+                window.external.returned = () => {
+                  modalStore.closeModal();
+                  listenerPlayer.connect(true);
+                  listenerPlayer.setState({
+                    hasStandaloneSpotifyWindow: true
+                  });
+                };
+                listenerPlayer.spotifyWindow = window.open(
+                  "/popunder",
+                  "spotifyWindow",
+                  "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
+                );
+                listenerPlayer.setState({
+                  spotifyFree: true
+                });
+              }}
+              buttonMessage="Open Background Window"
+            />
+          );
+          this.error_type = "authentication_error";
+          this.error_message = message;
+        }
       });
       player.on("not_ready", () => {
         modalStore.queue(
@@ -682,7 +707,7 @@ export class PlayerStore {
       REDIRECT_URI
     )}&scope=streaming%20user-read-email%20user-read-private%20user-modify-playback-state&code_challenge_method=S256&code_challenge=${
       hash[1]
-    }`;
+      }`;
   };
 }
 
@@ -725,7 +750,7 @@ async function pkce_challenge_from_verifier(v) {
 // Text-encoder polyfill
 
 if (typeof window.TextEncoder === "undefined") {
-  window.TextEncoder = function TextEncoder() {};
+  window.TextEncoder = function TextEncoder() { };
   window.TextEncoder.prototype.encode = function encode(str) {
     var Len = str.length,
       resPos = -1;
@@ -736,7 +761,7 @@ if (typeof window.TextEncoder === "undefined") {
       typeof Uint8Array === "undefined"
         ? new Array(Len * 1.5)
         : new Uint8Array(Len * 3);
-    for (var point = 0, nextcode = 0, i = 0; i !== Len; ) {
+    for (var point = 0, nextcode = 0, i = 0; i !== Len;) {
       point = str.charCodeAt(i);
       i += 1;
       if (point >= 0xd800 && point <= 0xdbff) {

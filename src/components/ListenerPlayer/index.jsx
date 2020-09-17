@@ -39,6 +39,9 @@ class ListenerPlayer extends React.Component {
     changeSongCallback: null,
     // should always maintain sync toggle.
     strict: true,
+    hasSpotifyWindow: false,
+    hasStandaloneSpotifyWindow: false,
+    spotifyFree: false
   };
 
   /**
@@ -227,12 +230,15 @@ class ListenerPlayer extends React.Component {
   /**
    * Initialize player as listener
    */
-  connect = async () => {
+  connect = async (ignoreTimeout = false) => {
     this.setState({ loading: true });
 
     // TODO: listener title based on session code?
     const playerDeviceId = await playerStore.initializePlayer(
-      "Pogify Listener"
+      "Pogify Listener",
+      true,
+      this,
+      ignoreTimeout
     );
     await playerStore.connectToPlayer(playerDeviceId).catch((err) => {
       if (err.message !== "Bad refresh token") {
@@ -253,30 +259,38 @@ class ListenerPlayer extends React.Component {
    * @param {boolean} playing playing state
    */
   async syncListener(uri, position, playing, trackWindow) {
+    if (this.state.spotifyFree && !this.state.hasStandaloneSpotifyWindow) {
+      console.log("<<<< Window has not returned, not syncing");
+      return;
+    }
     console.log("<<<< start sync");
     // because play/pause causes observable updates it triggers a run of the syncCheck reaction.
     // so set flag here until play/pause/newTrack is all encapsulated in an action.
     this.syncing = true;
     console.log(playing, position, playerStore.position);
     if (uri !== playerStore.uri) {
+      await playerStore.pause();
       console.log(uri, "!==", playerStore.uri);
       let indexOf = playerStore.track_window.indexOf(uri);
 
-      if (indexOf === -1) {
-        console.log("uri not in track window, fetching");
-        await playerStore.newTrack(uri, position, playing, trackWindow);
-      } else {
-        let offset = indexOf - playerStore.trackOffset;
-        if (offset !== 1) {
-          console.log(
-            "uri is in local track window but not next, skipping: ",
-            offset
-          );
-        } else {
-          console.log("uri is next in local track window, continuing");
-        }
-        await playerStore.skipTrack(offset);
-      }
+      this.spotifyWindow.location =
+        "https://open.spotify.com/track/" + uri.split(":")[2];
+
+      await playerStore.newTrack(uri, position, playing, trackWindow);
+      // if (indexOf === -1) {
+      //   console.log("uri not in track window, fetching");
+      // } else {
+      //   let offset = indexOf - playerStore.trackOffset;
+      //   if (offset !== 1) {
+      //     console.log(
+      //       "uri is in local track window but not next, skipping: ",
+      //       offset
+      //     );
+      //   } else {
+      //     console.log("uri is next in local track window, continuing");
+      //   }
+      //   await playerStore.skipTrack(offset);
+      // }
     } else {
       playerStore.seek(position);
       if (playing) {
@@ -303,6 +317,10 @@ class ListenerPlayer extends React.Component {
     if (this.eventListener) {
       this.eventListener.close();
     }
+    if (this.openInterval) {
+      clearInterval(this.openInterval);
+    }
+
     // disconnect current player
     if (playerStore.player) {
       playerStore.player.disconnect();
@@ -347,6 +365,49 @@ class ListenerPlayer extends React.Component {
               login again.
             </p>
           </div>
+        </Layout>
+      );
+    }
+
+    if (!this.state.hasSpotifyWindow) {
+      return (
+        <Layout>
+          <div>
+            Pogify uses a workaround to be able to scale to thousands of
+            listeners. It requires that you have a background tab open. Click
+            below to open the background tab.
+          </div>
+          <button
+            onClick={() => {
+              window.name = "pogifyMain";
+              this.spotifyWindow = window.open(
+                "/popunder",
+                "spotifyWindow"
+                // "location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes"
+              );
+              window.addEventListener("beforeunload", () => this.spotifyWindow.close());
+              this.openInterval = setInterval(() => {
+                if (this.spotifyWindow.closed) {
+                  this.setState({
+                    hasSpotifyWindow: false,
+                    hasStandaloneSpotifyWindow: false
+                  });
+                }
+              }, 1000);
+
+              window.external.returned = () => {
+                if (!this.state.spotConnected) {
+                  this.connect();
+                }
+                delete window.external.returned;
+              };
+              this.setState({
+                hasSpotifyWindow: true,
+              });
+            }}
+          >
+            Open Tab
+          </button>
         </Layout>
       );
     }
@@ -403,6 +464,7 @@ class ListenerPlayer extends React.Component {
             </div>
           </div>
           <Player isHost={false} warn={!this.state.synced} />
+
 
           <div className={styles.infoBar}>
             <div className={styles.info}>
