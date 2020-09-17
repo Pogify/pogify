@@ -542,7 +542,7 @@ export class PlayerStore {
     });
   });
 
-  connectToPlayer = async (device_id) => {
+  connectToPlayer = async (device_id, play = false) => {
     // get current access token
     // TODO: error handling
     let access_token;
@@ -552,19 +552,35 @@ export class PlayerStore {
       return e;
     }
     // call connect to device endpoint
-    return Axios.put(
-      `https://api.spotify.com/v1/me/player`,
-      {
-        device_ids: [device_id],
-        play: false,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access_token}`,
+    try {
+      return await Axios.put(
+        `https://api.spotify.com/v1/me/player`,
+        {
+          device_ids: [device_id],
+          play: play,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+    } catch (e) {
+      console.log(e.response);
+      if (
+        e.response &&
+        e.response.status === 403 &&
+        e.response.data.error.reason === "PREMIUM_REQUIRED"
+      ) {
+        modalStore.queue(
+          <WarningModal
+            title="Premium required to use Pogify"
+            content="It seems that you don't have Spotify Premium. You need premium to use Pogify. This is a limitation of Spotify."
+          />
+        );
       }
-    );
+    }
   };
 
   /**

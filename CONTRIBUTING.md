@@ -85,7 +85,7 @@ Congratulations, you should now be running a local environment for the backend o
 - Sessions hosted from local environments cannot be joined from the pogify.net production deployment.
 - Sessions hosted on a pogify.net production deployment can be joined from a local environment.
 - Missing any one step wil throw an error. Be sure to read each and every single instruction carefully.
-- If you click `join a session`, you will be stuck on the 'waiting for host' modal unless there is an active sesion w/ a host. (We are working on something so people can develop the listener player with 2 accounts.)
+- If you click `join a session`, you will be stuck on the 'waiting for host' modal unless there is an active sesion w/ a host. (Alternatively, you can use session code `dev` to join a session with 2 tracks. Take on Me will have pauses/seeks and Death of a Bachelor should play through normally.)
 
 ## Starting up a local development environment
 

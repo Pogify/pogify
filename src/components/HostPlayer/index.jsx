@@ -10,7 +10,6 @@ import debounce from "lodash/debounce";
 import { Layout } from "../../layouts";
 
 import Player from "../Player";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -206,34 +205,42 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout>
-        <div className="flexContainer">
-          <Player isHost />
-          <div className={`${styles.textWrapper} textAlignCenter`}>
-            <h2>Hosting {SessionManager.SessionCount.get()} listeners.</h2>
-            <p className="textAlignLeft">
-              "Pogify Host" should appear in your "Devices Available" list in Spotify.
-              Once you select Pogify as your playback device on Spotify, make sure to
-              mute this window in your streaming software.
-              <br></br>
-              <b>
-                Please do not close this window.
-                Doing so will disconnect you from the session.
-              </b>
-            </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink
-                href={window.location.href}
-                className={styles.shareLink}
-                title="Click to copy and share to your audience"
-              >
-                {window.location.href}
-              </CopyLink>
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session: {this.props.sessionId}</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
             </div>
-            <PoweredBySpotify />
-            <Donations large />
+          </div>
+
+          <Player isHost />
+
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
+              You can continue using Spotify as you normally would. The music is
+              playing through this browser tab, you can open this tab in a new
+              window to exclude it from OBS.
+            </div>
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <Donations noText />
+            </div>
           </div>
         </div>
       </Layout>

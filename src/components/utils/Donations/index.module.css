@@ -13,3 +13,14 @@
 .donateParagraph.large {
   max-width: 85%;
 }
+
+.donationButton {
+  background-color: #ffc43b !important;
+  color: #222222 !important;
+  margin: auto;
+  padding: 0.7rem 1rem !important;
+}
+
+:global(.theme-dark) .donationButton {
+  background-color: #222222 !important;
+}

@@ -6,7 +6,6 @@ import { Layout } from "../../layouts";
 
 import Player from "../Player";
 import WarningModal from "../../modals/WarningModal";
-import PoweredBySpotify from "../utils/PoweredBySpotify";
 import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
@@ -313,27 +312,6 @@ class ListenerPlayer extends React.Component {
     );
   }
 
-  // syncOnClick = () => {
-  //   const { hostUri, hostPosition, hostPlaying, updateTimestamp } = this.state;
-  //   const calcPos = hostPlaying
-  //     ? hostPosition + Date.now() - updateTimestamp
-  //     : hostPosition;
-  //   this.syncListener(hostUri, calcPos, hostPlaying, true);
-  // };
-
-  componentDidMount() {
-    // autorun to enforce initial state.
-    // will continuously try to pause if its not supposed to play
-    // this.forceUpdateAutorunDisposer = autorun((reaction) => {
-    //   const { firstPlay } = this.state;
-    //   if (playerStore.playing && firstPlay) {
-    //     console.log("dispose");
-    //     reaction.dispose();
-    //   } else if (playerStore.playing && !firstPlay) {
-    //     playerStore.pause();
-    //   }
-    // });
-  }
   componentWillUnmount() {
     // close connection to sub server
     if (this.eventListener) {
@@ -467,50 +445,45 @@ class ListenerPlayer extends React.Component {
     }
 
     return (
-      <Layout>
-        <div className="flexContainer">
-          <Player isHost={false} warn={!this.state.synced} listenerPlayer={this}>
-            {/* <div>
-              {!this.state.hostPlaying && this.state.synced && "Paused by host"}
-              {!this.state.hostPlaying && !this.state.synced && "Host Paused"}
-              {this.state.hostPlaying && <div style={{ height: "1.3rem" }} />}
-              {!this.state.synced && (
-                <div className={styles.syncButton} onClick={this.syncOnClick}>
-                  Sync with host &nbsp;
-                  <FontAwesomeIcon icon={faSync} />
-                </div>
-              )}
-            </div> */}
-          </Player>
-
-          <div className={`textAlignCenter ${styles.textWrapper}`}>
-            {/* <h2>Hosting to {this.state.connections} listeners.</h2> */}
-            <h2>
-              This is a <b>BETA</b> build of pogify.
-            </h2>
-            <p className="textAlignLeft">
-              You are listening to session: {this.props.sessionId}. Your
-              playback is controlled by the host. The music is playing through
-              the browser, so <b>please do not close this tab. </b>
-              If you play or pause on a different Spotify client you will be
-              de-synchronized from the host. You will have to refresh to sync
-              again. This is a known problem and we are working on getting it
-              fixed. If you want to pause while staying in sync please press{" "}
-              <i>mute</i>.
-              {/*Pressing pause will pause
-              playback locally only. On resume, playback will be resynchronised
-              with the host. Controlling Spotify will not work as long as you
-              are connected to "Pogify Listener". */}
-            </p>
-            <div className={styles.shareExplanations}>
-              Share the URL below to listen with others:
-              <br />
-              <CopyLink href={window.location.href}>
-                {window.location.href}
-              </CopyLink>
+      <Layout noBackground>
+        <div className={styles.container}>
+          <div className={styles.titleBar}>
+            <h1>Session: {this.props.sessionId}</h1>
+            <div className={styles.linkWrapper}>
+              <div className={styles.shareExplanations}>
+                Share the URL below to listen with others:
+                <br />
+                <CopyLink
+                  href={window.location.href}
+                  className={styles.shareLink}
+                  title="Click to copy and share to your audience"
+                >
+                  {window.location.href}
+                </CopyLink>
+              </div>
             </div>
-            <PoweredBySpotify />
-            <Donations large />
+          </div>
+          <Player isHost={false} warn={!this.state.synced} />
+
+
+          <div className={styles.infoBar}>
+            <div className={styles.info}>
+              <span className={styles.infoBold}>
+                Please do not close this tab.
+              </span>
+              <br />
+              Your playback is controlled by the host. If you control playback
+              on a different Spotify client, you will be resynchronized with the
+              host automatically. If you want to pause while staying in sync,
+              please simply mute.
+            </div>
+            <div className={`${styles.donations} ${styles.info}`}>
+              Do you like what we're doing? Help us our with a donation to keep
+              our dev servers running! Even just one dollar will help.
+              <div>
+                <Donations noText />
+              </div>
+            </div>
           </div>
         </div>
       </Layout>
