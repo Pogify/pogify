@@ -84,6 +84,12 @@
   justify-content: center;
 }
 
+.playerDiv iframe {
+  height: 360px;
+  width: 640px;
+  max-width: 100vw;
+}
+
 .controlsDiv {
   width: 600px;
   padding: 10px 40px;
