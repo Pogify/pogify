@@ -17,6 +17,9 @@
 .card:focus {
   margin-bottom: 500px;
 }
+.card:focus-within {
+  margin-bottom: 500px;
+}
 
 .thumbnail {
   margin-block: 5px;
@@ -79,10 +82,21 @@
 .playlistItems {
   background: white;
   position: absolute;
-  margin: 20px;
-  padding: 20px;
   left: 50%;
   transform: translateX(-50%);
+  height: 0px;
+  transition: height 400ms, padding 400ms;
+  margin-top: 20px;
+  overflow: hidden;
+  width: 90%;
+  z-index: 10;
+}
+
+.card:focus .playlistItems,
+.card:focus-within .playlistItems {
+  display: unset;
+  height: 480px;
+  z-index: 9;
 }
 
 :global(.theme-dark) .playlistItems {

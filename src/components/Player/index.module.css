@@ -87,7 +87,6 @@
 .playerDiv iframe {
   height: 360px;
   width: 640px;
-  max-width: 100vw;
 }
 
 .controlsDiv {
