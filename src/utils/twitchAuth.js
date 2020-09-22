@@ -1,5 +1,16 @@
 import promiseRetry from "promise-retry";
 import axios from "axios";
+import { observable } from "mobx";
+
+var twitchToken = observable({
+  access_token: "",
+  refresh_token: window.localStorage.getItem("twitch:refresh_token") ?? "",
+  expires_in: 0,
+  expires_at: 0,
+  scope: [],
+  id_token: "",
+  token_type: "",
+});
 
 export function authTwitch(redirectTo) {
   window.sessionStorage.setItem(
@@ -22,6 +33,10 @@ export function fetchToken(code) {
         code,
       },
     });
-    // res.data;
+
+    for (const [key, value] of Object.entries(res.data)) {
+      twitchToken[key] = value;
+    }
+    twitchToken.expires_at = Date.now() + res.data.expires_in * 1000;
   });
 }
