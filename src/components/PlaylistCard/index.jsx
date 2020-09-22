@@ -67,14 +67,18 @@ export const PlaylistItem = (props) => {
           <button
             onClick={(e) => {
               e.preventDefault();
-            }}
-            onFocus={(e) => {
-              e.preventDefault();
+              queueStore.addNext(props.item);
             }}
           >
             Play Next
           </button>
-          <button>Add to Queue</button>
+          <button
+            onClick={(e) => {
+              queueStore.addToQueue(props.item);
+            }}
+          >
+            Add to Queue
+          </button>
         </div>
       </div>
     </div>
