@@ -2,7 +2,7 @@ import React from "react";
 
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {
-  AuthRedirect,
+  TwitchAuthRedirect,
   Room,
   Create,
   ConnectToSession,
@@ -22,7 +22,7 @@ function App() {
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/create" exact component={Create} />
-        <Route path="/auth" exact component={AuthRedirect} />
+        <Route path="/auth/twitch" exact component={TwitchAuthRedirect} />
         <Route path="/session/:id" component={Room} />
         <Route path="/session" component={ConnectToSession} exact />
         <Route path="/privacy" component={Privacy} />

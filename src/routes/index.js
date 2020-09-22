@@ -1,5 +1,5 @@
 export * from "./ConnectToSession";
-export * from "./AuthRedirect";
+export * from "./TwitchAuthRedirect";
 export * from "./Create";
 export * from "./Home";
 export * from "./Room";
