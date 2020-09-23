@@ -12,9 +12,9 @@ export class QueueStore {
   addToQueue = action((item, i) => {
     // add to queue
     if (i !== undefined) {
-      this.queue.splice(i, 0, item);
+      this.queue = [...this.queue.slice(0, i), item, ...this.queue.slice(i)];
     } else {
-      this.queue.push(item);
+      this.queue = [...this.queue, item];
     }
     // if nothing queued then cue video.
     if (playerStore.videoId === null) {
@@ -23,7 +23,8 @@ export class QueueStore {
   });
 
   addNext = action((item) => {
-    this.queue.splice(this.currentIndex + 1, 0, item);
+    const i = this.currentIndex + 1;
+    this.queue = [...this.queue.slice(0, i), item, ...this.queue.slice(i)];
   });
 
   addMultipleToQueue = action((items, play = false) => {
