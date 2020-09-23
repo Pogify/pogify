@@ -65,6 +65,7 @@ export const PlaylistItem = (props) => {
         {title} | {channelTitle} | {numFormatter(viewCount)} Views
         <div>
           <button
+            onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => {
               e.preventDefault();
               queueStore.addNext(props.item);
@@ -73,7 +74,9 @@ export const PlaylistItem = (props) => {
             Play Next
           </button>
           <button
+            onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => {
+              e.preventDefault();
               queueStore.addToQueue(props.item);
             }}
           >
@@ -106,15 +109,16 @@ export const PlaylistCard = (props) => {
         <div className={styles.queueControl}>
           <div
             data-hover="Play All"
-            onClick={async (e) => {
+            onMouseUp={(e) => e.preventDefault()}
+            onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               queueStore.clearQueue();
-              await playlistStore.addPlaylistToQueue(props.id, true);
+              playlistStore.addPlaylistToQueue(props.id, true);
             }}
             onFocus={(e) => {
               e.preventDefault();
-              e.stopPropagation();
+              // e.stopPropagation();
             }}
             tabIndex={0}
           >
@@ -123,7 +127,7 @@ export const PlaylistCard = (props) => {
           <div
             data-hover="Add to Queue"
             onClick={(e) => {
-              e.stopPropagation();
+              // e.stopPropagation();
               playlistStore.addPlaylistToQueue(props.id);
             }}
             onFocus={(e) => e.stopPropagation()}

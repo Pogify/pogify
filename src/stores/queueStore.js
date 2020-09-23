@@ -23,8 +23,7 @@ export class QueueStore {
   });
 
   addNext = action((item) => {
-    const i = this.currentIndex + 1;
-    this.queue = [...this.queue.slice(0, i), item, ...this.queue.slice(i)];
+    this.addToQueue(item, this.currentIndex + 1);
   });
 
   addMultipleToQueue = action((items, play = false) => {

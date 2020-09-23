@@ -8,16 +8,16 @@
   border-radius: 10px;
 
   transition: margin-bottom 400ms;
+
+  cursor: pointer;
 }
 
 :global(.theme-dark) .card {
   background: #202020;
 }
 
-.card:focus {
-  margin-bottom: 500px;
-}
-.card:focus-within {
+.card:focus,
+.card:active:not(:focus-within) {
   margin-bottom: 500px;
 }
 
@@ -90,10 +90,12 @@
   overflow: hidden;
   width: 90%;
   z-index: 10;
+
+  cursor: initial;
 }
 
 .card:focus .playlistItems,
-.card:focus-within .playlistItems {
+.card:active:not(:focus-within) .playlistItems {
   display: unset;
   height: 480px;
   z-index: 9;

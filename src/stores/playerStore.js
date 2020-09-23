@@ -157,8 +157,9 @@ export class PlayerStore {
 
   newVideo = (videoId, pos, play) => {
     console.log(videoId, pos, play);
+
     if (this.player) {
-      if (play) {
+      if (play || this.videoId === null) {
         this.player.loadVideoById(videoId, pos);
       } else {
         this.player.cueVideoById(videoId, pos);
@@ -176,6 +177,7 @@ export class PlayerStore {
 
   cueQueue = () => {
     this.videoId = null;
+    console.log(queueStore.currentVideo.id);
     this.newVideo(queueStore.currentVideo.id, 0, false);
   };
 }
