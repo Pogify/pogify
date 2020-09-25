@@ -177,11 +177,19 @@ export const Player = observer((props) => {
               {secondsToTimeFormat(duration / 1000)}
             </div>
             <div className={styles.volumeContainer}>
-              <FAI
-                icon={faVolumeMute}
-                className={styles.muteButton}
+              <div
                 onClick={playerStore.setMute}
-              />
+                dangerouslySetInnerHTML={{
+                  __html:
+                    volume === 0
+                      ? feather.icons["volume-x"].toSvg()
+                      : volume < 0.02
+                      ? feather.icons["volume"].toSvg()
+                      : volume < 0.5
+                      ? feather.icons["volume-1"].toSvg()
+                      : feather.icons["volume-2"].toSvg(),
+                }}
+              ></div>
               <CustomSlider
                 value={input(parseFloat(volume))}
                 onChange={setVolume}
@@ -190,7 +198,6 @@ export const Player = observer((props) => {
                 step={0.01}
                 canChange
               />
-              <FAI icon={faVolumeUp} />
             </div>
           </>
         )}

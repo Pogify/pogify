@@ -10,7 +10,7 @@
 .container {
   display: flex;
   align-items: flex-start;
-  width: 840px;
+  max-width: 790px;
   flex-direction: column;
 }
 
@@ -39,6 +39,10 @@
   font-weight: 900;
 }
 
+.info:first-child {
+  margin-right: 45px;
+}
+
 .info {
   width: 340px;
   padding: 35px;
@@ -46,7 +50,6 @@
   border-radius: 16px;
   box-shadow: -8px -8px 30px 2px rgba(255, 255, 255, 0.3),
     8px 8px 30px 2px rgba(0, 0, 0, 0.3);
-  text-align: justify;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -61,7 +64,6 @@
 .playerInfoBar {
   display: flex;
   width: 100%;
-  height: 60px;
   color: white;
 }
 
@@ -105,4 +107,18 @@
 
 :global(.theme-dark) .donations {
   background-color: #cc8f00;
+}
+
+@media (max-width: 620px) {
+  .infoBar {
+    flex-wrap: wrap;
+  }
+
+  .info:first-child {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  .info {
+    flex-grow: 1;
+  }
 }

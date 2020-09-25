@@ -21,6 +21,14 @@ function Layout(props) {
     contentClass += ` ${styles.noBackground}`;
   }
 
+  if (props.smallerBlockPadding) {
+    contentClass += ` ${styles.smallerBlockPadding}`;
+  }
+
+  if (props.noBlockPadding) {
+    contentClass += ` ${styles.noBlockPadding}`;
+  }
+
   return (
     <div className={styles.layout}>
       <header className={styles.header}>

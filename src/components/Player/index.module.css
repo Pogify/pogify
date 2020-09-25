@@ -29,7 +29,6 @@
 }
 
 .overflowEllipses {
-  max-width: 560px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -63,17 +62,18 @@
 .seekContainer {
   display: flex;
   justify-content: center;
-  margin: 10px;
   width: 70%;
   align-items: center;
+  transition: flex-grow 200ms;
 }
 
 .volumeContainer {
   display: flex;
+  margin-left: 10px;
   justify-content: center;
-  margin: 10px;
   width: 30%;
   align-items: center;
+  transition: flex-grow 200ms;
 }
 
 .muteButton {
@@ -228,10 +228,14 @@
   margin-left: 25px;
   z-index: 1;
   box-shadow: 0px 2px 16px 2px rgba(0, 0, 0, 0.2);
+  transition: height 200ms, width 200ms;
 }
 
 .songInfo {
-  margin-left: 20px;
+  flex-grow: 1;
+  width: 0;
+
+  margin: 0 20px;
   line-height: 1.6rem;
   height: 100%;
 }
@@ -292,8 +296,6 @@
   justify-content: center;
   padding-left: 165px;
   background-color: white;
-  width: calc(100% - 165px);
-  height: 80px;
   border-radius: 16px;
   box-shadow: -8px -8px 30px 2px rgba(255, 255, 255, 0.3),
     8px 8px 30px 2px rgba(0, 0, 0, 0.3);
@@ -322,4 +324,35 @@
 .connectSpotify {
   margin-right: 165px;
   line-height: 80px;
+}
+
+@media (max-width: 850px) {
+  .playerBar {
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding-left: 200px;
+  }
+  .playButtonWrapper {
+    line-height: 50px;
+  }
+
+  .seekContainer:first-child {
+    margin-left: 0;
+  }
+
+  .seekContainer {
+    flex-grow: 1;
+    /* margin-right: 20px; */
+    line-height: 50px;
+    margin: 0 20px 0 10px;
+  }
+  .volumeContainer {
+    flex-grow: 1;
+    margin-left: 0;
+  }
+
+  .albumArt {
+    height: 155px;
+    width: 155px;
+  }
 }

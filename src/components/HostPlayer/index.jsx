@@ -217,7 +217,7 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout noBackground>
+      <Layout noBackground noBlockPadding>
         <div className={styles.container}>
           <div className={styles.titleBar}>
             <h1>{this.props.sessionId}</h1>
@@ -251,6 +251,7 @@ class HostPlayer extends React.Component {
             <div className={`${styles.donations} ${styles.info}`}>
               Do you like what we're doing? Help us our with a donation to keep
               our dev servers running! Even just one dollar will help.
+              <br />
               <Donations noText />
             </div>
           </div>
