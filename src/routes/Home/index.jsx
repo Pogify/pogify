@@ -30,8 +30,8 @@ export class Home extends React.Component {
           Listen to music with your live audience without getting DMCA-striked!
         </p>
         <div className={styles.actionWrapper}>
-        {!(/Edge\/\d./i.test(navigator.userAgent)) && (
-            <Link to="/session" style={{textDecoration: "none"}}>
+          {!/Edge\/\d./i.test(navigator.userAgent) && (
+            <Link to="/session" style={{ textDecoration: "none" }}>
               <div className={`${styles.actionButton} ${styles.joinButton}`}>
                 <div className={styles.actionIcon}>
                   <img src="headphones.svg" alt="" />
@@ -40,7 +40,7 @@ export class Home extends React.Component {
               </div>
             </Link>
           )}
-          <Link to="/create" style={{textDecoration: "none"}}>
+          <Link to="/create" style={{ textDecoration: "none" }}>
             <div className={`${styles.actionButton} ${styles.hostButton}`}>
               <div className={styles.actionIcon}>
                 <img src="play.svg" alt="" />
@@ -50,10 +50,14 @@ export class Home extends React.Component {
           </Link>
         </div>
         <div className={`${styles.donations}`}>
-          <p>Do you like what we're doing? Help us out to keep our servers running! Even just one dollar will help.</p>
-          <Donations noText buttonStyle={{padding: "1rem"}}/>
+          <p>
+            Do you like what we're doing? Help us out to keep our servers
+            running! Even just one dollar will help.
+          </p>
+          <div>
+            <Donations noText buttonStyle={{ padding: "1rem" }} />
+          </div>
         </div>
-
       </Layout>
     );
   }

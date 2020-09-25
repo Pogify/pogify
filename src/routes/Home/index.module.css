@@ -1,104 +1,122 @@
 .pogifyLogoWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
 }
 
 .pogifyLogoText {
-    text-align: center;
-    font-size: 56px;
-    font-weight: normal;
+  text-align: center;
+  font-size: 56px;
+  font-weight: normal;
 }
 
 .pogifyLogoImage {
-    height: 100%;
-    margin-right: 20px;
+  height: 100%;
+  margin-right: 20px;
 }
 
 .pogifyCatchline {
-    text-align: center;
-    font-size: 1rem;
-    margin: 2em 0;
+  text-align: center;
+  font-size: 1rem;
+  margin: 2em 0;
 }
 
 .actionWrapper {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin: 0 auto;
+  /* width: 100%; */
+}
+
+@media (max-width: 566px) {
+  .actionWrapper {
+    justify-content: center;
+  }
+  .actionWrapper > * {
+    margin: 10px;
+  }
 }
 
 .actionIcon {
-    height: 60px;
-    width: 60px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
+  height: 60px;
+  width: 60px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .actionIcon > img {
-    width: 50%;
+  width: 50%;
 }
 
 .actionButton {
-    background-color: red;
-    width: 180px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    border-radius: 30px;
-    transition: box-shadow 0.3s;
+  background-color: red;
+  width: 200px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  transition: box-shadow 0.25s;
 }
 
 .joinButton {
-    background: linear-gradient(90deg, #639AE9 0%, #247DFF 100%);
-    box-shadow: 0px 0px 9px 6px rgba(85, 145, 231, 0.25);
+  background: linear-gradient(90deg, #639ae9 0%, #247dff 100%);
+  box-shadow: 0px 0px 9px 6px rgba(85, 145, 231, 0.25);
 }
 
 .hostButton {
-    background: linear-gradient(90deg, #0FBD7F 0%, #009962 100%);
-    box-shadow: 0px 0px 9px 6px rgba(15, 189, 127, 0.25);
+  background: linear-gradient(90deg, #0fbd7f 0%, #009962 100%);
+  box-shadow: 0px 0px 9px 6px rgba(15, 189, 127, 0.25);
 }
 
 .joinButton:hover {
-    box-shadow: 0 9px 13px 0 rgba(85, 145, 231, 0.4), 0 17px 50px 0 rgba(85, 145, 231, 0.3);
+  box-shadow: 0 9px 13px 0 rgba(85, 145, 231, 0.4),
+    0 17px 50px 0 rgba(85, 145, 231, 0.3);
 }
 
 .hostButton:hover {
-    box-shadow: 0 9px 13px 0 rgba(15, 189, 127, 0.4), 0 17px 50px 0 rgba(15, 189, 127, 0.3);
+  box-shadow: 0 9px 13px 0 rgba(15, 189, 127, 0.4),
+    0 17px 50px 0 rgba(15, 189, 127, 0.3);
 }
 
 .actionText {
-    color: white;
-    flex: 1;
-    margin-right: 15px;
-    font-weight: bold;
-    font-size: 14px;
-    text-align: center;
+  color: white;
+  flex: 1;
+  margin-right: 15px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
 }
 
 .donations {
-    border-radius: 16px;
-    width: 500px;
-    height: 100px;
-    margin-top: 2em;
-    box-shadow: 0px 2px 15px -5px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: #FFE8B3;
+  border-radius: 16px;
+  height: 100px;
+  margin-top: 2em;
+  padding: 10px;
+  box-shadow: 0px 2px 15px -5px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #ffe8b3;
+  line-height: 1.4;
+}
+
+.donations > *:first-child {
+  padding: 0 10px 0 0;
 }
 
 :global(.theme-dark) .donations {
-    background-color: #CC8F00;
+  background-color: #cc8f00;
 }
 
 .donations {
-    color: black;
+  color: black;
 }
 
 .donations > p {
-    width: 300px;
+  width: 300px;
 }

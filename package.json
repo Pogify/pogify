@@ -17,6 +17,7 @@
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
+    "feather-icons": "^4.28.0",
     "firebase": "^7.18.0",
     "gh-pages": "^3.1.0",
     "lodash": "lodash/lodash#86a852fe763935bb64c12589df5391fd7d3bb14d",

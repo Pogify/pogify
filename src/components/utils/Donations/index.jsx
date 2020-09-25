@@ -14,9 +14,9 @@ export default function Donations(props) {
         border="0"
         name="submit"
         alt="Donate with PayPal button"
-        className={styles.donationButton}
+        className={`${styles.donationButton} noTheme`}
       >
-        <strong>Donate</strong>
+        <strong className="noTheme">Donate</strong>
       </button>
     </NewTabLink>
   );

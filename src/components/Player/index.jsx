@@ -4,6 +4,7 @@ import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
+import * as feather from "feather-icons";
 import {
   faPlay,
   faPause,
@@ -39,28 +40,29 @@ const TrackMetadata = observer(() => {
             href={trackData.uri}
             className={`${styles.spotifyLink} ${styles.title}`}
           >
-            {trackData.name}
+            <div className={styles.overflowEllipses}>{trackData.name}</div>
           </NewTabLink>
         </span>
-        <br />
-        {trackData.artists.map(({ name, uri }, index) => (
-          <React.Fragment key={uri}>
-            <NewTabLink
-              href={uri}
-              className={`${styles.spotifyLink} ${styles.artist}`}
-            >
-              {name}
-            </NewTabLink>
-            {index !== trackData.artists.length - 1 && " / "}
-          </React.Fragment>
-        ))}
-        •{" "}
-        <NewTabLink
-          href={trackData.album.uri}
-          className={`${styles.spotifyLink} ${styles.album}`}
-        >
-          {trackData.album.name}
-        </NewTabLink>
+        <div className={styles.overflowEllipses}>
+          {trackData.artists.map(({ name, uri }, index) => (
+            <React.Fragment key={uri}>
+              <NewTabLink
+                href={uri}
+                className={`${styles.spotifyLink} ${styles.artist}`}
+              >
+                {name}
+              </NewTabLink>
+              {index !== trackData.artists.length - 1 && " / "}
+            </React.Fragment>
+          ))}
+          •{" "}
+          <NewTabLink
+            href={trackData.album.uri}
+            className={`${styles.spotifyLink} ${styles.album}`}
+          >
+            {trackData.album.name}
+          </NewTabLink>
+        </div>
       </div>
     </>
   );
@@ -153,7 +155,13 @@ export const Player = observer((props) => {
                 className={styles.playButtonWrapper}
                 onClick={() => playerStore.togglePlay()}
               >
-                {playing ? <FAI icon={faPause} /> : <FAI icon={faPlay} />}
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: playing
+                      ? feather.icons.pause.toSvg()
+                      : feather.icons.play.toSvg(),
+                  }}
+                ></div>
               </div>
             )}
             <div className={styles.seekContainer}>
