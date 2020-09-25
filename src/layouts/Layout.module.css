@@ -73,6 +73,16 @@ p {
   max-height: 80%;
 }
 
+.smallerBlockPadding {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.noBlockPadding {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .darkContent:not(.noBackground) {
   background-color: #222222;
 }

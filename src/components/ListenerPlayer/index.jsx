@@ -384,7 +384,7 @@ class ListenerPlayer extends React.Component {
     }
 
     return (
-      <Layout noBackground>
+      <Layout noBackground noBlockPadding>
         <div className={styles.container}>
           <div className={styles.titleBar}>
             <h1>{this.props.sessionId}</h1>
