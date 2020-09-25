@@ -19,8 +19,9 @@
   color: #222222 !important;
   margin: auto;
   padding: 0.7rem 1rem !important;
+  font-size: 18px !important;
 }
 
-:global(.theme-dark) .donationButton {
+/* :global(.theme-dark) .donationButton {
   background-color: #222222 !important;
-}
+} */

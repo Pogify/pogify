@@ -21,12 +21,18 @@
 .spotifyLink {
   color: inherit;
   text-decoration: inherit;
-  margin: 0 3px;
   white-space: nowrap;
 }
 
 .spotifyLink:hover {
   text-decoration: underline;
+}
+
+.overflowEllipses {
+  max-width: 560px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .titleContainer {
@@ -231,7 +237,7 @@
 }
 
 .listenerInfo {
-  margin-right: 50px;
+  margin-right: 25px;
   margin-left: auto;
   text-align: right;
 }
