@@ -16,16 +16,12 @@
 
 .donationButton {
   background-color: #ffc43b !important;
-  color: #222222;
+  color: #222222 !important;
   margin: auto;
   padding: 0.7rem 1rem !important;
   font-size: 18px !important;
 }
 
-:not(:global(.theme-dark)) .donationButton {
-  color: #222222;
-}
-
-:global(.theme-dark) .donationButton {
-  color: #ffffff;
-}
+/* :global(.theme-dark) .donationButton {
+  background-color: #222222 !important;
+} */
