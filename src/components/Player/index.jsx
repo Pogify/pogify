@@ -3,14 +3,14 @@ import { observer } from "mobx-react";
 import * as SessionManager from "../../utils/sessionManager";
 import { playerStore } from "../../stores";
 import { secondsToTimeFormat } from "../../utils/formatters";
-import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
+//import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import * as feather from "feather-icons";
-import {
+/*import {
   faPlay,
   faPause,
   faVolumeUp,
   faVolumeMute,
-} from "@fortawesome/free-solid-svg-icons";
+} from "@fortawesome/free-solid-svg-icons";*/
 import "semantic-ui-css/components/progress.min.css";
 
 import { Progress } from "semantic-ui-react";
