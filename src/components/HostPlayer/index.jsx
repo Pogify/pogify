@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { reaction, autorun } from "mobx";
 
@@ -147,7 +147,7 @@ class HostPlayer extends React.Component {
   render() {
     const Buttons = (
       <div>
-        <button>
+        <button onClick={() => this.setState({ tab: "plus" })}>
           <FAI icon={faPlus} />
         </button>
         <button onClick={() => this.setState({ tab: "queueItems" })}>
@@ -196,6 +196,7 @@ class HostPlayer extends React.Component {
         <Player isHost />
         <div style={{ maxWidth: 1320 }}>
           {Buttons}
+          {this.state.tab === "plus" && <Plus />}
           {this.state.tab === "playlists" && <PlaylistList />}
           {this.state.tab === "queueItems" && (
             <pre style={{ textAlign: "left" }}>
@@ -210,7 +211,7 @@ class HostPlayer extends React.Component {
               )}
             </pre>
           )}
-          {this.state.tab === "current" && (
+          {this.state.tab === "current" && queueStore.currentVideo && (
             <pre style={{ textAlign: "left" }}>
               {JSON.stringify(
                 queueStore.currentVideo.snippet.title,
@@ -257,21 +258,6 @@ class _PlaylistList extends React.Component {
 
     return (
       <div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            playerStore.newVideo(this.state.videoId, undefined, true);
-          }}
-        >
-          <input
-            type="text"
-            placeholder="video id"
-            onChange={(e) => {
-              this.setState({ videoId: e.target.value });
-            }}
-          />
-          <button type="submit">Load Video</button>
-        </form>
         <div
           style={{
             overflow: "auto",
@@ -299,3 +285,29 @@ class _PlaylistList extends React.Component {
   }
 }
 const PlaylistList = observer(_PlaylistList);
+
+const Plus = () => {
+  const [videoId, setVideoId] = useState("");
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        playerStore.newVideo(videoId, undefined, true);
+      }}
+    >
+      <div>
+        <input
+          type="text"
+          placeholder="video id"
+          onChange={(e) => {
+            setVideoId(e.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <button type="submit">Load Video</button>
+      </div>
+    </form>
+  );
+};
