@@ -156,7 +156,7 @@ p {
 .themeSwitchContainer {
   position: relative;
   width: 60px;
-  filter: drop-shadow(0px 4px 3px rgba(50, 50, 0, 0.5));
+  filter: drop-shadow(0px 0px 5px rgba(50, 50, 0, 0.4));
 }
 
 :global(.theme-dark) .themeSwitchContainer {
@@ -224,6 +224,7 @@ p {
   right: 36px;
   border-radius: 20px;
   transition: all 0.4s ease-in-out 0s;
+  box-shadow: 0px 0px 6px 2px #3c77cd40;
 }
 
 .themeSwitchCheckbox:checked + .themeSwitchLabel .themeSwitchInner {
