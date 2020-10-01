@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { reaction } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
-import { playerStore } from "../../stores";
+import { modalStore, playerStore } from "../../stores";
 
 import debounce from "lodash/debounce";
 
@@ -14,6 +14,7 @@ import Donations from "../utils/Donations";
 import CopyLink from "../utils/CopyLink";
 
 import styles from "./index.module.css";
+import ErrorModal from "../../modals/ErrorModal";
 
 /**
  * HostPlayer handles logic for Pogify Host
@@ -38,7 +39,18 @@ class HostPlayer extends React.Component {
   setTokenRefreshInterval = () => {
     // refresh token
     this.refreshInterval = setInterval(
-      SessionManager.refreshToken,
+      () => {
+        SessionManager.refreshToken().catch((e) => {
+          if (e.response && e.response.status === 400) {
+            modalStore.queue(
+              <ErrorModal
+                errorCode="Failed to refresh session."
+                errorMessage="Pogify failed to refresh the session and your session has expired. Please start a new one."
+              />
+            );
+          }
+        });
+      },
       30 * 60 * 1000,
       [window.localStorage.getItem("pogify:token")]
     );
@@ -205,10 +217,10 @@ class HostPlayer extends React.Component {
 
     // return <div>done</div>
     return (
-      <Layout noBackground>
+      <Layout noBackground noBlockPadding>
         <div className={styles.container}>
           <div className={styles.titleBar}>
-            <h1>Session: {this.props.sessionId}</h1>
+            <h1>{this.props.sessionId}</h1>
             <div className={styles.linkWrapper}>
               <div className={styles.shareExplanations}>
                 Share the URL below to listen with others:
@@ -239,6 +251,7 @@ class HostPlayer extends React.Component {
             <div className={`${styles.donations} ${styles.info}`}>
               Do you like what we're doing? Help us our with a donation to keep
               our dev servers running! Even just one dollar will help.
+              <br />
               <Donations noText />
             </div>
           </div>

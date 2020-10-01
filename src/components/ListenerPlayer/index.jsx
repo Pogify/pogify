@@ -384,10 +384,10 @@ class ListenerPlayer extends React.Component {
     }
 
     return (
-      <Layout noBackground>
+      <Layout noBackground noBlockPadding>
         <div className={styles.container}>
           <div className={styles.titleBar}>
-            <h1>Session: {this.props.sessionId}</h1>
+            <h1>{this.props.sessionId}</h1>
             <div className={styles.linkWrapper}>
               <div className={styles.shareExplanations}>
                 Share the URL below to listen with others:
