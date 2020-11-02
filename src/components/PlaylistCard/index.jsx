@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { playlistStore, queueStore, playerStore } from "../../stores";
+import { playlistStore, queueStore } from "../../stores";
 import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import { faPlay, faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./index.module.css";

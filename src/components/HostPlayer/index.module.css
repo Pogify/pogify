@@ -79,3 +79,8 @@
 :global(.theme-dark) .donations {
   background-color: #cc8f00;
 }
+
+.stuffContainer {
+  background: grey;
+  padding: 20px;
+}

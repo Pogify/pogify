@@ -3,8 +3,7 @@ import { observer } from "mobx-react";
 import { reaction, autorun } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
-import * as gapiAuth from "../../utils/gapiAuth";
-import { playerStore, playlistStore, queueStore } from "../../stores";
+import { playerStore, queueStore } from "../../stores";
 
 import debounce from "lodash/debounce";
 
@@ -18,7 +17,8 @@ import { FontAwesomeIcon as FAI } from "@fortawesome/react-fontawesome";
 import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./index.module.css";
-import { PlaylistCard } from "../PlaylistCard";
+import { PlaylistList } from "./components/PlaylistList";
+import { QueueList } from "./QueueList";
 
 /**
  * HostPlayer handles logic for Pogify Host
@@ -143,27 +143,27 @@ class HostPlayer extends React.Component {
     // clear refresh interval
     clearInterval(this.refreshInterval);
   }
+  Buttons = (
+    <div>
+      <button onClick={() => this.setState({ tab: "queueItems" })}>
+        Queue
+      </button>
+      <button onClick={() => this.setState({ tab: "playlists" })}>
+        Playlists
+      </button>
+      <button onClick={() => this.setState({ tab: "requests" })}>
+        Requests
+      </button>
+      <button>
+        <FAI icon={faSearch} />
+      </button>
+      <button onClick={() => this.setState({ tab: "plus" })}>
+        <FAI icon={faPlus} />
+      </button>
+    </div>
+  );
 
   render() {
-    const Buttons = (
-      <div>
-        <button onClick={() => this.setState({ tab: "plus" })}>
-          <FAI icon={faPlus} />
-        </button>
-        <button onClick={() => this.setState({ tab: "queueItems" })}>
-          Queue
-        </button>
-        <button onClick={() => this.setState({ tab: "playlists" })}>
-          Playlists
-        </button>
-        <button onClick={() => this.setState({ tab: "current" })}>
-          now Playing
-        </button>
-        <button>
-          <FAI icon={faSearch} />
-        </button>
-      </div>
-    );
     // loading
     if (this.state.loading && this.state.pso) {
       return (
@@ -195,31 +195,16 @@ class HostPlayer extends React.Component {
 
         <Player isHost />
         <div style={{ maxWidth: 1320 }}>
-          {Buttons}
-          {this.state.tab === "plus" && <Plus />}
-          {this.state.tab === "playlists" && <PlaylistList />}
-          {this.state.tab === "queueItems" && (
-            <pre style={{ textAlign: "left" }}>
-              {JSON.stringify(
-                queueStore.queue.map((e, i) => {
-                  return queueStore.currentIndex === i
-                    ? "-> " + e.snippet.title
-                    : e.snippet.title;
-                }),
-                undefined,
-                2
-              )}
-            </pre>
-          )}
-          {this.state.tab === "current" && queueStore.currentVideo && (
-            <pre style={{ textAlign: "left" }}>
-              {JSON.stringify(
-                queueStore.currentVideo.snippet.title,
-                undefined,
-                2
-              )}
-            </pre>
-          )}
+          {this.Buttons}
+          <div className={styles.stuffContainer}>
+            {this.state.tab === "plus" && <Plus />}
+            {this.state.tab === "playlists" && (
+              <>
+                <PlaylistList />
+              </>
+            )}
+            {this.state.tab === "queueItems" && <QueueList />}
+          </div>
 
           <div className={styles.shareExplanations}>
             Share the URL below to listen with others:
@@ -241,50 +226,6 @@ class HostPlayer extends React.Component {
 }
 
 export default observer(HostPlayer);
-
-class _PlaylistList extends React.Component {
-  state = {
-    videoId: "",
-  };
-  render() {
-    if (!gapiAuth.gapiSignedIn.get()) {
-      return (
-        <div>
-          not logged in
-          <button onClick={gapiAuth.signIn}>Sign In</button>
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <div
-          style={{
-            overflow: "auto",
-            display: "flex",
-            flexFlow: "row wrap",
-            position: "relative",
-            justifyContent: "center",
-          }}
-        >
-          {playlistStore.playlists.map((item) => {
-            return (
-              <PlaylistCard
-                key={item.id}
-                imgUrl={item.snippet.thumbnails.medium.url}
-                title={item.snippet.title}
-                channel={item.snippet.channelTitle}
-                length={item.contentDetails.itemCount}
-                id={item.id}
-              />
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-}
-const PlaylistList = observer(_PlaylistList);
 
 const Plus = () => {
   const [videoId, setVideoId] = useState("");

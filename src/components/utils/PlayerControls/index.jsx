@@ -80,24 +80,19 @@ export const PlayerControls = observer((props) => {
           {currentVideo && (
             <>
               <h2 style={{ marginTop: 0 }}>{currentVideo.snippet.title}</h2>
-              <div>{currentVideo.snippet.channelTitle}</div>
+              <div>
+                {currentVideo.snippet.channelTitle} -{" "}
+                {new Date(currentVideo.snippet.publishedAt).toLocaleDateString(
+                  undefined,
+                  {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }
+                )}
+              </div>
             </>
           )}
-        </div>
-        <div className={styles.volumeContainer}>
-          <FAI
-            icon={faVolumeMute}
-            className={styles.muteButton}
-            onClick={playerStore.setMute}
-          />
-          <CustomSlider
-            value={input(parseFloat(playerStore.volume)) || 0}
-            onChange={setVolume}
-            min={-1}
-            max={1}
-            step={0.01}
-            canChange
-          />
         </div>
       </div>
       <div className={styles.seekContainer}>
@@ -132,6 +127,21 @@ export const PlayerControls = observer((props) => {
             </div>
           </>
         )}
+        <div className={styles.volumeContainer}>
+          <FAI
+            icon={faVolumeMute}
+            className={styles.muteButton}
+            onClick={playerStore.setMute}
+          />
+          <CustomSlider
+            value={input(parseFloat(playerStore.volume)) || 0}
+            onChange={setVolume}
+            min={-1}
+            max={1}
+            step={0.01}
+            canChange
+          />
+        </div>
         <div style={{ flexGrow: 1 }} />
         <div className={styles.nextVideoDiv} onClick={playerStore.next}>
           {nextVideo && (

@@ -1,0 +1,10 @@
+.button {
+  padding: 10px;
+
+  cursor: pointer;
+}
+
+.button::after {
+  content: "Clear Queue";
+  margin-left: 10px;
+}

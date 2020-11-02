@@ -83,7 +83,7 @@ export const Player = observer((props) => {
           className={styles.player}
           opts={{
             playerVars: {
-              controls: props.showControls,
+              controls: props.isHost ? 0 : 1,
             },
           }}
           onReady={playerStore.onYoutubeReady}

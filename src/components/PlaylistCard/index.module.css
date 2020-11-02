@@ -54,6 +54,8 @@
   position: relative;
   padding: 10px;
   outline: none;
+
+  color: white;
 }
 
 .queueControl > div::after {
@@ -86,6 +88,7 @@
   transform: translateX(-50%);
   height: 0px;
   transition: height 400ms, padding 400ms;
+  margin: auto;
   margin-top: 20px;
   overflow: hidden;
   width: 90%;
