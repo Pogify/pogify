@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { reaction, autorun } from "mobx";
 
 import * as SessionManager from "../../utils/sessionManager";
-import { playerStore, queueStore } from "../../stores";
+import { playerStore, queueStore, requestStore } from "../../stores";
 
 import debounce from "lodash/debounce";
 
@@ -18,6 +18,7 @@ import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./index.module.css";
 import { PlaylistList } from "./components/PlaylistList";
+import ClearRequests from "./components/ClearRequests";
 import { QueueList } from "./QueueList";
 
 /**
@@ -204,6 +205,18 @@ class HostPlayer extends React.Component {
               </>
             )}
             {this.state.tab === "queueItems" && <QueueList />}
+            {this.state.tab === "requests" && (
+              <>
+                <ClearRequests />
+                <pre>
+                  {JSON.stringify(
+                    requestStore.requestsByMostRequested,
+                    undefined,
+                    2
+                  )}
+                </pre>
+              </>
+            )}
           </div>
 
           <div className={styles.shareExplanations}>

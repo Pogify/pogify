@@ -1,0 +1,10 @@
+.button {
+  padding: 10px;
+
+  cursor: pointer;
+}
+
+.button::after {
+  content: "Clear Requests";
+  margin-left: 10px;
+}

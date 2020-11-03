@@ -4,7 +4,7 @@ export class RequestStore {
   subscription = null;
   constructor() {
     extendObservable(this, {
-      requests: {},
+      requests: { a: 1, b: 2 },
       requestsOpen: false,
     });
   }
@@ -56,5 +56,9 @@ export class RequestStore {
 
   removeRequest = (item) => {
     delete this.requests[item];
+  };
+
+  clearRequests = () => {
+    this.requests = {};
   };
 }

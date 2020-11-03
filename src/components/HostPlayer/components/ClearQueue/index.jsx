@@ -3,8 +3,8 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 import React from "react";
 
-import styles from "./ClearQueue.module.css";
-import { queueStore } from "../../../stores";
+import styles from "./index.module.css";
+import { queueStore } from "../../../../stores";
 
 export default () => {
   return (

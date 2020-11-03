@@ -26,3 +26,4 @@ export * from "./playlistStore";
 export * from "./queueStore";
 export * from "./searchStore";
 export * from "./requestStore";
+window.requestStore = requestStore;
