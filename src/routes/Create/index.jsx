@@ -2,11 +2,13 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { Layout } from "../../layouts";
 import { Link } from "react-router-dom";
+import { BrowserView, MobileView } from 'react-device-detect';
 
 import { createSession } from "../../utils/sessionManager";
 
 import { ErrorModal } from "../../modals";
 import { modalStore } from "../../stores";
+import { Unsupported } from "../";
 
 import styles from "./index.module.css";
 
@@ -56,32 +58,37 @@ export class Create extends React.Component {
   render() {
     return (
       <Layout>
-        <Helmet>
-          <title>Create a session - Pogify</title>
-        </Helmet>
-        <div className={styles.buttonStack}>
-          {Boolean(this.state.activeSession) && (
-            <>
-              <Link
-                className={styles.fullWidth}
-                to={`/session/${this.state.activeSession}`}
-              >
-                <button className={`textAlignCenter ${styles.fullWidth}`}>
-                  Continue Active Session:
-                  <div>
-                    <u>
-                      <b>{this.state.activeSession}</b>
-                    </u>
-                  </div>
-                </button>
-              </Link>
-              <div>
-                <h3>or</h3>
-              </div>
-            </>
-          )}
-          <button onClick={this.create}>Create New Listening Session</button>
-        </div>
+        <BrowserView>
+          <Helmet>
+            <title>Create a session - Pogify</title>
+          </Helmet>
+          <div className={styles.buttonStack}>
+            {Boolean(this.state.activeSession) && (
+              <>
+                <Link
+                  className={styles.fullWidth}
+                  to={`/session/${this.state.activeSession}`}
+                >
+                  <button className={`textAlignCenter ${styles.fullWidth}`}>
+                    Continue Active Session:
+                    <div>
+                      <u>
+                        <b>{this.state.activeSession}</b>
+                      </u>
+                    </div>
+                  </button>
+                </Link>
+                <div>
+                  <h3>or</h3>
+                </div>
+              </>
+            )}
+            <button onClick={this.create}>Create New Listening Session</button>
+          </div>
+        </BrowserView>
+        <MobileView>
+          <Unsupported></Unsupported>
+        </MobileView>
       </Layout>
     );
   }

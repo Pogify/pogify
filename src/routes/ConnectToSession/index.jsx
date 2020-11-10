@@ -1,7 +1,8 @@
 import React from "react";
+import { BrowserView, MobileView } from 'react-device-detect';
 import { useHistory } from "react-router-dom";
 import { Layout } from "../../layouts";
-
+import { Unsupported } from "../";
 import styles from "./index.module.css";
 
 
@@ -19,6 +20,7 @@ export const ConnectToSession = () => {
 
   return (
     <Layout>
+      <BrowserView>
       <h2 className="noMarginTop" >Enter Session Code</h2>
       <form onSubmit={submit} className="inline">
         <div>
@@ -41,6 +43,10 @@ export const ConnectToSession = () => {
           </button>
         </div>
       </form>
+      </BrowserView>
+      <MobileView>
+        <Unsupported></Unsupported>
+      </MobileView>
     </Layout >
   );
 };

@@ -120,6 +120,7 @@ p {
   flex-direction: column;
   align-items: center;
   margin-bottom: 30px;
+  max-width: 98%;
   height: 47px;
   padding-top: 25px;
   text-align: center;
