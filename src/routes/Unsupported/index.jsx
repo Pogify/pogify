@@ -12,7 +12,7 @@ export class Unsupported extends React.Component {
 			return (
 				<div>
 					<Helmet>
-						Unsupported Device
+						<title>Unsupported Device</title>
 					</Helmet>
 					<div className={styles.container}>
 						<center>
