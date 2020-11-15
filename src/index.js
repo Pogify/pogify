@@ -36,11 +36,9 @@ serviceWorker.unregister();
 window.onerror = (evt, source, lineno, colno, error) => {
   let eventId = Sentry.captureException(error);
   Sentry.showReportDialog({ eventId });
-  console.error(error);
 };
 
 window.onunhandledrejection = (e) => {
   let eventId = Sentry.captureException(e);
   Sentry.showReportDialog({ eventId });
-  console.error(e);
 };
