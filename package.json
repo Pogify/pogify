@@ -1,69 +1,39 @@
 {
-  "name": "pogify",
-  "version": "0.1.0",
-  "private": true,
-  "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/react-fontawesome": "^0.1.11",
-    "@sentry/integrations": "^5.22.3",
-    "@sentry/react": "^5.22.3",
-    "@sentry/tracing": "^5.22.3",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "axios": "^0.19.2",
-    "body-parser": "^1.19.0",
-    "cookie": "^0.4.1",
-    "cross-env": "^7.0.2",
-    "dotenv": "^8.2.0",
-    "express-session": "^1.17.1",
-    "feather-icons": "^4.28.0",
-    "firebase": "^7.18.0",
-    "gh-pages": "^3.1.0",
-    "lodash": "lodash/lodash#86a852fe763935bb64c12589df5391fd7d3bb14d",
-    "mobx": "^5.15.6",
-    "mobx-react": "^6.3.0",
-    "mobx-utils": "^5.6.1",
-    "nanoid": "^3.1.12",
-    "promise-retry": "^2.0.1",
-    "react": "^16.13.1",
-    "react-copy-to-clipboard": "^5.0.2",
-    "react-dom": "^16.13.1",
-    "react-helmet": "^6.1.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^1.2.1",
-    "socket.io": "^2.3.0",
-    "url-join": "^4.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "start-dev": "cross-env NODE_ENV=development react-scripts start",
-    "start-build": "node index.js",
-    "build": "react-scripts build && cp build/index.html build/404.html",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "edge >= 16",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version",
-      "edge >= 16"
-    ]
-  }
+	"name": "frontend-v2",
+	"version": "2.0.0-svelte",
+	"scripts": {
+		"dev": "svelte-kit dev",
+		"build": "svelte-kit build",
+		"preview": "svelte-kit preview"
+	},
+	"devDependencies": {
+		"@sveltejs/kit": "next",
+		"@typescript-eslint/eslint-plugin": "^4.19.0",
+		"@typescript-eslint/parser": "^4.19.0",
+		"autoprefixer": "^10.2.6",
+		"concurrently": "^6.2.0",
+		"cross-env": "^7.0.3",
+		"cssnano": "^5.0.6",
+		"eslint": "^7.22.0",
+		"eslint-config-prettier": "^8.1.0",
+		"eslint-plugin-svelte3": "^3.2.0",
+		"postcss": "^8.3.5",
+		"postcss-cli": "^8.3.1",
+		"postcss-load-config": "^3.1.0",
+		"prettier": "~2.2.1",
+		"prettier-plugin-svelte": "^2.2.0",
+		"promise-retry": "^2.0.1",
+		"svelte": "^3.34.0",
+		"svelte-check": "^2.0.0",
+		"svelte-loading-spinners": "^0.1.7",
+		"svelte-preprocess": "^4.7.3",
+		"tailwindcss": "^2.2.4",
+		"tslib": "^2.0.0",
+		"typescript": "^4.0.0"
+	},
+	"type": "module",
+	"dependencies": {
+		"axios": "^0.21.1",
+		"js-pkce": "^1.1.3"
+	}
 }

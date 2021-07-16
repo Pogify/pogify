@@ -1,5 +1,0 @@
-User-agent: *
-allow: /session/$
-allow: /create/$
-disallow: /session/*
-disallow: /create/*
